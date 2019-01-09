@@ -85,25 +85,20 @@ oper
 --2 Nouns
 
   regN : Str -> N ;
-  regN x = mkNomReg x ** {lock_N = <>} ;
+  regN x = lin N (mkNomReg x) ;
 
   femN  : N -> N ;
-  femN x = {s = x.s ; g = feminine ; lock_N = <>} ;
+  femN n = n ** {g = feminine} ;
 
   mascN : N -> N ;
-  mascN x = {s = x.s ; g = masculine ; lock_N = <>} ;
+  mascN n = n ** {g = masculine} ;
 
   mk2N : (bastão, bastões : Str) -> Gender -> N ;
-  mk2N x y g = mkNounIrreg x y g ** {lock_N = <>} ;
+  mk2N x y g = lin N (mkNounIrreg x y g) ;
 
-  --- [] update this docstring
   -- The regular function takes the singular form and the gender, and
-  -- computes the plural and the gender by a heuristic.  The heuristic
-  -- says that the gender is feminine for nouns ending with "a" or
-  -- "z", and masculine for all other words.  Nouns ending with "a",
-  -- "o", "e" have the plural with "s", those ending with "z" have
-  -- "ces" in plural; all other nouns have "es" as plural ending. The
-  -- accent is not dealt with.
+  -- computes the plural and the gender by a heuristic (see MorphoPor
+  -- for which heuristic).
   mkN = overload {
     -- predictable; "-a" for feminine, otherwise Masculine
     mkN : (luz : Str) -> N = regN ;
@@ -136,7 +131,7 @@ oper
 -- Relational nouns ("filha de x") need a case and a preposition.
 
   mkN2 : N -> Prep -> N2 ; -- relational noun with prepositio
-  mkN2 = \n,p -> n ** {lock_N2 = <> ; c2 = p} ;
+  mkN2 = \n,p -> lin N2 (n ** {c2 = p}) ;
 
 -- The most common cases are the genitive "de" and the dative "a",
 -- with the empty preposition.
@@ -150,7 +145,7 @@ oper
 -- Three-place relational nouns ("a conexão de x a y") need two
 -- prepositions.
   mkN3 : N -> Prep -> Prep -> N3 ; -- prepositions for two complements
-  mkN3 = \n,p,q -> n ** {lock_N3 = <> ; c2 = p ; c3 = q} ;
+  mkN3 = \n,p,q -> lin N3 (n ** {c2 = p ; c3 = q}) ;
 
 --3 Relational common noun phrases
 --
@@ -174,10 +169,10 @@ oper
     } ;
 
   mk2PN  : Str -> Gender -> PN ; -- Pilar
-  mk2PN x g = {s = x ; g = g} ** {lock_PN = <>} ;
+  mk2PN x g = lin PN {s = x ; g = g} ;
 
   mkPN = overload {
-    -- feminine for "-a"
+    -- feminine for "-a", else masculine
     mkPN : (Anna : Str) -> PN = regPN ;
     -- force gender
     mkPN : (Pilar : Str) -> Gender -> PN = mk2PN ;
@@ -187,73 +182,85 @@ oper
 
 --2 Adjectives
   compADeg : A -> A ;
-  compADeg a = lin A {
+  compADeg a = a ** {
     s = table {
       Posit => a.s ! Posit ;
       _ => \\f => "mais" ++  a.s ! Posit ! f
       } ;
-    isPre = a.isPre ;
-    copTyp = a.copTyp
     } ;
 
-  regA : Str -> A ;
-  regA a = compADeg (lin A {s = \\_ => (mkAdjReg a).s ; isPre = False ; copTyp = serCopula}) ;
+  liftAdj : Adj -> A ;
+  liftAdj adj = compADeg (lin A {s = \\_ => adj.s ; isPre = False ; copTyp = serCopula}) ;
 
-  mk2A : (único,unicamente : Str) -> A ;
-  mk2A adj adv = compADeg {s = \\_ => (mkAdj2 adj adv).s ; isPre = False ;
-                           copTyp = serCopula ;
-                           lock_A = <>} ;
+  regA : Str -> A ;
+  regA a = liftAdj (mkAdjReg a) ;
+
+  mk2A : (patrão,patroa : Str) -> A ;
+  mk2A ms fs = liftAdj (mkAdjReg2 ms fs) ;
+
+  mk4A : (bobão,bobona,bobões,bobonas : Str) -> A ;
+  mk4A a b c d = liftAdj (mkAdj4 a b c d) ;
 
   mk5A : (preto,preta,pretos,pretas,pretamente : Str) -> A ;
-  mk5A a b c d e = compADeg {s = \\_ => (mkAdj a b c d e).s ;
-                             isPre = False ; copTyp = serCopula ;
-                             lock_A = <>} ;
+  mk5A a b c d e = liftAdj (mkAdj a b c d e) ;
 
   adjCopula : A -> CopulaType -> A ;
   adjCopula a cop = a ** {copTyp = cop} ;
 
   mkADeg : A -> A -> A ;
-  mkADeg a b = lin A {
+  mkADeg a b = a ** {
     s = table {
       Posit => a.s ! Posit ;
       _ => b.s ! Posit
         -- Compar => b.s ! Posit ;
         -- Superl => "o" ++ b.s ! Posit ;
-      } ;
-    isPre = a.isPre ;
-    copTyp = a.copTyp
+      }
     } ;
 
+  invarA : Str -> A ;
+  invarA a = liftAdj (mkAdj4 a a a a) ;
+
   mkNonInflectA : A -> Str -> A ;
-  mkNonInflectA = \blanco,hueso -> blanco ** {s = \\x,y => blanco.s ! x ! y ++ hueso } ;
+  mkNonInflectA blanco hueso = blanco ** {
+    s = \\x,y => blanco.s ! x ! y ++ hueso
+    } ;
 
   mkA = overload {
 
--- For regular adjectives, all forms are derived from the masculine
--- singular. The types of adjectives that are recognized are "alto",
--- "fuerte", "util". Comparison is formed by "mas".
+    -- For regular adjectives, all forms are derived from the
+    -- masculine singular. The types of adjectives that are recognized
+    -- are "alto", "fuerte", "util". Comparison is formed by "mas".
     mkA : (bobo : Str) -> A
       = regA ; -- predictable adjective
 
--- Some adjectives need the feminine form separately.
+    -- Some adjectives need the feminine form separately.
     mkA : (espanhol,espanhola : Str) -> A
       = mk2A ;
 
--- One-place adjectives compared with "mais" need five forms in the
--- worst case (masc and fem singular, masc plural, adverbial).
+    -- Very rarely (if ever) does one need to specify the adverbial
+    -- form.
+    mkA : (burrão,burrona,burrões,burronas : Str) -> A
+      = mk4A ;
+
+    -- One-place adjectives compared with "mais" need five forms in
+    -- the worst case (masc and fem singular, masc and fem plural,
+    -- adverbial).
     mkA : (bobo,boba,bobos,bobas,bobamente : Str) -> A = mk5A ;
 
--- In the worst case, two separate adjectives are given: the positive
--- ("bueno"), and the comparative ("mejor").
-    -- special comparison with "mais" as default
+    -- In the worst case, two separate adjectives are given: the positive
+    -- ("bom"), and the comparative ("melhor").  special comparison with
+    -- "mais" as default
     mkA : (bom : A) -> (melhor : A) -> A
       = mkADeg ;
 
-    mkA : (blanco : A) -> (hueso : Str) -> A  -- noninflecting component after the adjective
+    -- noninflecting component after the adjective
+    mkA : (blanco : A) -> (hueso : Str) -> A
       = mkNonInflectA ;
 
-    mkA : A -> CopulaType -> A -- force copula type
+    -- force copula type
+    mkA : A -> CopulaType -> A
       = adjCopula ;
+
     } ;
 
 -- The functions above create postfix adjectives. To switch them to
@@ -374,7 +381,7 @@ oper
   -- deviant past participle, e.g. abrir - aberto
   special_ppV ve pa = {
     s = table {
-      VPart g n => (adjPreto pa).s ! (genNum2Aform g n) ;
+      VPart g n => (mkAdjReg pa).s ! (genNum2Aform g n) ;
       p => ve.s ! p
       } ;
     lock_V = <> ;
