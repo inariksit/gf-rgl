@@ -199,7 +199,7 @@ oper
   mk2A ms fs = liftAdj (mkAdjReg2 ms fs) ;
 
   mk4A : (bobão,bobona,bobões,bobonas : Str) -> A ;
-  mk4A a b c d = liftAdj (mkAdj4 a b c d) ;
+  mk4A a b c d = liftAdj (mkAdj a b c d (mente b)) ; -- here, calling mente is no problem!
 
   mk5A : (preto,preta,pretos,pretas,pretamente : Str) -> A ;
   mk5A a b c d e = liftAdj (mkAdj a b c d e) ;
@@ -218,7 +218,8 @@ oper
     } ;
 
   invarA : Str -> A ;
-  invarA a = liftAdj (mkAdj4 a a a a) ;
+  invarA a = mk5A a a a a a ; -- if I add (mente a), it breaks O_o
+  --invarA a = liftAdj (mkAdjInvar a) ; -- doesn't work either
 
   mkNonInflectA : A -> Str -> A ;
   mkNonInflectA blanco hueso = blanco ** {

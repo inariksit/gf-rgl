@@ -157,24 +157,17 @@ oper
        }
     } ;
 
-  mkAdj4 : (_,_,_,_ : Str) -> Adj ;
-  mkAdj4 ms fs mp fp = {
-    s = table {
-      ASg g _ => genForms ms fs ! g ;
-      APl g   => genForms mp fp ! g ;
-      AA      => case fs of {
-        exeg + v@("é"|"á"|"í"|"ó"|"ú"|"ê"|"ô") + tica
-          => exeg + (diacriticToVowel v) + tica + "mente" ;
-
-        comu + "m" => comu + "mente" ; -- for Brazilian Portuguese
-
-        _          => fs + "mente"
-        }
-      }
-    } ;
-
   mkAdjFromNouns : Noun -> Noun -> Adj ;
-  mkAdjFromNouns nm nf = mkAdj4 (nm.s ! Sg) (nf.s ! Sg) (nm.s ! Pl) (nf.s ! Pl) ;
+  mkAdjFromNouns nm nf =
+   let fs : Str = nf.s ! Sg
+   in mkAdj (nm.s ! Sg) fs (nm.s ! Pl) (nf.s ! Pl) (mente fs) ;
+
+  mente : Str -> Str = \fs -> case fs of {
+    exeg + v@("é"|"á"|"í"|"ó"|"ú"|"ê"|"ô") + tica
+      => exeg + (diacriticToVowel v) + tica + "mente" ;
+    comu + "m"
+      => comu + "mente" ; -- for Brazilian Portuguese
+    _ => fs + "mente" } ;
 
   mkAdjReg2 : Str -> Str -> Adj ;
   mkAdjReg2 ms fs = mkAdjFromNouns (mkNomReg ms) (mkNomReg fs) ;
