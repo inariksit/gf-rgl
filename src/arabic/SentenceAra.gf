@@ -64,7 +64,7 @@ concrete SentenceAra of Sentence = CatAra ** open
          }
       };
 
-    UseRCl t p cl = {s = \\agr,c => t.s ++ p.s ++ cl.s ! t.t ! p.p ! agr ! c} ;
+    UseRCl t p cl = {s = \\pgn,c => t.s ++ p.s ++ cl.s ! t.t ! p.p ! pgn ! c} ;
 
     -- If the cls has a c2, the preposition will just hang there without an object.
     -- If this bothers you, call complClSlash to cls ** {c2=noPrep}. /IL

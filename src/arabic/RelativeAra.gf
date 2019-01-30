@@ -10,10 +10,10 @@ concrete RelativeAra of Relative = CatAra **
 
    -- : RP -> VP -> RCl ;      -- who loves John
    RelVP rp vp = {
-     s = \\t,p,agr,c =>
+     s = \\t,p,pgn,c =>
        let
-         npS : Case => Str = \\_ => rp.s ! agr2ragr agr c ;
-         np : ResAra.NP = agrNP agr ** {s = npS} ;
+         npS : Case => Str = \\_ => rp.s ! agr2ragr pgn c ;
+         np : ResAra.NP = agrNP (NounPer3 (pgn2gn pgn)) ** {s = npS} ;
          cl = predVP np vp ;
        in
        cl.s ! t ! p ! Nominal
@@ -21,11 +21,11 @@ concrete RelativeAra of Relative = CatAra **
 
     -- : RP -> ClSlash -> RCl ; -- whom John loves
    RelSlash rp cls = cls ** {
-     s = \\t,p,agr,c =>
+     s = \\t,p,pgn,c =>
         let --empty : Agr -> NP = emptyNP ;
-            obj : ResAra.NP = pgn2pron agr.pgn ; -- head is repeated as a clitic object pronoun
+            obj : ResAra.NP = pgn2pron pgn ; -- head is repeated as a clitic object pronoun
             cl : ResAra.Cl = complClSlash obj cls ;
-        in rp.s ! agr2ragr agr c ++ cl.s ! t ! p ! VOS
+        in rp.s ! agr2ragr pgn c ++ cl.s ! t ! p ! VOS
      } ;
 --
 --    FunRP p np rp = {

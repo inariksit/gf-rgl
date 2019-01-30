@@ -764,8 +764,8 @@ param
 
 oper
   agr2ragr = overload {
-    agr2ragr : Agr -> Case -> RAgr = \a,c ->
-      let gn = pgn2gn a.pgn in case <gn.n,gn.g,a> of {
+    agr2ragr : PerGenNum -> Case -> RAgr = \pgn,c ->
+      let gn : AAgr = pgn2gn pgn in case <gn.n,gn.g,a> of {
         <Sg,x> => RSg x ;
         <Dl,x> => RDl x c ;
         <Pl,x> => RPl x } ;
@@ -776,7 +776,7 @@ oper
         Pl => RPl g }
     } ;
 
-  RCl : Type = {s : Tense => Polarity => Agr => Case => Str} ;
+  RCl : Type = {s : Tense => Polarity => PerGenNum => Case => Str} ;
   RP  : Type = {s : RAgr => Str } ;
 
 -----------------------------------------------------------------------------
