@@ -26,7 +26,7 @@ lin
   QuestIComp ic np =
     let vp = UseComp (CompNP np) ; -- puts NP in nominative
         ip : ResAra.IP = np ** { -- NP's s is already present in VP, we only want its agr
-               s = \\_,_,_,_ => ic.s ! pgn2gn np.a.pgn } ;
+               s = \\_,_,_,_ => ic.s ! pgn2gn (np2pgn np) } ;
      in QuestVP ip vp ;
 
   -- : IP -> IComp ;
@@ -69,7 +69,7 @@ lin
   -- : IDet -> IP
   IdetIP idet = idet ** {
     s = \\isPred => idet.s ;
-    a = { pgn = agrP3 NoHum Masc idet.n ; isPron = False }
+    a = agrP3 NoHum Masc idet.n
     } ;
 
   -- : IDet -> CN -> IP
@@ -77,7 +77,7 @@ lin
     s = \\isPred,g,s,c
           => idet.s ! cn.g ! s ! c ++
              cn2str cn idet.n idet.d Gen ;
-    a = { pgn = agrP3 NoHum cn.g idet.n ; isPron = False }
+    a = agrP3 NoHum cn.g idet.n
     } ;
 
    -- : IQuant -> Num -> IDet

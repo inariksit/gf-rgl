@@ -4,10 +4,10 @@ concrete SymbolAra of Symbol = CatAra ** open Prelude, ResAra in {
 
 
 lin
-  SymbPN i = {s = \\c => i.s ; g = Masc ; h = NoHum } ; --IL
-  IntPN i  = {s = \\c => i.s ; g = Masc ; h = NoHum } ; --IL
-  FloatPN i  = {s = \\c => i.s ; g = Masc ; h = NoHum } ; --IL
-  NumPN i  = {s = \\c => uttNum i ! Masc ; g = Masc ; h = NoHum } ; --IL
+  SymbPN i = mascSgAAgr ** {s = \\c => i.s} ; --IL
+  IntPN i  = mascSgAAgr ** {s = \\c => i.s}  ; --IL
+  FloatPN i = mascSgAAgr ** {s = \\c => i.s}  ; --IL
+  NumPN i  = mascSgAAgr ** {s = \\c => uttNum i ! Masc} ; --IL
   -- CNIntNP cn i = {
   --   s = \\c => cn2str cn Sg Def c ++ uttNum i ! cn.g ;
   --   a = dummyAgrP3 Sg ;
@@ -16,11 +16,11 @@ lin
   CNSymbNP det cn xs =
     let g = cn.g ; n = sizeToNumber det.n in emptyNP ** {
     s = \\c => det.s ! NoHum ! g ! c ++ cn2str cn n Def c ++ xs.s; ----IL word order?? Seems to be nontrivial according to ResAra comments.
-    a = dummyAgrP3 n
+    a = NounPer3 {g=Masc ; n=n}
     } ;
   CNNumNP cn i = emptyNP ** {
     s = \\c => cn2str cn Sg Def c ++ uttNum i ! cn.g ;
-    a = dummyAgrP3 Sg
+    a = mascSg3Agr;
     } ;
 
   SymbS sy = {s = \\_ => sy.s} ;
@@ -39,10 +39,5 @@ lin
 
   BaseSymb = infixSS "und" ; ----
   ConsSymb = infixSS "," ;
-
-oper
-
-  dummyAgrP3 : Number -> Agr = \n ->
-   { pgn = Per3 Masc n ; isPron = False } ;
 
 }

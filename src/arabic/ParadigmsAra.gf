@@ -84,14 +84,14 @@ resource ParadigmsAra = open
 --3 Proper names
 
   mkPN = overload {
-    mkPN : Str -> PN  -- Predictable PN from a Str: fem hum if ends in ة, otherwise masc hum.
+    mkPN : Str -> PN  -- Predictable PN from a Str: fem sg if ends in ة, otherwise masc sg.
      = smartPN ;
     mkPN : N -> PN    -- Make a PN out of N. The PN is in construct state.
      = \n -> lin PN (n ** {
           s = \\c => n.s ! Sg ! Const ! c
-                  ++ n.s2 ! Sg ! Def ! c -- NB this hack works for idaafa constructions (if you used mkN : N -> N -> N), but wrong for mkN : N -> A -> N. /IL
-        }) ;
-    mkPN : Str -> Gender -> Species -> PN -- Make a PN out of string, gender and species.
+                  ++ n.s2 ! Sg ! Def ! c ; -- NB this hack works for idaafa constructions (if you used mkN : N -> N -> N), but wrong for mkN : N -> A -> N. /IL
+          n = Sg}) ;
+    mkPN : Str -> Gender -> Number -> PN -- Make a PN out of string, gender and number.
      = mkFullPN ;
   } ;
 
@@ -619,13 +619,14 @@ resource ParadigmsAra = open
     let { mucallim = mkWord sg root;
     } in mkFullN (sndm mucallim) gen spec;
 
-  mkFullPN : Str -> Gender -> Species -> PN ;
-  mkFullPN = \str,gen,species ->
-    { s = \\c => str + indecl!c ;
-      g = gen;
-      h = species;
-      lock_PN = <>
-    };
+  mkFullPN = overload {
+    mkFullPN : Str -> Gender -> Number -> PN = \str,gen,num -> lin PN {
+      s = \\c => str + indecl!c ; g = gen ; n = num
+      } ;
+    mkFullPN : Str -> Gender -> Species -> PN = \str,gen,_spec -> lin PN {
+      s = \\c => str + indecl!c ; g = gen ; n = Sg
+      } -- Only kept for backward compatibility; Species doesn't contribute to anything. /IL
+  } ;
 
   mkN2 = overload {
     mkN2 : N -> Prep -> N2 = prepN2 ;
@@ -846,8 +847,8 @@ smartN : Str -> N = \s -> case s of {
   } ;
 
 smartPN : Str -> PN = \s -> case last s of {
-  "ة" => mkFullPN s Fem Hum ;
-  _ => mkFullPN s Masc Hum
+  "ة" => mkFullPN s Fem Sg ;
+  _ => mkFullPN s Masc Sg
   } ;
 
 formV : (root : Str) -> VerbForm -> V = \s,f -> case f of {

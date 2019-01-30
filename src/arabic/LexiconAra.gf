@@ -145,7 +145,7 @@ flags
   paint_V2A    = dirV2 (regV "يَدهَن" ) ;
 --  paint_V2A    = mkV2A (v1 "دهن" a a ) [] ;
   paper_N      = brkN "ورق" "فَعَلة" "أَفعَال" Fem NoHum ;
-  paris_PN     = mkPN "بارِيس" Fem NoHum  ;
+  paris_PN     = mkPN "بارِيس" Fem Sg  ;
   peace_N      = brkN "سلم" "فَعَال" "فَعَال" Masc NoHum; --no plur
   pen_N        = brkN "قلم" "فَعَل" "أَفعَال" Masc NoHum;
   planet_N     = mkN (reg "كَوكَب" "كَواكِب") Masc NoHum ; -- quadriconsonantal

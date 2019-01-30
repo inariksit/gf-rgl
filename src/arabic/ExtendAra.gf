@@ -20,8 +20,8 @@ concrete ExtendAra of Extend =
 
 lin
   -- If the NP is a pronoun, just use PossPron
-  GenNP np = case np.a.isPron of {
-    True  => Grammar.PossPron (pgn2pron np.a.pgn) ;
+  GenNP np = case isPron np of {
+    True  => Grammar.PossPron (pgn2pron (np2pgn np)) ;
     False => let g = np.s ! Gen in mkQuant3 g g g Const
   } ;
 
@@ -70,7 +70,7 @@ lin
   ConjVPS = conjunctDistrTable PerGenNum ;
 
   PredVPS np vps = {
-    s = \\_ => np.s ! Nom ++ vps.s ! np.a.pgn -- first quick version with order always Nominal.
+    s = \\_ => np.s ! Nom ++ vps.s ! np2pgn np -- first quick version with order always Nominal.
     } ;                                       -- if necessary, change VPS into {s : PerGenNum => Order => {before,after : Str}}
 
 }

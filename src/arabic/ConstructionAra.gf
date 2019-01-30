@@ -33,7 +33,7 @@ lin
     let january_CN : CN = mkCN month_Timeunit (mkNP (mkPN january)) ;
         january_NP : NP = R.emptyNP **
            {s = \\c => R.cn2str january_CN R.Sg R.Const c ;
-            a = {pgn = R.Per3 january_CN.g R.Sg ; isPron = False}} ;
+            a = R.NounPer3 {g=january_CN.g ; n=R.Sg}} ;
      in SyntaxAra.mkAdv R.biPrep january_NP ;
 
   yearAdv y = SyntaxAra.mkAdv in_Prep y ;
@@ -60,27 +60,27 @@ oper
   amount_N : N = mkN "مِقْدَار" "مَقَادِير" masc nohum ;
 
   -- hack used in the name constructions
-  toNP : Bool -> NP -> NP = \b -> if_then_else NP b R.emptyNP ;
+  toNP : NP -> NP = \np -> if_then_else NP (R.isPron np) R.emptyNP np ;
 
 lin
   -- : NP -> NP -> Cl
   have_name_Cl np nm =
     let subjPron : Pron = R.np2pron np ;
-        me : NP = toNP np.a.isPron np ;
+        me : NP = toNP np ;
         myName : NP = E.ApposNP me (mkNP (mkDet subjPron) L.name_N) ;
      in mkCl myName nm ;
 
   -- : NP -> QCl
   what_name_QCl np =
     let subjPron : Pron = R.np2pron np ;
-        me : R.NP = toNP np.a.isPron np ;
+        me : R.NP = toNP np ;
         myName : NP = E.ApposNP me (mkNP (mkDet subjPron) L.name_N) ;
         what_IP : R.IP = R.mkIP "مَا هُوَ" R.Sg ;
      in mkQCl what_IP myName ;
 
   how_old_QCl np =
     let subjPron : Pron = R.np2pron np ;
-        me : R.NP = toNP np.a.isPron np ;
+        me : R.NP = toNP np ;
         age_N = mkN "عُمر" ;
         myAge : NP = E.ApposNP me (mkNP (mkDet subjPron) L.name_N) ;
      in mkQCl what_IP myAge ;

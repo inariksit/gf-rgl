@@ -26,8 +26,8 @@ lin
     a = conjAgr xs.a x.a
     } ;
   ConjNP conj ss = emptyNP ** conjunctDistrTable Case conj ss ** {
-    a = let gn = pgn2gn ss.a.pgn in
-        {pgn = Per3 gn.g (conjNumber conj.n gn.n) ; isPron = False}
+    a = let gn = pgn2gn (agr2pgn ss.a) in
+        NounPer3 {g=gn.g ; n=conjNumber conj.n gn.n}
     } ;
 
   BaseAP = twoTable5 Species Gender Number State Case ;
@@ -36,11 +36,9 @@ lin
 
 
 oper
-  conjAgr : Agr -> Agr -> Agr = \a,b -> {
-    isPron = False ;
-    pgn = let gnA = pgn2gn a.pgn ; gnB = pgn2gn b.pgn in
-    	  Per3 (conjGender gnA.g gnB.g) (conjNumber gnA.n gnB.n)
-    } ;
+  conjAgr : Agr -> Agr -> Agr = \a,b ->
+  let gnA = pgn2gn (agr2pgn a) ; gnB = pgn2gn (agr2pgn b)
+   in NounPer3 {g = conjGender gnA.g gnB.g ; n = conjNumber gnA.n gnB.n} ;
 
   conjGender : Gender -> Gender -> Gender = \g,h ->
     case g of {Fem => h ; _ => Masc} ;

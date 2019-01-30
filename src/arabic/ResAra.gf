@@ -53,14 +53,6 @@ oper
   uttNum : NumOrdCard -> (Gender => Str) ;
   uttNum n = \\g => n.s ! Fem ! Const ! Bare ;
 
-  Agr = {pgn : PerGenNum; isPron : Bool} ;
-  AgrLite = {gn : AAgr ; isPron : Bool} ; --used in ImpersCl
-  AAgr = {g : Gender ; n : Number} ;
-
-  agrLite : Agr -> AgrLite = \a -> a ** {gn = pgn2gn a.pgn} ;
-  is1sg : Agr -> Bool = \a ->
-    case a.pgn of {Per1 Sing => True; _ => False} ;
-
   someSg_Det = mkDet "أَحَد" Sg Const ;
   somePl_Det = mkDet "بَعض" Pl Const ;
 
@@ -160,6 +152,45 @@ oper
 -----------------------------------------------------------------------------
 -- NP, Pron
 
+param
+  -- isPron was only relevant for Per3. This way we get 20 instead of 28 values.
+  Agr = NounPer3 AAgr | Pron PerGenNum ;
+  -- was: Agr = {pgn : PerGenNum; isPron : Bool} ;
+oper
+
+  mascSgAAgr : AAgr = {g=Masc ; n=Sg} ;
+  mascSg3Agr : Agr = NounPer3 mascSgAAgr ;
+
+  AgrLite = {gn : AAgr ; isPron : Bool} ; --used in ImpersCl
+  AAgr = {g : Gender ; n : Number} ;
+
+  agrLite : Agr -> AgrLite = \a -> case a of {
+    NounPer3 aagr => {gn = aagr ; isPron = False} ;
+    Pron     pgn  => {gn = pgn2gn pgn ; isPron = True}
+    } ;
+
+  is1sg : Agr -> Bool = \a -> case a of {
+    Pron (Per1 Sing) => True ;
+    _                => False
+    } ;
+
+  isPron : NP -> Bool = \np -> case np.a of {
+    Pron _     => True ;
+    NounPer3 _ => False
+    } ;
+
+  notPron : Agr -> Agr = \a -> case a of {
+    Pron pgn   => NounPer3 (pgn2gn pgn) ;
+    NounPer3 x => NounPer3 x
+    } ;
+
+  np2pgn : NP -> PerGenNum = \np -> agr2pgn np.a ;
+
+  agr2pgn : Agr -> PerGenNum = \a -> case a of {
+    Pron x => x ;
+    NounPer3 gn => gn2pgn gn
+    } ;
+
   NP : Type = {
     s : Case => Str ;
     a : Agr ;
@@ -180,18 +211,18 @@ oper
         Gen => I ;  -- possessive suffix
         Dat => I -- will only be used with preposition لِ
       };
-    a = {pgn = pgn; isPron = True}
-  };
+    a = Pron pgn
+    };
 
   proDrop : NP -> NP = \np ->
-    case np.a.isPron of {
+    case isPron np of {
       True => np ** {s = table {Nom => [] ; x => np.s ! x}};
       _    => np
     } ;
 
   emptyNP : NP = {
     s = \\_ => [] ;
-    a = {pgn = Per3 Masc Sg ; isPron = False} ;
+    a = mascSg3Agr ;
     isHeavy = False ;
     empty = [] } ;
 
@@ -199,7 +230,7 @@ oper
 
   -- e.g. al-jamii3, 2a7ad
   regNP : Str -> Number -> State -> NP = \word,n,s ->
-    agrNP {pgn = Per3 Masc n ; isPron = False} ** {
+    agrNP mascSg3Agr ** {
       s = \\c => fixShd word (dec1sg ! s ! c) ;
       } ;
 
@@ -228,14 +259,10 @@ oper
   -- Used e.g. to encode the subject as an object clitic
   -- or to find a possessive suffix corresponding to the NP.
   -- If the NP is a pronoun, just use itself.
-  np2pron : NP -> NP = \np -> case np.a.isPron of {
+  np2pron : NP -> NP = \np -> case isPron np of {
     True  => np ;
-    False => pgn2pron np.a.pgn
+    False => pgn2pron (np2pgn np)
     } ;
-
-  pron2np : NP -> NP = \np -> np ** {
-    a = np.a ** {isPron=False} -- hack, sometimes we *don't* want prodrop
-  } ;
 
   pgn2pron : PerGenNum -> NP = \pgn ->
     case pgn of {
@@ -352,10 +379,10 @@ oper
       _ => False
     };
 
-  agrP3 : Species -> Gender -> Number -> PerGenNum= \h,g,n ->
+  agrP3 : Species -> Gender -> Number -> Agr = \h,g,n ->
     case <h,n> of {
-      <NoHum,Pl> => Per3 Fem Sg;
-      _          => Per3 g n
+      <NoHum,Pl> => NounPer3 {g=Fem ; n=Sg} ;
+      _          => NounPer3 {g=g   ; n=n}
     };
 
 
@@ -373,12 +400,12 @@ oper
   mkIP = overload {
      mkIP : Str -> Number -> IP = \maa,n -> {
         s = \\_p,_g,_s,_c => maa ;
-        a = { pgn = agrP3 NoHum Masc n ; isPron = False }
+        a = agrP3 NoHum Masc n
         } ;
     mkIP : (_,_ : Str) -> Number -> IP = \maa,maadhaa,n -> {
         s = table { True  => \\_g,_s,_c => maa ;
                     False => \\_g,_s,_c => maadhaa } ;
-        a = { pgn = agrP3 NoHum Masc n ; isPron = False }
+        a = agrP3 NoHum Masc n
         }
     } ;
 
@@ -469,7 +496,7 @@ param
          | VPImp
          | VPGer ;
 
-  VType = -- indicates if there is a predicate (xabar): 
+  VType = -- indicates if there is a predicate (xabar):
           Copula  -- 1) disappears in equational sentences
                   -- 2) its argument ('xabar') is in the pred field
                   -- 3) it is negated with laysa
@@ -535,14 +562,22 @@ oper
 
   Subj : Type = {s : Case => Str ; isPron : Bool} ;
 
-  np2subj : NP -> Subj = \np -> np ** {isPron = np.a.isPron} ;
-  subj2np : Subj -> NP = \su -> emptyNP ** su ** {a = {pgn = emptyNP.a.pgn ; isPron = su.isPron}} ;
-  emptyObj : Obj = {a = {gn = {g=Masc ; n=Sg} ; isPron = False}; s = []} ;
+  np2subj : NP -> Subj = \np -> np ** {isPron = isPron np} ;
+
+  -- Eventually get rid of this and move to a nicer VP+Cl+S model /IL
+  subj2np : Subj -> NP = \su -> emptyNP ** su ** {
+    a = case su.isPron of {
+               True => Pron (Per3 Masc Sg) ;
+               False => mascSg3Agr
+        }
+    } ;
+
+  emptyObj : Obj = {a = {gn = mascSgAAgr ; isPron = False}; s = []} ;
 
   insertObj : NP -> VPSlash -> VP = \np,vp -> vp ** {
     obj = {s = vp.obj.s -- old object, if there was one
             ++ bindIfPron np vp -- new object, bind if pronoun and not pred
-            ++ vp.agrObj ! np.a.pgn ; -- used for SlashV2V, Slash3V3 and SlashV2S
+            ++ vp.agrObj ! (agr2pgn np.a) ; -- used for SlashV2V, Slash3V3 and SlashV2S
            a = agrLite np.a} ;
     agrObj = \\_ => []
     } ;
@@ -553,7 +588,7 @@ oper
     let notNom : Case -> Bool = \c -> case c of {Nom => False; _=>True} ;
         bind = case vp.vtype of {
                  Copula => [] ;
-                 _ => bindIf (orB (andB np.a.isPron (notNom vp.c2.c)) --if np is pron, not in nominative
+                 _ => bindIf (orB (andB (isPron np) (notNom vp.c2.c)) --if np is pron, not in nominative
                                   vp.c2.binds)
                  }
      in vp.c2.s ++ bind ++ np.s ! vp.c2.c ;
@@ -577,15 +612,15 @@ oper
   predVP : NP -> VP -> Cl = \np,vp -> {
     s = \\t,p,o =>
       let pgn =
-            case <o,np.a.isPron> of {
-              <Verbal, False> => verbalAgr np.a.pgn;
-              _               => np.a.pgn
+            case <o,isPron np> of {
+              <Verbal, False> => verbalAgr (np2pgn np);
+              _               => np2pgn np
             };
 
           -- very unsure about this /IL
           sc : Preposition = case o of {
                 Subord => {s=[]; c=Acc; binds=False} ;
-                _ => case np.a.isPron of {
+                _ => case isPron np of {
                        True => noPrep ; -- to prevent weird stuff with VVs, might be overly specific
                        _    => vp.sc }
               } ;
@@ -595,7 +630,7 @@ oper
                     _ => (proDrop np).s ! sc.c -- prodrop if it's not predicative
                  } ;
       in wordOrder o
-           vp.obj.a.isPron np.a.isPron np.isHeavy
+           vp.obj.a.isPron (isPron np) np.isHeavy
            (vStr vp pgn t p o)
            vp.obj.s
            (pred vp pgn t p)
@@ -698,7 +733,7 @@ oper
   -- we might need different word orders for the ClSlash.
   predVPSlash : NP -> VPSlash -> ClSlash = \np,v -> v ** {
     subj = np2subj np ;
-    s = \\_pgn,vf => v.s ! np.a.pgn ! vf -- so we can throw away subject's pgn
+    s = \\_pgn,vf => v.s ! np2pgn np ! vf -- so we can throw away subject's pgn
     } ;
 
   complClSlash = overload {

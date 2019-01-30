@@ -60,7 +60,7 @@ concrete IdiomAra of Idiom = CatAra ** open
 
   -- : NP -> NP ;        -- the president himself (is at home)
   SelfNP np = np ** {
-    s = \\c => np.s ! c ++ reflPron c (np.a.pgn)
+    s = \\c => np.s ! c ++ reflPron c (np2pgn np)
     } ;
 
 }

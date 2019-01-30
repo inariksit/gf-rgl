@@ -35,15 +35,14 @@ lin
                ++ adj c'
                ++ cn.np ! c'
         };
-      a = { pgn = agrP3 cn.h cn.g number;
-            isPron = False } ;
+      a = agrP3 cn.h cn.g number ;
       isHeavy = cn.isHeavy
     } ;
 
   UsePN pn = emptyNP ** {
     s = pn.s;
-    a = {pgn = Per3 pn.g Sg ; isPron = False}
-    };
+    a = NounPer3 {g=pn.g ; n=pn.n} -- NounPer3 pn gives internal error in GeneratePMCFG
+    } ;
 
   UsePron p = p ;
 
@@ -58,10 +57,10 @@ lin
 
   PredetNP det np = np ** {
     s = \\c => case det.isDecl of {
-      True  => det.s ! c ++ bindIf np.a.isPron ++ np.s ! Gen ; -- akvaru l-awlAdi
+      True  => det.s ! c ++ bindIf (isPron np) ++ np.s ! Gen ; -- akvaru l-awlAdi
       False => det.s ! c ++ np.s ! c
       } ;
-    a = np.a ** {isPron=False}
+    a = notPron np.a
     } ;
 
 {-
@@ -178,7 +177,7 @@ lin
 
   MassNP cn = emptyNP ** {
     s = \\c => cn2str cn Sg Indef c ;
-    a = {pgn = Per3 cn.g Sg ; isPron = False} ;
+    a = NounPer3 {g=cn.g ; n=Sg} ;
     isHeavy = cn.isHeavy ;
     } ;
 
@@ -227,7 +226,7 @@ lin
           ++ case is1sg np.a of {
                 True => "لَدَي" ++ np.empty ;
                 False =>
-                  case np.a.isPron of {
+                  case isPron np of {
                     True => "لَدَي" ++ BIND ++ np.s ! Gen ;
                     False =>  np.s ! Gen }
              }

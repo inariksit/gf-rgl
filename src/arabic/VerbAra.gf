@@ -27,7 +27,7 @@ concrete VerbAra of Verb = CatAra ** open Prelude, ResAra, ParamX in {
         s = \\pgn,vpf => v2vVP.s ! pgn ! vpf -- main verb agrees with subject
                       ++ bindIfPron np v2vVP
                       ++ v2v.s2  -- أَنْ
-                      ++ vps.s ! np.a.pgn ! VPImpf Cnj -- verb from old VP agrees with object
+                      ++ vps.s ! np2pgn np ! VPImpf Cnj -- verb from old VP agrees with object
                       ++ vps.obj.s ; -- otherwise obj appears in a weird place /IL
         obj = emptyObj ;
         vtype = NotPred ;
@@ -48,7 +48,7 @@ concrete VerbAra of Verb = CatAra ** open Prelude, ResAra, ParamX in {
     Slash3V3 v np =
       let vp = slashV2 v ** {c2 =
             v.c2 ** {
-              s = case np.a.isPron of {
+              s = case isPron np of {
                     True => case v.c2.binds of {
                         True  => v.c2.s ; -- to make sure there's something for the object to attach to
                         False => v.c2.s ++ "إِيَّا" } ; -- see https://en.wiktionary.org/wiki/%D8%A5%D9%8A%D8%A7#Particle /IL

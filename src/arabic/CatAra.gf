@@ -90,7 +90,7 @@ concrete CatAra of Cat = CommonX - [Utt]  ** open ResAra, Prelude, ParamX in {
     N = ResAra.Noun ;
     N2 = ResAra.Noun2 ;
     N3 = ResAra.Noun3 ;
-    PN = {s : Case => Str; g : Gender; h : Species} ;
+    PN = {s : Case => Str; g : Gender; n : ResAra.Number} ;
 
 linref
 
