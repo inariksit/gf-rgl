@@ -1,19 +1,21 @@
 module Main where
 
+import Control.Monad
 import Data.List
 import qualified Data.Map as M
-import Paradigms (Case(..))
-import qualified Paradigms as P
-import Control.Monad
-
+import qualified Data.Set as S
 import qualified Data.Text    as T
-import qualified Data.Text.IO as TIO
+import qualified Data.Text.IO as T
+import qualified Paradigms as P
+import Paradigms (Case(..))
+
 
 -- data Case = Sg_Nom | Sg_Gen | … defined in Paradigms
 type Paradigm = T.Text
 type Form = T.Text
 type ParadigmMap = M.Map Paradigm (M.Map Case Form)
 type Case_Form = (Case, Form)
+type CF_Combination = [Case_Form]
 
 
 paradigm_map :: ParadigmMap
@@ -21,56 +23,90 @@ paradigm_map = M.fromList [(T.pack paradigm, M.fromList cases_forms)
                           | (paradigm, cases_forms) <- P.paradigms
                           ]
 
-
 allomorphs_per_case :: ParadigmMap -> Case -> M.Map Form Int
 allomorphs_per_case paramap cas =
   M.fromListWith (+)
     [ (frm, 1)
     | (cse,frm) <- all_cases_forms paramap
-    , cse == cas
-    , '[' `notElem` T.unpack frm ]
+    , cse == cas ]
 
-all_cases_forms :: ParadigmMap -> [(Case, Form)]
-all_cases_forms paramap = concat $ M.assocs `map` M.elems paramap :: [(Case, Form)]
 
--- Return those paradigms that have a combination of given  [case,form]
+all_cases_forms = all_cases_forms' (enumFromTo Sg_Nom Pl_Voc)
+
+all_cases_forms' :: [Case] -> ParadigmMap -> CF_Combination
+all_cases_forms' cases paramap = S.toList $ S.fromList $
+  [ (cse,frm)
+  | cases_forms <- M.elems paramap 
+  , (cse,frm) <- M.assocs cases_forms
+  , '[' `notElem` T.unpack frm
+  , cse  `elem` cases
+  ] :: [(Case, Form)]
+
+
+cf_combos :: ParadigmMap -> [Case] -> [CF_Combination]
+cf_combos paramap cases = sequence cases_forms
+  where
+    fstEq = \(a,_) (a',_) -> a==a'
+    cases_forms = groupBy fstEq (all_cases_forms' cases paramap)
+
+best_combo :: ParadigmMap -> [[Case]] -> [Case]
+best_combo paramap casecombos = fst $ maximumBy max' cfs_paradigms
+  where
+    max' :: ([Case], M.Map CF_Combination [Paradigm]) -> ([Case], M.Map CF_Combination [Paradigm]) -> Ordering
+    max' (_, a) (_, b) = M.size a `compare` M.size b
+
+    -- For each [(case, "form")] e.g. [(Sg_Gen,"i"),(Sg_Nom,"a")] keep a list of 
+    -- paradigms in which those cases have those forms.
+    cfs_paradigms  = 
+      [(cases3, M.fromListWith (++)
+            [ (case_form, M.keys $ filterParamap paramap case_form)
+            | case_form <- cfs
+            ])
+      | cases3 <- casecombos
+      , let cfs = cf_combos paramap cases3
+      ] :: [([Case], M.Map CF_Combination [Paradigm])]
+
+-- Return those paradigms that have a combination of given [case,form]
 -- e.g. Sg_Nom="a", Sg_Gen="i"
-combinations :: ParadigmMap -> [(Case, Form)] -> ParadigmMap
-combinations paramap cases_forms =
+filterParamap :: ParadigmMap -> CF_Combination -> ParadigmMap
+filterParamap paramap cases_forms =
   M.fromList
     [ (paradigm, cf_map)
     | (paradigm, cf_map) <- M.assocs paramap
     , all (`elem` M.assocs cf_map) cases_forms
     ]
 
-
 main :: IO ()
 main = do
-  let cases = enumFromTo Sg_Nom Pl_Voc
 
-  -- For each (case, "form") e.g. (Sg_Gen,"i"), keep a list of paradigms
-  -- where that case has that form.
-  let cfs_paramaps = M.fromListWith (++)
-          [ (case_form, [combinations paradigm_map [case_form]])
-          | case_form <- all_cases_forms paradigm_map
-          , fst case_form `elem` enumFromTo Sg_Nom Sg_Voc
-          , ']' `notElem` (T.unpack $ snd case_form)
-          ] :: M.Map Case_Form [ParadigmMap]
+  let all_cases = enumFromTo Sg_Gen Pl_Voc
+  let cases3 = [ cases 
+                      | cases <- subsequences all_cases 
+                      , length cases == 4 ] :: [[Case]]
 
+  let bestCombo = best_combo paradigm_map cases3 :: [Case]
+  print bestCombo 
 
-  let foo = -- M.fromListWith (+) 
-        [ ((cas,form), length paramaps) 
-        | ((cas,form), paramaps) <- M.assocs cfs_paramaps
-        ]
+  let cfs_paradigms = 
+        M.fromListWith M.union
+              [ (case_form, filterParamap paradigm_map case_form)
+              | case_form <- cf_combos paradigm_map bestCombo
+              ] :: M.Map CF_Combination ParadigmMap
 
-  mapM_ (\(cf, count) -> 
-          do TIO.putStr (T.pack $ show cf)
+  let foo = [ (cf, count, M.keys paras)
+            | (cf, paras) <- M.assocs cfs_paradigms
+            , let count = M.size paras
+            , count > 0
+            ]
+
+  mapM_ (\(cf, count, paras) -> 
+          do T.putStr (T.pack $ show cf)
              putStr (" ")
              putStrLn (show count)
-        ) (sort foo) --(sortBy sndBigger $  foo)
+             mapM_ (\x -> putStrLn ("\t" ++ show x)) paras
+        ) (sortBy (\(a,b,c) (a',b',c') -> (flip compare) b b') foo)
 
-  
-  -- (Sg_Gen,"i") |--->  {Case |---> {"form" |--> count}}
+
   -- let formCount = 
   --       M.fromList [ (cf, 
   --                     M.fromList [ (cas, 
@@ -79,7 +115,7 @@ main = do
   --                                   )
   --                                 | cas <- cases ]
   --                     )
-  --                   | (cf, paramaps) <- M.assocs cfs_paramaps
+  --                   | (cf, paramaps) <- M.assocs cfs_paradigm 
   --                   ] :: M.Map Case_Form (M.Map Case (M.Map Form Int))
 
   -- M.assocs formCount `forM_` (\(cf, cases_forms) ->
