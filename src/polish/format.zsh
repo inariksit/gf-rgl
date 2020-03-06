@@ -8,12 +8,13 @@ data Case = Sg_Nom | Sg_Gen | Sg_Dat | Sg_Acc | Sg_Ins | Sg_Loc | Sg_Voc
       deriving (Show, Eq, Ord, Enum)
 
 paradigms :: [((T.Text, Int), [(Case, T.Text)])]
+paradigms = [
 "
 # First two seds: preparation for irregularities
 grep -A16 "oper.*lexem" NounMorphoPol.gf \
-| sed 's/\[\]/""/g' \
+| sed 's/    table {//g' | tr -s '\n' \
+| sed 's/\[\]/"NO_PLURAL"/g' \
 | sed 's/      let x = lexem in/      let x = Predef.tk 0 lexem in/' \
-| sed 's/    table { //g' | tr -s '\n' \
 \
 | sed -E 's/.* (mkNTable.....?) .*/    \(\(T.pack "\1", /g' \
 | sed -E 's/    oper (.*) lexem.*/\1/g' \
