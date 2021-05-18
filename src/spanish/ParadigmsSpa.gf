@@ -395,6 +395,9 @@ oper
   mkAdA x = ss x ** {lock_AdA = <>} ;
   mkAdN x = ss x ** {lock_AdN = <>} ;
 
+  datV : Str -> V = \s ->
+    let reg : V = regV s
+     in reg ** {vtyp = VDat} ;
 
   regV x = -- cortar actuar cazar guiar pagar sacar
     let

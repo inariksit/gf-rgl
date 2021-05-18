@@ -1,6 +1,9 @@
 --# -path=.:../romance:../abstract:../common:prelude
 
-instance DiffSpa of DiffRomance - [iAdvQuestionInv,otherInv,partAgr,stare_V,vpAgrSubj,vpAgrClits,contractInf] = open CommonRomance, PhonoSpa, BeschSpa, Prelude in {
+instance DiffSpa of DiffRomance - [
+  iAdvQuestionInv,otherInv,partAgr,stare_V,vpAgrSubj,vpAgrClits,contractInf
+  --, Verb , VP -- IL 05/2021: add dative subject
+  ] = open CommonRomance, PhonoSpa, BeschSpa, DiffRomance, Prelude in {
 
   flags optimize=noexpand ;
     coding=utf8 ;
@@ -15,7 +18,11 @@ instance DiffSpa of DiffRomance - [iAdvQuestionInv,otherInv,partAgr,stare_V,vpAg
 
   param
     Prepos = P_de | P_a ;
-    VType = VHabere | VRefl ;
+    VType =
+      VHabere
+      | VRefl
+      | VDat -- Added by IL 05/2021: verbs with dative subject. Assume this is incompatible with VRefl. Doing this to save parameters.
+      ;
 
   oper
     dative   : Case = CPrep P_a ;
@@ -219,5 +226,19 @@ instance DiffSpa of DiffRomance - [iAdvQuestionInv,otherInv,partAgr,stare_V,vpAg
     subjPron = \_ -> [] ;
 
     polNegDirSubj = RPos ;
+
+---------------------------------
+-- IL 05/2021
+-- Add dative subject
+
+  -- oper
+
+  --   Verb = DiffRomance.Verb ** {
+  --     sc : SubjCase
+  --     } ;
+    -- VP = DiffRomance.VP ** {
+    --   datSubjSuffix : Person => Number => Str ; -- "no puede gustarme todo" TODO: is this necessary?
+    --   } ;
+
 
 }

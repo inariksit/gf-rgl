@@ -109,7 +109,7 @@ lin
    learn_V2 = dirV2 (regV "aprender") ;
    leather_N = regN "cuero" ;
    leave_V2 = mkV2 (mkV "partir") genitive ;	-- irse, dejar
-   like_V2 = dirV2 (regV "gustar") ;
+   like_V2 = dirV2 (datV "gustar") ;
    listen_V2 = dirV2 (regV "escuchar") ;
    live_V = verboV (vivir_7 "vivir") ;
    long_A = regADeg "largo" ;
