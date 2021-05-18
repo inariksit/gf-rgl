@@ -83,7 +83,8 @@ lin
       Fem Sg P3 ;
   so_AdA = ss "così" ;
   somebody_NP = pn2np (mkPN ["qualcuno"] Masc) ;
-  somePl_Det = {s,sp = \\_,c => prepCase c ++ "qualche" ; n = Pl ; s2 = [] ; isNeg = False} ;
+--  somePl_Det = {s,sp = \\_,c => prepCase c ++ "qualche" ; n = Pl ; s2 = [] ; isNeg = False} ;
+  somePl_Det = {s,sp = \\g,c => prepCase c ++ genForms "alcuni" "alcune" ! g ; n = Pl ; s2 = [] ; isNeg = False} ;
   someSg_Det = {s,sp = \\_,c => prepCase c ++ "qualche" ; n = Sg ; s2 = [] ; isNeg = False} ;
   something_NP = pn2np (mkPN ["qualche cosa"] Masc) ;
   somewhere_Adv = ss ["qualche parte"] ;
