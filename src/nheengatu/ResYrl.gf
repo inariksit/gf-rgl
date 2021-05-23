@@ -1,12 +1,37 @@
-resource ResYrl = ParamX ** open Prelude in {
+resource ResYrl = ParamX ** open Prelude, Predef in {
+
+
+  ---------------------
+  -- Phonology
+
+  oper
+    vowel : pattern Str = #("a"|"e"|"i"|"o"|"u"|"á"|"é"|"í"|"ó"|"ú") ;
+    -- TODO: is ~ a nasal vowel marker and are they also vowels?
+
 
   ---------------------
   -- Nominal morphology
   oper
     Noun : Type = {
       s : NForm => Str ; -- We omit number, because -itá is easy to glue with BIND token
-      nc : NClass ;
+      nc : NClass ; -- Which possession strategy to use: need to use explicit pronoun to
+      } ;           -- either the wordform already contains info by whom it's possessed, or need to use explicit pronoun
+                    -- i pirá 'his fish' vs. samunha 'his grandfather'
+
+    mkNoun : (abs, nsg3, sg3 : Str) -> NClass -> Noun = \taiti,raiti,saiti,nc -> {
+      s = table {
+	NRel SG3  => saiti ;
+	NRel NSG3 => raiti ;
+	NAbs => taiti } ;
+      nc = nc ;
       } ;
+
+    relPrefNoun : Str -> Noun = \taiti ->
+      let aiti : Str = case taiti of {
+            "t" + aiti => aiti ;
+            #vowel + _ => taiti ;
+            _ => error ("relPrefNoun: expected bare form, got" ++ taiti) }
+       in mkNoun taiti ("r"+aiti) ("s"+aiti) NCS ;
 
   param
     -- NForm: bare or possessed forms.
@@ -17,16 +42,19 @@ resource ResYrl = ParamX ** open Prelude in {
     PsorForm = SG3 | NSG3 ;
 
     -- NClass: controls the allomorphs i vs. s-
-    -- Is this an example of this, or unrelated?
-    -- i        igara i        pusé   u-iku
-    -- 3s.INACT canoa 3s.INACT pesado 3s.ACT-estar
-    -- ‘a canoa dele está pesada’
-    -- vs.
-    -- (ixé) se       pusé
-    -- (eu)  1s.INACT pesado
-    -- ‘(eu) sou pesado’
     NClass = NCI | NCS ;
 
+  oper
+    NounPhrase : Type = {
+      s : NClass => Str ;
+      isPron : Bool ;
+      } ;
+
+    -- Pron may become an independent NP, or a possessive Quant
+    -- Need to keep both options open in the lincat
+    Pronoun : Type = {
+      s : Str
+      } ;
 
   ---------------------
   -- Verbal morphology
@@ -83,7 +111,10 @@ resource ResYrl = ParamX ** open Prelude in {
       | C2 NClass -- secondClassPron
       ;
 
-    Level = Ind | Stage ;
+    Level =
+      Ind      -- no copula
+      | Stage  -- uses -iku as copula (like estar in Cat,Por,Spa)
+      ;
     -- Analogamente a ser e estar em português,
     -- o nheengatu lexicaliza em orações predicativas a distinção entre
     -- * predicado de nível de indivíduo (individual level predicate) e
