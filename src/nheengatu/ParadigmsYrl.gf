@@ -13,6 +13,10 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
       mkA : Str -> AClass -> A
       } ;
 
+    mkPN : overload {
+      mkPN : Str -> PN ; -- Singular proper name
+      mkPN : Str -> Number -> PN ; -- Proper name with number given explicitly
+      } ;
 
 --.
 -- Definitions of opers
@@ -33,6 +37,13 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
     mkA = overload {
       mkA : Str -> A = \s -> ss s ;
       mkA : Str -> AClass -> A = \s,_ -> ss s
+      } ;
+
+    mkPN = overload {
+      mkPN : Str -> PN = \s ->
+        lin PN {s = s ; n = Sg} ;
+      mkPN : Str -> Number -> PN = \s,n ->
+        lin PN {s = s ; n = n}
       } ;
 
     param AClass = AC1 | AC2 ; -- TODO: figure this out
