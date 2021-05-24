@@ -36,8 +36,8 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
 
 -- Constructed in [Verb Verb.html].
 
-    VP = SS ;       -- verb phrase                       e.g. "is very warm"
-    Comp = SS ;     -- complement of copula, such as AP  e.g. "very warm"
+    VP = VerbPhrase ;       -- verb phrase                       e.g. "is very warm"
+    Comp = Complement ;     -- complement of copula, such as AP  e.g. "very warm"
     VPSlash = SS ;  -- verb phrase missing complement    e.g. "give to John"
 
 --2 Adjectival phrases
@@ -79,9 +79,8 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
 -- Constructed in [Structural Structural.html].
 
     Conj = SS ;     -- conjunction                         e.g. "and"
----b    DConj = SS ; -- distributed conjunction             e.g. "both - and"
     Subj = SS ;     -- subjunction                         e.g. "if"
-    Prep = SS ;     -- preposition, or just case           e.g. "in"
+    Prep = Postposition ;     -- preposition, or just case           e.g. "in"
 
 --2 Words of open classes
 
@@ -108,8 +107,5 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
     N3 = SS ;       -- three-place relational noun         e.g. "connection"
     PN = ProperName ;  -- proper name                         e.g. "Paris"
 
--- DEPRECATED: QuantSg, QuantPl
----    QuantSg ;-- quantifier ('nucleus' of sing. Det) e.g. "every"
----    QuantPl ;-- quantifier ('nucleus' of plur. Det) e.g. "many"
 
 }
