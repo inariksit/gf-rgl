@@ -14,9 +14,11 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
   oper
     Noun : Type = {
       s : NForm => Str ; -- We omit number, because -itá is easy to glue with BIND token
-      nc : NClass ; -- Which possession strategy to use: need to use explicit pronoun to
-      } ;           -- either the wordform already contains info by whom it's possessed, or need to use explicit pronoun
-                    -- i pirá 'his fish' vs. samunha 'his grandfather'
+      nc : NClass ; -- When the noun is possessed, which possession strategy to use:
+      } ;           -- * NCS: the wordform already contains info by whom it's possessed
+                    --        e.g. uka 'house', suka 'his house'
+                    -- * NCI: need to use explicit pronoun
+                    --        e.g. pirá 'fish', i pirá 'his fish'
 
     mkNoun : (abs, nsg3, sg3 : Str) -> NClass -> Noun = \taiti,raiti,saiti,nc -> {
       s = table {
@@ -27,11 +29,17 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
       } ;
 
     relPrefNoun : Str -> Noun = \taiti ->
-      let aiti : Str = case taiti of {
-            "t" + aiti => aiti ;
-            #vowel + _ => taiti ;
-            _ => error ("relPrefNoun: expected bare form, got" ++ taiti) }
-       in mkNoun taiti ("r"+aiti) ("s"+aiti) NCS ;
+      let r_s_stem : Str*Str*Str = case taiti of {
+            "t"|"s" + aiti
+              => <"r", "s", aiti> ;  -- t+aiti, r+aiti, s+aiti
+            #vowel + _
+              => <"r", "s", taiti> ; -- uka, r+uka, s+uka
+            _ => <"ra", "sa", taiti> -- pé, ra+pé, sa+pé
+            } ;
+          r = r_s_stem.p1 ;
+          s = r_s_stem.p2 ;
+          aiti = r_s_stem.p3 ;
+       in mkNoun taiti (r+aiti) (s+aiti) NCS ;
 
   param
     -- NForm: bare or possessed forms.
@@ -41,21 +49,78 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
     NForm = NAbs | NRel PsorForm ;
     PsorForm = SG3 | NSG3 ;
 
-    -- NClass: controls the allomorphs i vs. s-
     NClass = NCI | NCS ;
 
   oper
-    NounPhrase : Type = {
-      s : NClass => Str ;
-      isPron : Bool ;
-      } ;
-
     -- Pron may become an independent NP, or a possessive Quant
     -- Need to keep both options open in the lincat
-    Pronoun : Type = {
-      s : Str
+    Pronoun : Type = { -- TODO: figure this out properly
+      s : NClass => Str ; -- ixé vs. se
+      a : Agr ;
       } ;
 
+    mkPronoun : (nci, ncs : Str) -> Number -> Person -> Pronoun = \ixe,se,n,p -> {
+      s = table {NCI => ixe ; NCS => se} ;
+      a = Ag n p ;
+      } ;
+
+    NounPhrase : Type = Pronoun ** { -- NClass matters only for pronouns, but since NPs can be Prons and non-Prons, the parameter needs to be there.
+      isPron : Bool ; -- TODO do we need this?
+      } ;
+
+    ProperName : Type = {
+      s : Str ;
+      n : Number ;
+      } ;
+
+  param
+    Agr = Ag Number Person ;
+    -- Number and Person are defined in ParamX
+
+  oper
+    Quantifier : Type = {
+      s : NClass => Str ; -- TODO check if this makes sense
+      nf : NForm ; -- NRel pf for possessive pronouns, NAbs for other quantifiers (this, that, …)
+      } ;
+
+    Determiner : Type = Quantifier ** {
+      n : Number ; -- slightly redundant, NForm already contains some number info
+      } ;
+
+    mkQuant : Str -> NForm -> Quantifier = \s,nf -> {
+      s = \\_ => s ;
+      nf = nf
+      } ;
+
+    ag2psor : Agr -> PsorForm = \agr -> case agr of {
+      Ag Sg P3 => SG3 ;
+      _ => NSG3 } ;
+
+  oper
+    Num : Type = {
+      s : Str ; -- TODO: may need revision after we introduce cardinal numbers
+      n : Number ;
+      } ;
+
+    mkNum : Number -> Num = \n -> {s=[]; n=n} ;
+
+  ---------------------
+  -- Prepositions
+
+  oper
+    Postposition : Type = {
+      s : Str ;
+      nc : NClass
+      } ;
+
+    mkPostp = overload {
+      mkPostp : Str -> Postposition = \s -> {
+        s = s ;
+        nc = NCI} ;
+      mkPostp : Str -> NClass -> Postposition = \s,nc -> {
+        s = s ;
+        nc = nc}
+      };
   ---------------------
   -- Verbal morphology
   oper
@@ -84,13 +149,13 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
   oper
 
     Complement : Type = {
-      s : Number => Person => Str ;
+      s : Agr => Str ;
       v : Verbal ;
       cc : CClass ;
       };
 
     VerbPhrase : Type = {
-      s : Number => Person => Str ;
+      s : Agr => Str ;
       cc : CClass ;
       v : Verbal ;
       l : Level ; -- whether to use *-iku or not

@@ -1,4 +1,4 @@
-concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl in {
+concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
 
   lincat
 
@@ -57,11 +57,11 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl in {
 
     CN = Noun ;       -- common noun (without determiner)    e.g. "red house"
     NP = NounPhrase ; -- noun phrase (subject or object)     e.g. "the red house"
-    Pron = SS ;     -- personal pronoun                    e.g. "she"
-    Det = SS ;      -- determiner phrase                   e.g. "those seven"
+    Pron = Pronoun ;     -- personal pronoun                    e.g. "she"
+    Det = Determiner ;      -- determiner phrase                   e.g. "those seven"
     Predet = SS ;   -- predeterminer (prefixed Quant)      e.g. "all"
-    Quant = SS ;    -- quantifier ('nucleus' of Det)       e.g. "this/these"
-    Num = SS ;      -- number determining element          e.g. "seven"
+    Quant = Quantifier ;    -- quantifier ('nucleus' of Det)       e.g. "this/these"
+    Num = R.Num ;  -- number determining element          e.g. "seven"
     Card = SS ;     -- cardinal number                     e.g. "seven"
     ACard = SS ;    -- adjective like cardinal             e.g. "few", "many"
     Ord = SS ;      -- ordinal number (used in Det)        e.g. "seventh"
@@ -106,7 +106,7 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl in {
     N = Noun ;        -- common noun                         e.g. "house"
     N2 = SS ;       -- relational noun                     e.g. "son"
     N3 = SS ;       -- three-place relational noun         e.g. "connection"
-    PN = SS ;       -- proper name                         e.g. "Paris"
+    PN = ProperName ;  -- proper name                         e.g. "Paris"
 
 -- DEPRECATED: QuantSg, QuantPl
 ---    QuantSg ;-- quantifier ('nucleus' of sing. Det) e.g. "every"
