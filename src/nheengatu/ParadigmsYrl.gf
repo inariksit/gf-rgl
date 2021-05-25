@@ -23,7 +23,7 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
 
     mkN = overload {
       mkN : Str -> N = \n ->
-        lin N (mkNoun n n n NCI) ;
+        lin N (regNoun n) ;
 
       mkN : Str -> NClass -> N = \n,nc ->
         lin N (case nc of {

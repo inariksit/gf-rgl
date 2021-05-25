@@ -69,6 +69,7 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
 
     -- DetQuant    : Quant -> Num ->        Det ;  -- these five
     DetQuant quant num = quant ** {
+      s = quant.s ! num.n ;
       n = num.n
       } ;
 
@@ -146,8 +147,8 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
     PossPron pron = {
       s = case pron.a of {
         Ag Sg P3
-          => table {NCS => []; NCI => "i"} ;
-        _ => \\_ => pron.s ! NCS  -- se, ne, … instead of ixé, indé, …
+          => \\_ => table {NCS => []; NCI => "i"} ;
+        _ => \\_,_ => pron.s ! NCS  -- se, ne, … instead of ixé, indé, …
         } ;
       nf = NRel (ag2psor pron.a)
       } ;
@@ -206,10 +207,19 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
     ApposCN = cc2 ;
 --2 Possessive and partitive constructs
 
-
+-}
     -- PossNP  : CN -> NP -> CN ;     -- house of Paris, house of mine
-    PossNP = cc2 ;
-    -- PartNP  : CN -> NP -> CN ;     -- glass of wine
+    PossNP cn np = cn ** {
+      s = \\nf => nps ++ cn.s ! NRel (ag2psor np.a)
+      } where {
+        nps : Str = case <np.isPron, np.a, cn.nc> of {
+          <True,
+           Ag Sg P3,
+           NCS> => "" ;
+          _ => np.s ! NCS }
+      } ;
+
+{-    -- PartNP  : CN -> NP -> CN ;     -- glass of wine
     PartNP = cc2 ;
 
 -- This is different from the partitive, as shown by many languages.

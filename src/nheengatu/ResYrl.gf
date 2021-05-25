@@ -41,6 +41,11 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
           aiti = r_s_stem.p3 ;
        in mkNoun taiti (r+aiti) (s+aiti) NCS ;
 
+    regNoun : Str -> Noun = \n -> mkNoun n n n NCI ;
+
+    -- Postpositions also seem to behave like nouns. For now, we define
+    mkPrep = regNoun ;
+
   param
     -- NForm: bare or possessed forms.
     -- tendaua ‘comunidade’
@@ -79,18 +84,24 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
 
   oper
     Quantifier : Type = {
-      s : NClass => Str ; -- TODO check if this makes sense
+      s : Number => NClass => Str ; -- TODO check if this makes sense
       nf : NForm ; -- NRel pf for possessive pronouns, NAbs for other quantifiers (this, that, …)
       } ;
 
-    Determiner : Type = Quantifier ** {
+    Determiner : Type = {
+      s : NClass => Str ;
+      nf : NForm ;
       n : Number ; -- slightly redundant, NForm already contains some number info
       } ;
 
-    mkQuant : Str -> NForm -> Quantifier = \s,nf -> {
-      s = \\_ => s ;
-      nf = nf
-      } ;
+    mkQuant = overload {
+      mkQuant : Str -> NForm -> Quantifier = \s,nf -> {
+        s = \\_,_ => s ;
+        nf = nf} ;
+      mkQuant : (sg,pl : Str) -> NForm -> Quantifier = \sg,pl,nf -> {
+        s = table {Sg => \\_ => sg ; Pl => \\_ => pl} ;
+        nf = nf}
+      };
 
     ag2psor : Agr -> PsorForm = \agr -> case agr of {
       Ag Sg P3 => SG3 ;
@@ -104,23 +115,6 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
 
     mkNum : Number -> Num = \n -> {s=[]; n=n} ;
 
-  ---------------------
-  -- Prepositions
-
-  oper
-    Postposition : Type = {
-      s : Str ;
-      nc : NClass
-      } ;
-
-    mkPostp = overload {
-      mkPostp : Str -> Postposition = \s -> {
-        s = s ;
-        nc = NCI} ;
-      mkPostp : Str -> NClass -> Postposition = \s,nc -> {
-        s = s ;
-        nc = nc}
-      };
   ---------------------
   -- Verbal morphology
   oper

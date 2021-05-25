@@ -59,19 +59,18 @@ lin all_Predet =
 --lin only_Predet = { s = "" } ;
 lin most_Predet =
 
-lin every_Det = R.defDet [] pl **
-                 { s = mkVow } ;
-lin few_Det = R.indefDet "" pl ;
-lin many_Det = R.indefDet "" pl ;
-lin much_Det = R.indefDet "" sg ;
+lin every_Det = R.defDet
+lin few_Det = R.indefDet
+lin many_Det = R.indefDet
+lin much_Det = R.indefDet
 
 lin somePl_Det =
 lin someSg_Det =
 
 --lin no_Quant = mkPrep no_Quant
 -}
-lin that_Quant = mkQuant "nhaã" NAbs ;
-lin this_Quant = mkQuant "kuá" NAbs ;
+lin that_Quant = mkQuant "nhaã" "nhaã-itá" NAbs ;
+lin this_Quant = mkQuant "kuá" "kuá-itá" NAbs ;
 {-
 lin which_IQuant = defIQuant "" ;
 
@@ -81,7 +80,7 @@ lin which_IQuant = defIQuant "" ;
 
 lin everybody_NP = defNP "" N.NumPl ;
 lin everything_NP = defNP "" N.NumSg ;
-lin nobody_NP = mkVerb; ""
+lin nobody_NP = ""
 lin nothing_NP = defNP "" N.NumSg ;
 lin somebody_NP = defNP "" N.NumSg ;
 lin something_NP = defNP "" N.NumSg ;
@@ -105,14 +104,14 @@ oper
 -- lin for_Prep = mkPrep ;
 -- lin from_Prep = mkPrep "" ;
 -- lin in8front_Prep =  ;
-lin in_Prep = mkPostp "kuara upé" ;
-lin on_Prep = mkPostp "upé" ;
+lin in_Prep = mkPrep "kuara upé" ;
+lin on_Prep = mkPrep "upé" ;
 -- lin part_Prep = mkPrep ;
 -- lin possess_Prep = mkPrep ;
 -- lin through_Prep = mkPrep ;
 -- lin to_Prep = mkPrep ;
 -- lin under_Prep =
-lin with_Prep = mkPostp "irũmu" ;
+lin with_Prep = mkPrep "irũmu" ;
 -- lin without_Prep = mkPrep ;
 
 
