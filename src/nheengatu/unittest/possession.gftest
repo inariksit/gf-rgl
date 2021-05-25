@@ -1,0 +1,68 @@
+---------------------------
+-- Possession of a NCS noun
+
+-- Not possessed
+Lang: DetCN (DetQuant that_Quant NumSg) (UseN seed_N)
+LangEng: that seed
+LangYrl: nhaã tainha
+
+-- Possessed
+Lang: DetCN (DetQuant (PossPron she_Pron) NumSg) (UseN seed_N)
+LangEng: her seed
+LangYrl: sainha
+
+Lang: DetCN (DetQuant DefArt NumSg) (PossNP (UseN seed_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))
+LangEng: the seed of the boy
+LangYrl: kurumĩ sainha
+
+Lang: DetCN (DetQuant (PossPron youPl_Pron) NumSg) (UseN seed_N)
+LangEng: your seed
+LangYrl: pe rainha
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN seed_N) (UsePron he_Pron))
+LangEng: that seed of his
+LangYrl: nhaã sainha
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN seed_N) (UsePron i_Pron))
+LangEng: that seed of mine
+LangYrl: nhaã se rainha
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN seed_N) (UsePron youSg_Pron))
+LangEng: that seed of yours
+LangYrl: nhaã ne rainha
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN house_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))
+LangEng: that house of the boy
+LangYrl: nhaã kurumĩ suka
+
+
+---------------------------
+-- Possession of a NCI noun
+
+Lang: DetCN (DetQuant (PossPron he_Pron) NumSg) (UseN fish_N)
+LangEng: his fish
+LangYrl: i pirá
+
+Lang: DetCN (DetQuant (PossPron i_Pron) NumSg) (UseN fish_N)
+LangEng: my fish
+LangYrl: se pirá
+
+Lang: DetCN (DetQuant DefArt NumSg) (PossNP (UseN fish_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))
+LangEng: the fish of the boy
+LangYrl: kurumĩ pirá
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN fish_N) (UsePron he_Pron))
+LangEng: that fish of his
+LangYrl: nhaã i pirá
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN fish_N) (UsePron she_Pron))
+LangEng: that fish of hers
+LangYrl: nhaã i pirá
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN fish_N) (UsePron they_Pron))
+LangEng: that fish of theirs
+LangYrl: nhaã ta pirá
+
+Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN fish_N) (UsePron we_Pron))
+LangEng: that fish of ours
+LangYrl: nhaã iané pirá
