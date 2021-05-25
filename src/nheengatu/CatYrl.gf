@@ -80,7 +80,8 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
 
     Conj = SS ;     -- conjunction                         e.g. "and"
     Subj = SS ;     -- subjunction                         e.g. "if"
-    Prep = Postposition ;     -- preposition, or just case           e.g. "in"
+    Prep = Noun ;     -- preposition, or just case           e.g. "in"
+    -- Postpositions behave like nouns: suaki 'near 3SG' / ruaki 'near
 
 --2 Words of open classes
 

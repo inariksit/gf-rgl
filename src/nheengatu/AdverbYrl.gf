@@ -1,6 +1,6 @@
 --1 Adverb: Adverbs and Adverbial Phrases
 
-concrete AdverbYrl of Adverb = CatYrl ** open Prelude in {
+concrete AdverbYrl of Adverb = CatYrl ** open Prelude, ResYrl in {
 
   lin
 
@@ -10,7 +10,7 @@ concrete AdverbYrl of Adverb = CatYrl ** open Prelude in {
     -- PositAdvAdj : A -> Adv ;                 -- warmly
 --    PositAdvAdj = id SS ;
     -- PrepNP      : Prep -> NP -> Adv ;        -- in the house
-    PrepNP prep np = {s = np.s ! prep.nc ++ prep.s} ;
+    PrepNP prep np = {s = np.s ! prep.nc ++ prep.s ! NRel (ag2psor np.a)} ;
 
 -- Comparative adverbs have a noun phrase or a sentence as object of
 -- comparison.
