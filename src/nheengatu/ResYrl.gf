@@ -44,7 +44,10 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
     regNoun : Str -> Noun = \n -> mkNoun n n n NCI ;
 
     -- Postpositions also seem to behave like nouns. For now, we define
-    mkPrep = regNoun ;
+    mkPrep = overload {
+      mkPrep : Str -> Noun = regNoun ;
+      mkPrep : (ruaki,suaki : Str) -> Noun = \r,s -> mkNoun r r s NCS
+      } ;
 
   param
     -- NForm: bare or possessed forms.
