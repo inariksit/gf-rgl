@@ -13,9 +13,8 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
 --
   lin
     -- DetCN   : Det -> CN -> NP ;   -- the man
-    DetCN det cn = {
-      s = \\nc => det.s ! cn.nc ++ cns ;
-      isPron = False ;
+    DetCN det cn = baseNP ** {
+      s = \\_ => det.s ! cn.nc ++ cns ; -- "case" difference (ixé vs. se) only for Pron
       a = Ag det.n P3 ;
       } where {
          cns : Str = case det.n of {
@@ -29,15 +28,14 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
       More info about BIND token: https://www.aclweb.org/anthology/W15-3305/ -}
 
     -- UsePN   : PN -> NP ;          -- John
-    UsePN pn = {
-      s = \\nc => pn.s ;
-      isPron = False ;
+    UsePN pn = baseNP ** {
+      s = \\_ => pn.s ;
       a = Ag pn.n P3
       } ;
 
     -- UsePron : Pron -> NP ;        -- he
-    UsePron pron = pron ** {
-      isPron = True
+    UsePron pron = baseNP ** pron ** {
+      isPron = True ;
       } ;
 
 -- A noun phrase already formed can be modified by a $Predet$erminer.
@@ -69,7 +67,7 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
 
     -- DetQuant    : Quant -> Num ->        Det ;  -- these five
     DetQuant quant num = quant ** {
-      s = quant.s ! num.n ;
+      s = \\nc => quant.s ! num.n ! nc ++ num.s ;
       n = num.n
       } ;
 
@@ -146,9 +144,14 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
     -- PossPron : Pron -> Quant ;    -- my (house)
     PossPron pron = {
       s = case pron.a of {
-        Ag Sg P3
-          => \\_ => table {NCS => []; NCI => "i"} ;
-        _ => \\_,_ => pron.s ! NCS  -- se, ne, … instead of ixé, indé, …
+        Ag Sg P3 => -- SG3: NCS form is empty, NCI is the inactive form (i)
+          \\num => table {
+            NCS => pron.sg3poss ; -- empty string, must store it in pron to avoid metavariables
+            NCI => pron.s ! Inact} ;
+        _ =>       -- NSG3: Inactive form (ne,se,…) for possessing all nouns
+          \\num => table {
+            nc => pron.s ! Inact
+          }
         } ;
       nf = NRel (ag2psor pron.a)
       } ;
@@ -214,9 +217,10 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
       } where {
         nps : Str = case <np.isPron, np.a, cn.nc> of {
           <True,
-           Ag Sg P3,
-           NCS> => "" ;
-          _ => np.s ! NCS }
+            Ag Sg P3,
+            NCS> => np.sg3poss ; -- this empty string needs to come from the NP,
+                                 -- othewise we get metavariables when parsing
+          _ => np.s ! Inact }    -- https://inariksit.github.io/gf/2018/08/28/gf-gotchas.html#metavariables-or-those-question-marks-that-appear-when-parsing
       } ;
 
 {-    -- PartNP  : CN -> NP -> CN ;     -- glass of wine

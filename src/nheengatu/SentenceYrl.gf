@@ -11,7 +11,7 @@ concrete SentenceYrl of Sentence = CatYrl ** open Prelude, ResYrl in {
 
   lin
     -- PredVP    : NP -> VP -> Cl ;         -- John walks
-    PredVP np vp = {s = np.s ! NCI ++ vp.s ! np.a} ; -- just guessing
+    PredVP np vp = {s = np.s ! Full ++ vp.s ! np.a} ; -- just guessing
 
 -- Using an embedded sentence as a subject is treated separately.
 -- This can be overgenerating. E.g. "whether you go" as subject
