@@ -11,7 +11,15 @@ concrete SentenceYrl of Sentence = CatYrl ** open Prelude, ResYrl in {
 
   lin
     -- PredVP    : NP -> VP -> Cl ;         -- John walks
-    PredVP np vp = {s = np.s ! Full ++ vp.s ! np.a} ; -- just guessing
+    PredVP np vp = {
+      s = \\p => subjPron ++ polStr ! p ++ vp.s ! np.a
+      } where {
+        subjPron = case vp.l of {
+          Stage => np.sg3poss ; -- Empty string again, for avoiding metavariables
+          Ind => np.s ! Full } ;
+        polStr : Polarity => Str =
+          table {Pos => [] ; Neg => "ti"} ;
+      } ; -- just guessing
 
 -- Using an embedded sentence as a subject is treated separately.
 -- This can be overgenerating. E.g. "whether you go" as subject
@@ -68,7 +76,9 @@ concrete SentenceYrl of Sentence = CatYrl ** open Prelude, ResYrl in {
 -- anteriority, which are defined in [``Common`` Common.html].
 -}
     -- UseCl    : Temp -> Pol -> Cl  -> S ;   -- she had not slept
-    UseCl = cc3 ;
+    UseCl t p cl = {s = t.s ++ p.s ++ cl.s ! p.p} ;
+
+    {-
     -- UseQCl   : Temp -> Pol -> QCl -> QS ;  -- who had not slept
     UseQCl = cc3 ;
     -- UseRCl   : Temp -> Pol -> RCl -> RS ;  -- that had not slept
@@ -93,5 +103,6 @@ concrete SentenceYrl of Sentence = CatYrl ** open Prelude, ResYrl in {
 
     -- RelS     : S -> RS -> S ;              -- she sleeps, which is good
     RelS = cc2 ;
+-}
 
 }

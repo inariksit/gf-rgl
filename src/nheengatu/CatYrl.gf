@@ -10,7 +10,7 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
     S = SS ;        -- declarative sentence                e.g. "she lived here"
     QS = SS ;       -- question                            e.g. "where did she live"
     RS = SS ;       -- relative                            e.g. "in which she lived"
-    Cl = SS ;       -- declarative clause, with all tenses e.g. "she looks at this"
+    Cl = Clause ;       -- declarative clause, with all tenses e.g. "she looks at this"
     ClSlash = SS ;  -- clause missing NP (S/NP in GPSG)    e.g. "she looks at"
     SSlash = SS ;   -- sentence missing NP                 e.g. "she has looked at"
     Imp = SS ;      -- imperative                          e.g. "look at this"

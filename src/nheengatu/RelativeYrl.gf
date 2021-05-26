@@ -1,7 +1,7 @@
 --1 Relative clauses and pronouns
 
 concrete RelativeYrl of Relative = CatYrl ** open Prelude in{
-
+{-
   lin
 
 -- The simplest way to form a relative clause is from a clause by
@@ -13,7 +13,7 @@ concrete RelativeYrl of Relative = CatYrl ** open Prelude in{
 -- The more proper ways are from a verb phrase
 -- (formed in [``Verb`` Verb.html]) or a sentence
 -- with a missing noun phrase (formed in [``Sentence`` Sentence.html]).
-{-
+
     -- RelVP    : RP -> VP -> RCl ;      -- who loves John
     RelVP = cc2 ;
     -- RelSlash : RP -> ClSlash -> RCl ; -- whom John loves
