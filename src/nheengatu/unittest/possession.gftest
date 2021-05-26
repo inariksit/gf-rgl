@@ -13,7 +13,7 @@ LangYrl: sainha
 
 Lang: DetCN (DetQuant DefArt NumSg) (PossNP (UseN seed_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))
 LangEng: the seed of the boy
-LangYrl: kurumĩ sainha
+LangYrl: kurumĩ rainha
 
 Lang: DetCN (DetQuant (PossPron youPl_Pron) NumSg) (UseN seed_N)
 LangEng: your seed
@@ -33,7 +33,7 @@ LangYrl: nhaã ne rainha
 
 Lang: DetCN (DetQuant that_Quant NumSg) (PossNP (UseN house_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))
 LangEng: that house of the boy
-LangYrl: nhaã kurumĩ suka
+LangYrl: nhaã kurumĩ ruka
 
 
 ---------------------------

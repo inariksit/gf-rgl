@@ -213,8 +213,12 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
 -}
     -- PossNP  : CN -> NP -> CN ;     -- house of Paris, house of mine
     PossNP cn np = cn ** {
-      s = \\nf => nps ++ cn.s ! NRel (ag2psor np.a)
+      s = \\nf => nps ++ cn.s ! NRel pf
       } where {
+        pf : PsorForm = case np.isPron of {
+                          False => NSG3 ;
+                          True => ag2psor np.a
+                          } ;
         nps : Str = case <np.isPron, np.a, cn.nc> of {
           <True,
             Ag Sg P3,
