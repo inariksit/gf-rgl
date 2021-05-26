@@ -81,7 +81,7 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
     mkPronoun : (ixe, se : Str) -> Number -> Person -> Pronoun = \ixe,se,n,p -> {
       s = table {
             Full => ixe ;
-            Inact => se} ;
+            SecondClass => se} ;
       a = Ag n p ;
       sg3poss = [] ;
       } ;
@@ -106,7 +106,7 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
     -- TODO: figure out better names for these
     PForm =
         Full  -- ixé
-      | Inact -- se
+      | SecondClass -- se
       ;
 
     Agr = Ag Number Person ;
@@ -149,20 +149,17 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
   -- Verbal morphology
   oper
     Verb : Type = { -- TODO: beyond present indicative
-      s: Number => Person => Str
+      s: Agr => Str
       } ;
 
     mkRegVerbYrl : Str -> Verb = \x -> {
       s = table {
-	Sg => table {
-	  P1 => "a"  + x ;
-	  P2 => "re" + x ;
-	  P3 => "u"  + x } ;
-	Pl => table {
-	  P1 => "ia" + x ;
-	  P2 => "pe" + x ;
-	  P3 => "u"  + x }
-	}
+	Ag Sg P1 => "a" + x ;
+        Ag Sg P2 => "re" + x ;
+        Ag Sg P3 => "u"  + x ;
+        Ag Pl P1 => "ia" + x ;
+        Ag Pl P2 => "pe" + x ;
+        Ag Pl P3 => "u"  + x }
       } ;
 
     StageLevelCopula : Verb = mkRegVerbYrl "iku" ;
