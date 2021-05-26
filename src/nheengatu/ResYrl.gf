@@ -51,29 +51,50 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
 
   param
     -- NForm: bare or possessed forms.
-    -- tendaua ‘comunidade’
-    -- sendaua ‘comunidade dele’
-    -- se/iane/… rendaua ‘a minha/nossa/… comunidade’
-    NForm = NAbs | NRel PsorForm ;
-    PsorForm = SG3 | NSG3 ;
+    NForm =
+        NAbs -- uka 'house'
+      | NRel PsorForm
+      ;
+    PsorForm =
+        SG3  -- suka '3SG's house'
+      | NSG3 -- se/iane/… ruka 'my/our/… house'
+      ;
 
-    NClass = NCI | NCS ;
+    -- NClass:
+    -- * whether the noun has multiple forms, and
+    -- * whether the noun takes 'i' or not when possessed by 3SG
+    NClass =
+        NCI -- uniform, takes i: pirá 'fish', i pirá '3SG's fish'
+      | NCS -- multiform, no i:  uka 'house', suka '3SG's house'
+      ;
 
   oper
     -- Pron may become an independent NP, or a possessive Quant
     -- Need to keep both options open in the lincat
     Pronoun : Type = { -- TODO: figure this out properly
-      s : NClass => Str ; -- ixé vs. se
+      s : PForm => Str ; -- ixé vs. se
       a : Agr ;
-      } ;
+      sg3poss: Str ; -- need this so there's some string for P3Sg pron to contibute,
+                     -- otherwise we get metavariables:
+      } ; -- https://inariksit.github.io/gf/2018/08/28/gf-gotchas.html#metavariables-or-those-question-marks-that-appear-when-parsing
 
-    mkPronoun : (nci, ncs : Str) -> Number -> Person -> Pronoun = \ixe,se,n,p -> {
-      s = table {NCI => ixe ; NCS => se} ;
+    mkPronoun : (ixe, se : Str) -> Number -> Person -> Pronoun = \ixe,se,n,p -> {
+      s = table {
+            Full => ixe ;
+            Inact => se} ;
       a = Ag n p ;
+      sg3poss = [] ;
       } ;
 
     NounPhrase : Type = Pronoun ** { -- NClass matters only for pronouns, but since NPs can be Prons and non-Prons, the parameter needs to be there.
-      isPron : Bool ; -- TODO do we need this?
+      isPron : Bool ;
+      } ;
+
+    baseNP : NounPhrase = {
+      s = \\_ => [] ;
+      a = Ag Sg P3 ;
+      isPron = False ;
+      sg3poss = [] ;
       } ;
 
     ProperName : Type = {
@@ -82,6 +103,12 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
       } ;
 
   param
+    -- TODO: figure out better names for these
+    PForm =
+        Full  -- ixé
+      | Inact -- se
+      ;
+
     Agr = Ag Number Person ;
     -- Number and Person are defined in ParamX
 

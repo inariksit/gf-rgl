@@ -34,7 +34,7 @@ concrete PhraseYrl of Phrase = CatYrl ** open Prelude,ResYrl in {
     -- UttIAdv   : IAdv -> Utt ;               -- why
     UttIAdv = id SS ;
     -- UttNP     : NP   -> Utt ;               -- this man
-    UttNP np = {s = np.s ! NCI} ;
+    UttNP np = {s = np.s ! Full} ;
     -- UttAdv    : Adv  -> Utt ;               -- here
     UttAdv = id SS ;
     -- UttVP     : VP   -> Utt ;               -- to sleep
