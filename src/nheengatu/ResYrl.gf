@@ -170,16 +170,18 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
   oper
 
     Complement : Type = {
-      s : Agr => Str ;
-      v : Verbal ;
-      cc : CClass ;
+      s : -- Level => -- whether to use *-iku or not. TODO check if we can add it as a string in UseComp, or are there word order considerations
+        PsorForm =>  -- Matters for APs
+        Str ;
+      v : Verbal ; -- Needed to get correct word order (IsVerbal for AP, NotVerbal for rest)
+      c : VClass ; -- Needed to get correct form of clitic pronoun
       };
 
     VerbPhrase : Type = {
       s : Agr => Str ;
-      cc : CClass ;
-      v : Verbal ;
-      l : Level ; -- whether to use *-iku or not
+      -- c : VClass ; -- Copula has already added, if the VP comes from Comp*
+      -- v : Verbal ; -- TODO: do we need these for other verbs?
+      l : Level ; -- The *-iku has already been applied (or not), but we need to retain info on Level to know whether to omit the subject or not.
       } ;
 
     Clause : Type = {
@@ -192,9 +194,11 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
       | NotVerbal -- otherwise: cop ++ pron ++ prop
       ;
 
-    CClass =
-      C1 -- no explicit pronoun (?)
-      | C2 NClass -- secondClassPron
+    -- Controls which version to use of subject pronoun, if not using stage level.
+    -- If stage level, the subject pronoun is omitted.
+    VClass =
+        C1 -- When subject pronoun is used, it is always full form.
+      | C2 NClass -- When subject clitic pronoun is used, which form to use
       ;
 
     Level =
@@ -214,11 +218,11 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
     --     ‘estes peixes vermelhos estão baratos’
 
   oper
-    YrlCopula : Number -> Person -> Level -> CClass -> Verbal -> (prop,pol : Str) -> Str =
-      \n,p,l,cc,verbal,prop,pol ->
-      let pron: Str = choosePron n p cc ;
-          cop : Str = chooseCopula n p l ;
-      in pol ++ wordOrder verbal pron prop cop ;
+    YrlCopula : Agr -> Level -> VClass -> Verbal -> (prop : Str) -> Str =
+      \agr,l,vc,verbal,prop ->
+      let pron: Str = choosePron agr vc ;
+          cop : Str = chooseCopula agr l ;
+      in wordOrder verbal pron prop cop ;
 
     wordOrder : Verbal -> (pron, prop, cop : Str) -> Str =
       \verbal,pron,prop,cop -> case verbal of {
@@ -227,27 +231,26 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
       } ;
 
 
-    choosePron : Number -> Person -> CClass -> Str = \num,pers,cc ->
+    choosePron : Agr -> VClass -> Str = \agr,cc ->
       case cc of {
         C1    => "" ;
-        C2 nc => SecondClassPron ! num ! pers ! nc
+        C2 nc => SecondClassPron ! agr ! nc
       } ;
 
-    chooseCopula : Number -> Person -> Level -> Str = \n,p,l ->
+    chooseCopula : Agr -> Level -> Str = \agr,l ->
       case l of {
-        Stage => StageLevelCopula.s ! n ! p ;
+        Stage => StageLevelCopula.s ! agr ;
         Ind => ""
       } ;
 
 
-    SecondClassPron : Number => Person => NClass => Str = table {
-      Sg => table { P1 => \\nc => "se" ;
-        	    P2 => \\nc => "ne" ;
-        	    P3 => table {NCI => "i"; NCS => ""}} ;
-
-      Pl => table { P1 => \\nc => "iané" ;
-        	    P2 => \\nc => "pe" ;
-        	    P3 => \\nc => "aintá"|"ta"}
+    SecondClassPron : Agr => NClass => Str = table {
+      Ag Sg P1 => \\nc => "se" ;
+      Ag Sg P2 => \\nc => "ne" ;
+      Ag Sg P3 => table {NCI => "i"; NCS => ""} ;
+      Ag Pl P1 => \\nc => "iané" ;
+      Ag Pl P2 => \\nc => "pe" ;
+      Ag Pl P3 => \\nc => "ta"
       } ;
 
 }

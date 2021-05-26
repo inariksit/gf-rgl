@@ -1,6 +1,6 @@
 --1 The construction of verb phrases
 
-concrete VerbYrl of Verb = CatYrl ** open Prelude in{
+concrete VerbYrl of Verb = CatYrl ** open Prelude, ResYrl in {
 
   flags coding = utf8 ;
 
@@ -9,8 +9,9 @@ concrete VerbYrl of Verb = CatYrl ** open Prelude in{
 -- Verb phrases are constructed from verbs by providing their
 -- complements. There is one rule for each verb category.
 
-    {-
+
   lin
+    {-
     -- UseV     : V   -> VP ;        -- sleep
     UseV = id SS ;
 
@@ -53,19 +54,19 @@ concrete VerbYrl of Verb = CatYrl ** open Prelude in{
 
     -- ReflVP   : VPSlash -> VP ;         -- love himself
     ReflVP = id SS ;
+-}
     -- UseComp  : Comp -> VP ;            -- be warm
-    UseComp = id SS ;
+    -- NB. This rule only produces individual level VP.
+    -- For stage level, use Extend.UseComp_estar.
+    -- The purpose of the RGL is to provide a range of syntactic structures, and
+    -- an application grammarian can choose which one to use for a given communicative need.
+    UseComp comp = {
+      s = \\agr =>
+        YrlCopula agr Ind comp.c comp.v (comp.s ! ag2psor agr)  ;
+      l = Ind ;
+      };
 
--- Passivization of two-place verbs is another way to use
--- them. In many languages, the result is a participle that
--- is used as complement to a copula ("is used"), but other
--- auxiliary verbs are possible (Ger. "wird angewendet", It.
--- "viene usato"), as well as special verb forms (Fin. "käytetään",
--- Swe. "används").
---
--- *Note*. the rule can be overgenerating, since the $V2$ need not
--- take a direct object.
-
+{-
     -- PassV2   : V2 -> VP ;               -- be loved
     PassV2 = id SS ;
 
@@ -91,23 +92,34 @@ concrete VerbYrl of Verb = CatYrl ** open Prelude in{
 -- *Agents of passives* are constructed as adverbs with the
 -- preposition [Structural Structural.html]$.8agent_Prep$.
 
-
+-}
 --2 Complements to copula
 
 -- Adjectival phrases, noun phrases, and adverbs can be used.
 
     -- CompAP   : AP  -> Comp ;            -- (be) small
-    CompAP = id SS ;
-    -- CompNP   : NP  -> Comp ;            -- (be) the man
-    CompNP np = id SS ;
+    -- CompAP ap =  ;
     -- CompAdv  : Adv -> Comp ;            -- (be) here
-    CompAdv = id SS ;
+    CompAdv adv = {
+      s = \\_ => adv.s ; -- no agreement in Advs
+      v = NotVerbal ;
+      c = C1 ;
+      } ;
+
+ {-
+    -- TODO: how to make NP into a predicative?
+    -- CompNP   : NP  -> Comp ;            -- (be) the man
+    CompNP np = {
+      s = np.s ! Full ; -- TODO: do we need to put agr stuff already here?
+      v = NotVerbal ;
+      c = ?
+      } ;
     -- CompCN   : CN  -> Comp ;            -- (be) a man/men
     CompCN = id SS ;
 
 -- Copula alone
 
     -- UseCopula : VP ;                    -- be
-    UseCopula = ss "" ;
+    --UseCopula = ss "" ;
 -}
 }
