@@ -143,14 +143,14 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
 
     -- PossPron : Pron -> Quant ;    -- my (house)
     PossPron pron = {
-      s = case pron.a of {
-        Ag Sg P3 => -- SG3: NCS form is empty, NCI is the inactive form (i)
-          \\num => table {
+      s = \\num => case pron.a of {
+        Ag Sg P3 => -- SG3: NCS form is empty, NCI is the second class form (i)
+          table {
             NCS => pron.sg3poss ; -- empty string, must store it in pron to avoid metavariables
-            NCI => pron.s ! Inact} ;
-        _ =>       -- NSG3: Inactive form (ne,se,…) for possessing all nouns
-          \\num => table {
-            nc => pron.s ! Inact
+            NCI => pron.s ! SecondClass} ;
+        _ =>       -- NSG3: second class form (ne,se,…) for possessing all nouns
+          table {
+            nc => pron.s ! SecondClass
           }
         } ;
       nf = NRel (ag2psor pron.a)
@@ -224,7 +224,7 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
             Ag Sg P3,
             NCS> => np.sg3poss ; -- this empty string needs to come from the NP,
                                  -- othewise we get metavariables when parsing
-          _ => np.s ! Inact }    -- https://inariksit.github.io/gf/2018/08/28/gf-gotchas.html#metavariables-or-those-question-marks-that-appear-when-parsing
+          _ => np.s ! SecondClass }    -- https://inariksit.github.io/gf/2018/08/28/gf-gotchas.html#metavariables-or-those-question-marks-that-appear-when-parsing
       } ;
 
 {-    -- PartNP  : CN -> NP -> CN ;     -- glass of wine
