@@ -1,0 +1,73 @@
+---- ADJECTIVES
+--- C1: no second class pronoun
+
+Lang: PredVP (UsePron we_Pron) (UseComp (CompAP (PositA beautiful_A)))
+LangEng: we are beautiful
+LangYrl: iandé puranga
+
+Lang: PredVP (UsePron she_Pron) (UseComp (CompAP (PositA beautiful_A)))
+LangEng: she is beautiful
+LangYrl: aé puranga
+
+Lang: PredVP (DetCN (DetQuant (PossPron he_Pron) NumSg) (UseN house_N)) (UseComp (CompAP (PositA beautiful_A)))
+LangEng: his house is beautiful
+LangYrl: suka puranga
+
+Lang: PredVP (DetCN (DetQuant (PossPron he_Pron) NumSg) (UseN fish_N)) (UseComp (CompAP (PositA beautiful_A)))
+LangEng: his fish is beautiful
+LangYrl: i pirá puranga
+
+--- C2 + NCI: second class pronoun for NSG3 and SG3 (i)
+
+Lang: PredVP (UsePron i_Pron) (UseComp (CompAP (PositA heavy_A)))
+LangEng: I am heavy
+LangYrl: ixé se pusé
+
+Lang: PredVP (UsePron he_Pron) (UseComp (CompAP (PositA heavy_A)))
+LangEng: he is heavy
+LangYrl: aé i pusé
+
+Lang: PredVP (DetCN (DetQuant (PossPron he_Pron) NumSg) (UseN house_N)) (UseComp (CompAP (PositA heavy_A)))
+LangEng: his house is heavy
+LangYrl: suka i pusé
+
+Lang: PredVP (DetCN (DetQuant (PossPron he_Pron) NumSg) (UseN fish_N)) (UseComp (CompAP (PositA heavy_A)))
+LangEng: his fish is heavy
+LangYrl: i pirá i pusé
+
+--- C2 + NCS: no second class pronoun for SG3
+
+Lang: PredVP (UsePron youSg_Pron) (UseComp (CompAP (PositA hot_A)))
+LangEng: you are hot
+LangYrl: indé ne raku
+
+Lang: PredVP (UsePron he_Pron) (UseComp (CompAP (PositA hot_A)))
+LangEng: he is hot
+LangYrl: aé saku
+
+Lang: PredVP (DetCN (DetQuant (PossPron she_Pron) NumSg) (UseN fish_N)) (UseComp (CompAP (PositA hot_A)))
+LangEng: her fish is hot
+LangYrl: i pirá saku
+
+Lang: PredVP (DetCN (DetQuant (PossPron he_Pron) NumSg) (UseN house_N)) (UseComp (CompAP (PositA hot_A)))
+LangEng: his house is hot
+LangYrl: suka saku
+
+---- ADVERBIALS
+
+Lang: PredVP (UsePron she_Pron) (UseComp (CompAdv (PrepNP with_Prep (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))))
+LangEng: she is with the boy
+LangYrl: aé kurumĩ irũmu
+
+Lang: PredVP (DetCN (DetQuant DefArt NumSg) (PossNP (UseN seed_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))) (UseComp (CompAdv here_Adv))
+LangEng: the seed of the boy is here
+LangYrl: kurumĩ rainha iké
+
+-- unittest.py doesn't work with Extend, need to do a custom grammar
+-- to test Extend.UseComp_estar. But this is what it outputs:
+    -- Lang: PredVP (UsePron she_Pron) (UseComp_estar (CompAdv here_Adv))
+    -- LangEng: she is here
+    -- LangYrl: uiku iké
+    -- Lang: PredVP (DetCN (DetQuant DefArt NumSg) (PossNP (UseN seed_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))) (UseComp_estar (CompAP (PositA beautiful_A)))
+    -- LangEng: the seed of the boy is beautiful
+    -- LangYrl: kurumĩ rainha puranga uiku
