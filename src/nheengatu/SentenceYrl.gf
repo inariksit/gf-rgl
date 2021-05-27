@@ -14,9 +14,9 @@ concrete SentenceYrl of Sentence = CatYrl ** open Prelude, ResYrl in {
     PredVP np vp = {
       s = \\p => subjPron ++ polStr ! p ++ vp.s ! np.a
       } where {
-        subjPron = case vp.l of {
-          Stage => np.sg3poss ; -- Empty string again, for avoiding metavariables
-          Ind => np.s ! Full } ;
+        subjPron = case <np.isPron,vp.l> of {
+          <True, Stage> => np.sg3poss ; -- Empty string again, for avoiding metavariables
+          _ => np.s ! Full } ;
         polStr : Polarity => Str =
           table {Pos => [] ; Neg => "ti"} ;
       } ; -- just guessing
