@@ -28,14 +28,15 @@ lin always_AdV = ss "" ;
 
 lin everywhere_Adv = ss "" ;
 lin here7from_Adv = ss "" ;
-lin here7to_Adv = ss "" ;
-lin here_Adv = ss "" ;
-lin quite_Adv = ss "" ;
-lin somewhere_Adv = ss "" ;
-lin there7from_Adv = ss "" ;
-lin there7to_Adv = ss "" ;
-lin there_Adv = ss "" ;
-
+lin here7to_Adv = ss "" ; -}
+lin here_Adv = mkAdvLoc "iké" ;
+--lin quite_Adv = ss "" ;
+--lin somewhere_Adv = ss "" ;
+--lin there7from_Adv = ss "" ;
+--lin there7to_Adv = ss "" ;
+lin there_Adv = mkAdvLoc "ape" ;
+oper mkAdvLoc = ss ;
+{-
 -------
 -- Conj
 
