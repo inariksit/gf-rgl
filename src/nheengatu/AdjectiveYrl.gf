@@ -1,8 +1,6 @@
 --1 Adjective: Adjectives and Adjectival Phrases
 
 concrete AdjectiveYrl of Adjective = CatYrl ** open Prelude in {
-{-
-
   lin
 
 -- The principal ways of forming an adjectival phrase are
@@ -10,7 +8,8 @@ concrete AdjectiveYrl of Adjective = CatYrl ** open Prelude in {
 -- elliptic-relational.
 
     -- PositA  : A  -> AP ;        -- warm
-    PositA = id SS ;
+    PositA a = a ;
+{-
     -- ComparA : A  -> NP -> AP ;  -- warmer than I
     ComparA = cc2 ;
     -- ComplA2 : A2 -> NP -> AP ;  -- married to her

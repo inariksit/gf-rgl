@@ -44,7 +44,7 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
 
 -- Constructed in [Adjective Adjective.html].
 
-    AP = SS ;       -- adjectival phrase                   e.g. "very warm"
+    AP = Adjective ;  -- adjectival phrase                   e.g. "very warm"
 
 --2 Nouns and noun phrases
 
@@ -100,7 +100,7 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
     V2Q = SS ;      -- verb with NP and Q complement       e.g. "ask"
     V2A = SS ;      -- verb with NP and AP complement      e.g. "paint"
 
-    A = SS ;        -- one-place adjective                 e.g. "warm"
+    A = Adjective ;        -- one-place adjective                 e.g. "warm"
     A2 = SS ;       -- two-place adjective                 e.g. "divisible"
 
     N = Noun ;        -- common noun                         e.g. "house"

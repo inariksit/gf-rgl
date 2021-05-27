@@ -98,7 +98,8 @@ concrete VerbYrl of Verb = CatYrl ** open Prelude, ResYrl in {
 -- Adjectival phrases, noun phrases, and adverbs can be used.
 
     -- CompAP   : AP  -> Comp ;            -- (be) small
-    -- CompAP ap =  ;
+    CompAP ap = ap ** {v = IsVerbal} ;
+
     -- CompAdv  : Adv -> Comp ;            -- (be) here
     CompAdv adv = {
       s = \\_ => adv.s ; -- no agreement in Advs

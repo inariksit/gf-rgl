@@ -2,6 +2,11 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
 
   oper
 
+    VType : Type ;
+    noPron : VType ; -- C1
+    nci : VType ;    -- C2 NCI
+    ncs : VType ;    -- C2 NCS
+
     mkN : overload {
       mkN : Str -> N ;  -- regular noun, possessed with i: mkN "pirá"
       mkN : Str -> NClass -> N ; -- regular noun, give possession type explicitly: mkN "uka" NCS
@@ -10,7 +15,7 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
 
     mkA : overload {
       mkA : Str -> A ;
-      mkA : Str -> AClass -> A
+      mkA : Str -> VType -> A
       } ;
 
     mkPN : overload {
@@ -20,6 +25,11 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
 
 --.
 -- Definitions of opers
+
+    VType = VClass ;
+    noPron = C1 ;
+    nci = C2 NCI ;
+    ncs = C2 NCS ;
 
     mkN = overload {
       mkN : Str -> N = \n ->
@@ -35,8 +45,8 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
       } ;
 
     mkA = overload {
-      mkA : Str -> A = \s -> ss s ;
-      mkA : Str -> AClass -> A = \s,_ -> ss s
+      mkA : Str -> A = \s -> lin A (mkAdj s nci) ;
+      mkA : Str -> VType -> A = \s,vt -> lin A (mkAdj s vt)
       } ;
 
     mkPN = overload {

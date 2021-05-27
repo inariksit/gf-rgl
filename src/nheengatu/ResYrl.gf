@@ -165,16 +165,29 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
     StageLevelCopula : Verb = mkRegVerbYrl "iku" ;
 
   ---------------------
+  -- Adjective and AP
+
+  oper
+    Adjective : Type = {
+      s : PsorForm => Str ; -- Adjectives may agree in 3SG-N3SG: suri, ruri
+      c : VClass ; -- Whether to use second class pronoun or not: ∅ suri, i pusé
+    } ;
+
+    mkAdj : Str -> VClass -> Adjective = \ruri,vc -> {
+      s = table {SG3 => suri ; NSG3 => ruri} ;
+      c = vc ;
+    } where {
+      suri : Str = case <vc,ruri> of {
+          <C2 NCS, "r" + uri> => "s" + uri ;
+          _ => ruri } ;
+    } ;
+  ---------------------
   -- VP and clause
 
   oper
 
-    Complement : Type = {
-      s : -- Level => -- whether to use *-iku or not. TODO check if we can add it as a string in UseComp, or are there word order considerations
-        PsorForm =>  -- Matters for APs
-        Str ;
+    Complement : Type = Adjective ** {
       v : Verbal ; -- Needed to get correct word order (IsVerbal for AP, NotVerbal for rest)
-      c : VClass ; -- Needed to get correct form of clitic pronoun
       };
 
     VerbPhrase : Type = {
