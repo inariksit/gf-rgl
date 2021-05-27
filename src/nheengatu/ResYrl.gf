@@ -22,9 +22,9 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
 
     mkNoun : (abs, nsg3, sg3 : Str) -> NClass -> Noun = \taiti,raiti,saiti,nc -> {
       s = table {
-	NRel SG3  => saiti ;
-	NRel NSG3 => raiti ;
-	NAbs => taiti } ;
+            NRel SG3  => saiti ;
+            NRel NSG3 => raiti ;
+            NAbs => taiti } ;
       nc = nc ;
       } ;
 
@@ -154,7 +154,7 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
 
     mkRegVerbYrl : Str -> Verb = \x -> {
       s = table {
-	Ag Sg P1 => "a" + x ;
+        Ag Sg P1 => "a" + x ;
         Ag Sg P2 => "re" + x ;
         Ag Sg P3 => "u"  + x ;
         Ag Pl P1 => "ia" + x ;
@@ -230,7 +230,6 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
         NotVerbal => cop ++ pron ++ prop
       } ;
 
-
     choosePron : Agr -> VClass -> Str = \agr,cc ->
       case cc of {
         C1    => "" ;
@@ -242,7 +241,6 @@ resource ResYrl = ParamX ** open Prelude, Predef in {
         Stage => StageLevelCopula.s ! agr ;
         Ind => ""
       } ;
-
 
     SecondClassPron : Agr => NClass => Str = table {
       Ag Sg P1 => \\nc => "se" ;
