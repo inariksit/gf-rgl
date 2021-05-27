@@ -168,19 +168,19 @@ concrete NounYrl of Noun = CatYrl ** open Prelude, ResYrl in {
     UseN n = n ;
 
 -- Relational nouns take one or two arguments.
-{-
     -- ComplN2 : N2 -> NP -> CN ;    -- mother of the king
-    ComplN2 = cc2 ;
+    ComplN2 = PossNP ;
+
     -- ComplN3 : N3 -> NP -> N2 ;    -- distance from this city (to Paris)
-    ComplN3 = cc2 ;
+    --ComplN3 = cc2 ;
 
 -- Relational nouns can also be used without their arguments.
 -- The semantics is typically derivative of the relational meaning.
 
     -- UseN2   : N2 -> CN ;          -- mother
-    UseN2 = id SS ;
+    UseN2 n = n ;
     -- Use2N3  : N3 -> N2 ;          -- distance (from this city)
-    Use2N3 = id SS ;
+{-    Use2N3 = id SS ;
     -- Use3N3  : N3 -> N2 ;          -- distance (to Paris)
     Use3N3 = id SS ;
 
