@@ -104,7 +104,7 @@ concrete CatYrl of Cat = CommonX ** open Prelude, ResYrl, (R=ResYrl) in {
     A2 = SS ;       -- two-place adjective                 e.g. "divisible"
 
     N = Noun ;        -- common noun                         e.g. "house"
-    N2 = SS ;       -- relational noun                     e.g. "son"
+    N2 = Noun ;       -- relational noun                     e.g. "son"
     N3 = SS ;       -- three-place relational noun         e.g. "connection"
     PN = ProperName ;  -- proper name                         e.g. "Paris"
 
