@@ -3,9 +3,13 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
   oper
 
     VType : Type ;
-    noPron : VType ; -- C1
-    nci : VType ;    -- C2 NCI
-    ncs : VType ;    -- C2 NCS
+    c1_noPron : VType ; -- C1
+    c2_nci : VType ;    -- C2 NCI
+    c2_ncs : VType ;    -- C2 NCS
+
+    NType : Type ;
+    ncs : NType ; -- wordform already contains possessor, e.g. uka 'house', suka 'his house'
+    nci : NType ; -- need explicit pronoun for possessor, e.g. pirá 'fish', i pirá 'his fish'
 
     mkN : overload {
       mkN : Str -> N ;  -- regular noun, possessed with i: mkN "pirá"
@@ -27,9 +31,13 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
 -- Definitions of opers
 
     VType = VClass ;
-    noPron = C1 ;
-    nci = C2 NCI ;
-    ncs = C2 NCS ;
+    c1_noPron = C1 ;
+    c2_nci = C2 NCI ;
+    c2_ncs = C2 NCS ;
+
+    NType = NClass ;
+    ncs = NCS ; -- wordform already contains possessor, e.g. uka 'house', suka 'his house'
+    nci = NCI ; -- need explicit pronoun for possessor, e.g. pirá 'fish', i pirá 'his fish'
 
     mkN = overload {
       mkN : Str -> N = \n ->
@@ -45,7 +53,7 @@ resource ParadigmsYrl = open CatYrl, ResYrl, Prelude in {
       } ;
 
     mkA = overload {
-      mkA : Str -> A = \s -> lin A (mkAdj s nci) ;
+      mkA : Str -> A = \s -> lin A (mkAdj s c2_nci) ;
       mkA : Str -> VType -> A = \s,vt -> lin A (mkAdj s vt)
       } ;
 
