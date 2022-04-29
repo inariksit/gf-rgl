@@ -63,11 +63,11 @@ Lang: PredVP (DetCN (DetQuant DefArt NumSg) (PossNP (UseN seed_N) (DetCN (DetQua
 LangEng: the seed of the boy is here
 LangYrl: kurumĩ rainha iké
 
--- unittest.py doesn't work with Extend, need to do a custom grammar
--- to test Extend.UseComp_estar. But this is what it outputs:
-    -- Lang: PredVP (UsePron she_Pron) (UseComp_estar (CompAdv here_Adv))
-    -- LangEng: she is here
-    -- LangYrl: uiku iké
-    -- Lang: PredVP (DetCN (DetQuant DefArt NumSg) (PossNP (UseN seed_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))) (UseComp_estar (CompAP (PositA beautiful_A)))
-    -- LangEng: the seed of the boy is beautiful
-    -- LangYrl: kurumĩ rainha puranga uiku
+-- Testing UseComp_estar which is in the Extend module, we need to use AllYrlAbs as the grammar
+-- There is no English concrete for that grammar, so only outputting Nheengatu linearisation
+
+AllYrlAbs: PredVP (UsePron she_Pron) (UseComp_estar (CompAdv here_Adv))
+AllYrl: uiku iké
+
+AllYrlAbs: PredVP (DetCN (DetQuant DefArt NumSg) (PossNP (UseN seed_N) (DetCN (DetQuant DefArt NumSg) (UseN boy_N)))) (UseComp_estar (CompAP (PositA beautiful_A)))
+AllYrl: kurumĩ rainha puranga uiku
