@@ -1,3 +1,5 @@
+--# -path=.:../abstract:../common:../api:../prelude
+
 --1 Lang: a Test Module for the Resource Grammar
 
 -- This grammar is for testing the resource as included in the
