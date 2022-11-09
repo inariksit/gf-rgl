@@ -39,9 +39,9 @@ concrete NounEng of Noun = CatEng ** open MorphoEng, ResEng, Prelude in {
 
     DetQuant quant num = {
       s  = quant.s ! num.hasCard ! num.n ++ num.s ! quant.isDef ! Nom;
-      sp = \\g,hasAdj,c => case <num.hasCard,num.n> of {
-                             <False,Sg> => quant.sp ! g ! hasAdj ! num.n ! c ++ num.s  ! quant.isDef ! Nom ;
-                             _          => quant.s  !     True   ! num.n     ++ num.sp ! quant.isDef ! npcase2case c
+      sp = \\g,hasAdj,c => case num.hasCard of {
+                             False => quant.sp ! g ! hasAdj ! num.n ! c ++ num.s  ! quant.isDef ! Nom ; -- Changed here that any non-digit Quant is using the sp form in the Det's sp /Inari
+                             _     => quant.s  !     True   ! num.n     ++ num.sp ! quant.isDef ! npcase2case c
                            } ;
       n  = num.n ;
       hasNum = num.hasCard
@@ -90,11 +90,14 @@ concrete NounEng of Noun = CatEng ** open MorphoEng, ResEng, Prelude in {
 
     DefArt = {
       s  = \\hasCard,n => artDef ;
+      sp = \\_,_,_,_ => "the" ;
+
+{- Inari's change to "parse English without major annoyances": this is completely unnecessary for parsing, and just contributes to ambiguity, because the table contains forms that exist elsewhere in the grammar.
       sp = \\g,hasCard,n => case <n,hasCard> of {
         <Sg,False> => table { NCase Gen => table Gender ["its"; "his"; "her"] ! g; _ => table Gender ["it"; "he"; "she"] ! g } ;
         <Pl,False> => table { NCase Nom => "they"; NPAcc => "them"; _ => "theirs" } ;
         _          => \\c => artDef
-        } ;
+        } ; -}
       isDef = True
       } ;
 
@@ -103,10 +106,10 @@ concrete NounEng of Noun = CatEng ** open MorphoEng, ResEng, Prelude in {
         <Sg,False> => artIndef ;
         _          => []
         } ;
-      sp = \\g,hasCard,n => case <n,hasCard> of {
-        <Sg,False> => table {NCase Gen => "one's"; _ => "one" };
-        <Pl,False> => table {NCase Gen => "ones'"; _ => "ones" } ;
-        _          => \\c => []
+-- Inari's change to "parse English without major annoyances": no empty strings allowed here
+      sp = \\g,hasCard,n => case n of {
+        Sg => table {NCase Gen => "one's"; _ => "one" };
+        Pl => table {NCase Gen => "ones'"; _ => "ones"}
         } ;
       isDef = False
       } ;
