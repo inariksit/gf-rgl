@@ -3,6 +3,12 @@ concrete DictEng of DictEngAbs = CatEng ** open MorphoEng, ResEng, ParadigmsEng,
 flags
   coding=utf8 ;
 
+oper
+addPOS = overload {
+  addPOS : N -> N = \n -> n ** {s = \\num,cas => n.s ! num ! cas + "<n>"} ;
+  addPOS : V -> V = \v -> v ** {s = \\vf => v.s ! vf + "<v>"}
+} ;
+
 lin a_bomb_N = mkN "a-bomb" "a-bombs";
 lin a_fortiori_Adv = mkAdv "a fortiori";
 lin a_la_carte_Adv = mkAdv "à la carte";
@@ -17184,8 +17190,8 @@ lin ducat_N = mkN "ducat" "ducats";
 lin duce_N = mkN "duce" "duci";
 lin duchess_N = mkN "duchess" "duchesses";
 lin duchy_N = mkN "duchy" "duchies";
-lin duck_N = mkN "duck" "duck";
-lin duck_V = mkV "duck" "ducks" "ducked" "ducked" "ducking";
+lin duck_N = addPOS (mkN "duck");
+lin duck_V = addPOS (mkV "duck" "ducks" "ducked" "ducked" "ducking");
 lin duck_V2 = mkV2 (mkV "duck" "ducks" "ducked" "ducked" "ducking");
 lin duckbill_A = mkA "duckbill" ;
 lin duckbilled_A = compoundA (mkA "duckbilled");
