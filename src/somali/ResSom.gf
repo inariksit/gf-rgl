@@ -546,6 +546,9 @@ oper
                _ + "o" => "an" ; -- Allomorph for imperatives
                _       => "in" } ;
 
+
+
+  mkVerbFull : (imper,progr, : Str) -> Verb = \qaado,qaat,ark ->
    in { s = table {
           VPres Simple Sg1_Sg3Masc pol
                                     => qaat     + if_then_Pol pol "aa" "o" ;

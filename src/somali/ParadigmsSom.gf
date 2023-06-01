@@ -214,6 +214,7 @@ oper
 
   mkV = overload {
     mkV : (imp : Str) -> V = \v -> lin V (regV v) ;
+    mkV : (imp, sg1 : Str) -> V = \v,_ -> lin V (regV v) ;
     mkV : (imp,pl2,sg1 : Str) -> V = \i,p,s -> lin V (mkVerb i p s) ;
     mkV : Str -> V -> V = \s,v -> lin V (prefixV s v)
   } ;
