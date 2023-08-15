@@ -4,21 +4,19 @@
 -- To test the resource, import [``Lang`` Lang.html], which also contains
 -- a lexicon.
 
-concrete GrammarYrl of Grammar = 
+concrete GrammarYrl of Grammar =
   NounYrl
   , VerbYrl
   , AdjectiveYrl
   , AdverbYrl
   , NumeralYrl
-  , SentenceYrl 
+  , SentenceYrl
   , QuestionYrl
   , RelativeYrl
   , ConjunctionYrl
   , PhraseYrl
-  , TextYrl
+  , TextX
   , StructuralYrl
   , IdiomYrl
-  , TenseYrl
---  , TransferYrl 
+  , TenseX
   ;
-
