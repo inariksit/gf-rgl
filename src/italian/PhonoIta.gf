@@ -12,13 +12,31 @@ oper
     } ;
 
   sImpuro : Strs = strs {
-    "z" ; "sb" ; "sc" ; "sd" ; "sf" ; "sm" ; "sp" ; "sq" ; "sr" ; "st" ; "sv" ;
-    "Z" ; "Sb" ; "Sc" ; "Sd" ; "Sf" ; "Sm" ; "Sp" ; "Sq" ; "Sr" ; "St" ; "Sv"
+    "sb" ; "sc" ; "sd" ; "sf" ; "sg" ; "sh" ; "sl" ; "sm" ; "sn" ; "sp" ; "sq" ; "sr" ; "st" ; "sv" ;
+    "Sb" ; "Sc" ; "Sd" ; "Sf" ; "Sg" ; "Sh" ; "Sl" ; "Sm" ; "Sn" ; "Sp" ; "Sq" ; "Sr" ; "St" ; "Sv"
     } ;
+
+  xyz : Strs = strs {
+    "x" ; "X" ;
+    "z" ; "Z" ;
+    "y" ; "Y"
+  } ;
+
+  gn : Strs = strs {
+    "gn" ; "Gn"
+  } ;
+
+  pn : Strs = strs {
+    "pn" ; "Pn"
+  } ;
+
+  ps : Strs = strs {
+    "ps" ; "Pn"
+  } ;
 
   elision : (_,_,_ : Str) -> Str = \il, l', lo -> 
     let ll = case last l' of {"'" => l' ++ Predef.BIND ; _ => l'} in
-    pre {il ; ll / vocale ; lo / sImpuro} ;
+    pre {il ; ll / vocale ; lo / sImpuro ; lo / xyz ; lo / gn ; lo / pn ; lo / ps } ;
 ---    pre {vocale => l' ;  sImpuro => lo ; _ => il} ;  --- doesn't work properly 15/4/2014
 
 }

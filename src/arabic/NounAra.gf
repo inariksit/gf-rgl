@@ -130,6 +130,10 @@ lin
     s = \\_,_,_ => digits.s ;
     isNum = True
     };
+  NumDecimal dec = dec ** {
+    s = \\_,_,_ => dec.s ;
+    isNum = True
+    };
 
   NumNumeral numeral = numeral ** {
     s = numeral.s ! NCard ;
@@ -233,6 +237,11 @@ lin
              }
     };
 
-  -- : CN -> NP -> CN ;     -- glass of wine
-  --PartNP
+  DetDAP d = d ;
+
+  QuantityNP n m = emptyNP ** {
+    s = \\c => preOrPost m.isPre m.s n.s ;
+    a = { pgn = agrP3 NoHum Masc (sizeToNumber n.n);
+          isPron = False }
+  };
 }

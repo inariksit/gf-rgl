@@ -27,9 +27,11 @@ abstract Extend = Cat ** {
 
     CompBareCN  : CN -> Comp ;        -- (is) teacher
 
+    PiedPipingQuestSlash : IP -> ClSlash -> QCl ;   -- with whom does John live
+    PiedPipingRelSlash   : RP -> ClSlash -> RCl ;   -- with whom John lives
     StrandQuestSlash : IP -> ClSlash -> QCl ;   -- whom does John live with
-    StrandRelSlash   : RP -> ClSlash -> RCl ;   -- that he lives in
-    EmptyRelSlash    : ClSlash       -> RCl ;   -- he lives in
+    StrandRelSlash   : RP -> ClSlash -> RCl ;   -- that he lives with
+    EmptyRelSlash    : ClSlash       -> RCl ;   -- he lives with
 
 
 -- $VP$ conjunction, separate categories for finite and infinitive forms (VPS and VPI, respectively)
@@ -267,6 +269,7 @@ abstract Extend = Cat ** {
   weFem_Pron     : Pron ; -- we (Fem)
   youPlFem_Pron  : Pron ; -- you plural (Fem)
   theyFem_Pron   : Pron ; -- they (Fem)
+  theyNeutr_Pron : Pron ; -- they (Neutr)
   youPolFem_Pron : Pron ; -- you polite (Fem)
   youPolPl_Pron  : Pron ; -- you polite plural (Masc)
   youPolPlFem_Pron : Pron ; -- you polite plural (Fem)
@@ -290,6 +293,19 @@ fun UseDAP     : DAP -> NP ;
 cat X ; -- for words that are difficult to classify, mainly for MorphoDict
 
 fun
+  UseComp_estar : Comp -> VP ; -- esta lleno, as opposed to es lleno
+  UseComp_ser : Comp -> VP ; -- es lleno, as opposed to esta lleno
+
+fun
   CardCNCard : Card -> CN -> Card ;  -- three million, four lakh, six dozen etc
+
+fun
+  AnaphPron : NP -> Pron ;
+
+fun
+  TPastSimple : Tense ;
+
+fun
+  SubjunctRelCN : CN -> RS -> CN ; -- e.g. Romance languages when subjunctive/conjunctive is needed
 
 }

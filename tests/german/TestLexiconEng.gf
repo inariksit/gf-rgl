@@ -51,13 +51,19 @@ lin
   kaufen_bei_fuer_V4 = dirV4 (irregV "buy" "bought" "bought") (mkPrep "from") (mkPrep "for") ;
   mieten_von_fuer_V4 = dirV4 (regV "rent") (mkPrep "from") (mkPrep "for") ;
 
-  neugierig_auf_A2 = mkA2 (regA "curious") (mkPrep "about") ;
-
   wagen_VV = mkVV (regV "dare") ;                       -- typ=VVInf
   versuchen_VV = mkVV (irregV "try" "tried" "tried") ;  -- typ=VVInf
   helfen_V2V = defaultV2V (regV "help") ;
   warnen_V2V = defaultV2V (regV "warn") ;               -- typ=VVInf
   versprechen_dat_V2V = defaultV2V (regV "promise") ;   -- typ=VVInf
   lassen_V2V = ParadigmsEng.mkV2V (I.let_V) ;           -- typ=VVAux
+  -- aci verb:
+  sehen_V2V  = mkV2V (I.see_V) ;
+  hoeren_V2V = mkV2V (I.hear_V) ;
 
+  -- Adjectives
+
+  neugierig_auf_A2 = mkA2 (regA "curious") (mkPrep "about") ;
+  treu_A2 = mkA2 (compoundA (mkA "faithful")) (mkPrep "to") ;
+  stolz_A2 = mkA2 (mkA "proud" "prouder") (mkPrep "of") ;
 }

@@ -5,9 +5,13 @@ concrete ExtendFin of Extend =
     VPI2,VPS2,MkVPS,MkVPS2,ConjVPS2,ComplVPS2, ConsVPS, BaseVPS, ListVPS, VPS, ConjVPS,PredVPS,
     MkVPI2,ConjVPI2,ComplVPI2,ComplVPIVV
     ,ExistCN, ExistMassCN, ICompAP, ByVP
-    ,CompoundN, GenNP, GenIP, AdvIsNP, EmbedSSlash
+    ,CompoundN, GenNP, GenIP, GenRP, AdvIsNP, EmbedSSlash
     ,PassVPSlash, PassAgentVPSlash
     ,CardCNCard
+    ,UttAccNP
+    ,AdjAsCN, AdjAsNP
+    ,ApposNP
+    ,PresPartAP, PastPartAP
     ]
   with
     (Grammar = GrammarFin) **
@@ -17,6 +21,7 @@ concrete ExtendFin of Extend =
     ResFin,
     StemFin,
     (S=StemFin),
+    (P=PhraseFin),
     IdiomFin,
     Coordination,
     Prelude,
@@ -186,6 +191,15 @@ lin
 
     GenIP ip = {s = \\_,_ => ip.s ! NPCase Gen} ;
 
+    GenRP num cn = {
+      s = \\n,c =>
+        let k = npform2case num.n c
+         in relPron ! n ! Gen ++ linCN (NCase num.n k) cn ;
+---      a = RNoAg
+      a = RAg (agrP3 num.n)
+      } ;
+
+
     ByVP vp = lin Adv {s = S.infVP vp.s.sc Pos (Ag Sg P3) vp Inf3Adess} ; ---- Agr ?
 
     AdvIsNP adv np = S.mkClause (\_ -> adv.s) np.a (UseComp (CompNP np)) ;
@@ -233,5 +247,28 @@ lin CardCNCard card cn = {
     in card.s ! n ! c ++ cn.s ! NCase Sg k ;
   n = Pl
   } ;
+
+lin UttAccNP np = {s = P.addNegation np.isNeg ++ np.s ! NPAcc} ;
+lin AdjAsCN ap = {s = ap.s ! True ; postmod = \\_ => ap.p ; h = Back} ; ---- Harmony just a guess
+lin AdjAsNP ap = MassNP (AdjAsCN ap) ;
+lin ApposNP np1 np2 = np1 ** {s = \\npf => np1.s ! npf ++ np2.s ! NPSep} ;
+lin PresPartAP vp = {
+      s = \\_,nf => preCompVP vp (PresPartAct (AN nf)) ;
+      p = [] ;
+      hasPrefix = False
+      } ;
+lin PastPartAP vps = {
+      s = \\_,nf => preCompVP <vps : VP>  (PastPartAct (AN nf)) ;
+      p = vps.c2.s.p1 ;
+      hasPrefix = False
+      } ;
+
+oper
+  -- ruohoa syövä, Ranskassa valmistettu
+  preCompVP : S.VP -> VForm -> Str = \vp, vform ->
+    vp.s2 ! True ! Pos ! agrP3 Sg ++
+    vp.adv ! Pos ++
+    vp.s.s ! vform ++
+    vp.ext ;
 
 }

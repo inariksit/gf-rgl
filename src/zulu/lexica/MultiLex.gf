@@ -1,6 +1,62 @@
 abstract MultiLex = Cat ** {
 
   fun
+    big_A : A ;
+    bad_A : A ;
+    beautiful_A : A ;
+    better_R : A ;
+    bitter_R : A ;
+    black_R : A ;
+    blue_R : A ;
+    blunt_R : A ;
+    brown_R : A ;
+    busy_R : A ;
+    certain_R : A ;
+    cold_R : A ;
+    colourful_R : A ;
+    difficult_R : A ;
+    easy_R : A ;
+    few_R : A ;
+    five_A : A ;
+    four_A : A ;
+    green_R : A ;
+    grey_R : A ;
+    hard_R : A ;
+    holy_R : A ;
+    honest_R : A ;
+    heavy_R : A ;
+    innocent_R : A ;
+    kind_R : A ;
+    light_R : A ;
+    long_A : A ;
+    -- most_important_A : A ;
+    new_A : A ;
+    old_A : A ;
+    one_A : A ;
+    -- overcast_A : A ;
+    painful_R : A ;
+    peaceful_R : A ;
+    pink_R : A ;
+    pleasant_R : A ;
+    poor_R : A ;
+    purple_R : A ;
+    red_A : A ;
+    sharp_R : A ;
+    short_A : A ;
+    small_A : A ;
+    soft_R : A ;
+    sour_R : A ;
+    spotted_R : A ;
+    strong_R : A ;
+    sweet_R : A ;
+    tasteless_R : A ;
+    three_A : A ;
+    two_A : A ;
+    wet_R : A ;
+    white_R : A ;
+    wide_R : A ;
+    yellow_R : A ;
+
     -- nouns
     ability_N : N ;
     accident_N : N ;
@@ -398,6 +454,7 @@ abstract MultiLex = Cat ** {
     sock_N : N ;
     soil_N : N ;
     soldier_N : N ;
+    son_N : N ;
     song_N : N ;
     south_N : N ;
     spade_N : N ;
@@ -1090,5 +1147,4 @@ abstract MultiLex = Cat ** {
 
     -- adjectivals
     colourful_R : A ;
-    big_A : A ;
 }

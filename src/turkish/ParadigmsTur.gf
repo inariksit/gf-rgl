@@ -60,13 +60,6 @@ resource ParadigmsTur = open
     mkVS : V -> VS = \verb -> verb ;
     mkVQ : V -> VQ = \verb -> verb ;
 
-    -- worst-case function
-    -- bases of all forms are required.
-    makeVerb : (mek,inf,base,presBase,pastBase,aoristBase : Str)
-            -> (futureBase : Softness => Str )
-            -> Harmony
-            -> V ;
-
     -- make a regular verb
     -- supply infinitive, softened infinitive, future infinitive forms and
     -- aorist type
@@ -85,14 +78,14 @@ resource ParadigmsTur = open
 
     mkV2 = overload {
       -- sormak
-      mkV2 : V -> V2 = \verb -> verb ** lin V2 {c = noPrep} ;
+      mkV2 : V -> V2 = \verb -> verb ** lin V2 {c = mkPrep [] Acc} ;
       -- (bir şeyden) korkmak
       mkV2 : V -> Prep -> V2 = \verb,c -> verb ** lin V2 {c = c} ;
     } ;
 
     mkV3 = overload {
       -- (birine bir şeyi) satmak
-      mkV3 : V -> V3 = \verb -> verb ** lin V3 {c1 = noPrep; c2 = noPrep} ;
+      mkV3 : V -> V3 = \verb -> verb ** lin V3 {c1 = mkPrep [] Acc; c2 = mkPrep [] Dat} ;
       -- (biri ile bir şeyi) konuşmak
       mkV3 : V -> Prep -> Prep -> V3 =
         \verb,c1,c2 -> verb ** lin V3 {c1 = c1; c2 = c2} ;
@@ -128,7 +121,7 @@ resource ParadigmsTur = open
     -- worst case function
     -- parameters: all singular cases of base, base of genitive table, plural
     -- form of base and harmony of base
-    mkNoun : (nom,acc,dat,gen,loc,abl,abessPos,abessNeg,gens,plural : Str)
+    mkNoun : (nom,acc,dat,gen,loc,abl,abessPos,abessNeg,instr,gens,plural : Str)
           -> Harmony
           -> N ;
 
@@ -142,6 +135,11 @@ resource ParadigmsTur = open
     -- Paradigm for regular noun
     regN : Str -> N ;
 
+    mkPN = overload {
+        mkPN : Str -> PN = regPN ;
+        mkPN : Str -> Str -> PN = makePN ;
+    } ;
+    
     -- Paradigm for proper noun
     regPN : Str -> PN ;
 
@@ -150,7 +148,7 @@ resource ParadigmsTur = open
 
     -- digits can be seen as proper noun, but we need an additional harmony argument
     -- since harmony information can not be extracted from digit string.
-    makeHarPN : Str -> Str -> Harmony -> Noun ;
+    makeHarNoun : Str -> Str -> Harmony -> Noun ;
 
     -- Link two nouns, e.g. zeytin (olive) + yağ (oil) -> zeytinyağı (olive oil)
     linkNoun : (tere,yag : N) -> Species -> Contiguity -> N ;
@@ -166,6 +164,8 @@ resource ParadigmsTur = open
       -- pürdikkat
       mkA : Str -> Str -> HarVowP -> A ;
     } ;
+
+    irregAdv  : A -> Str -> A ;
 
     mkAS : A -> AS ;
     mkAV : A -> AV ;
@@ -227,8 +227,8 @@ resource ParadigmsTur = open
 
     auxillaryVerb prefix verb con =
       case con of {
-        Sep => lin V {s = \\t => prefix ++ verb.s ! t} ;
-        Con => lin V {s = \\t => prefix + verb.s ! t}
+        Sep => lin V {s = prefix ++ verb.s; stems : VStem => Str = \\t => prefix ++ verb.stems ! t; h = verb.h; aoristType = verb.aoristType} ;
+        Con => lin V {s = prefix +  verb.s; stems : VStem => Str = \\t => prefix +  verb.stems ! t; h = verb.h; aoristType = verb.aoristType}
       } ;
 
     regV inf = regVerb inf inf inf (getAoristType (tk 3 inf)) ;
@@ -236,87 +236,34 @@ resource ParadigmsTur = open
     irregV_aor inf aorT = regVerb inf inf inf aorT ;
 
     regVerb inf softInf futInf aoristType =
-      let base = (tk 3 inf) ;
-          softBase = (tk 3 softInf) ;
-          futBase = (tk 3 futInf) ;
-          har = getHarmony base ;
-          softness = getSoftness base ;
-          futureBase = addSuffix futBase har futureSuffix ;
-          softFutureBase = addSuffix futBase har softFutureSuffix ;
-          pastBase = addSuffix base har pastSuffix ;
-          futureTable =
-            table {
-              Soft => softFutureBase ;
-              Hard => futureBase
-            } ;
-          aoristBase =
-            case aoristType of {
-              SgSylConReg => addSuffix softBase har aoristErSuffix ;
-              _           => addSuffix softBase har aoristIrSuffix
-          } ;
+      let base = tk 3 inf ;
+          softBase = tk 3 softInf ;
+          futBase = tk 3 futInf ;
           progBase =
-            case (getHarConP base) of {
-              SVow => addSuffix (tk 1 base) (getHarmony (tk 1 base)) presentSuffix ;
-              _    => addSuffix softBase har presentSuffix
-        } ;
-    in makeVerb (init inf) inf base progBase pastBase aoristBase futureTable har;
-
-    makeVerb mek inf base progBase pastBase aoristBase futureTable har =
-      let
-        futht = getHarVowP (futureTable ! Hard) ;
-        pastHar = {vow = har.vow ; con = SVow} ;
-        futHar = {vow = futht ; con = (SCon Soft)} ;
-        aorHar = {vow = getHarVowP aoristBase ; con = (SCon Soft)} ;
-      in
-        lin V {
-          s =
-            table {
-              VPres agr    =>
-                addSuffix aoristBase aorHar (verbSuffixes ! agr) ;
-              VProg agr      =>
-                addSuffix progBase   progHar (verbSuffixes ! agr) ;
-              VPast agr      =>
-                addSuffix pastBase   pastHar (verbSuffixes ! agr) ;
-              VFuture agr    =>
-                addSuffix futureTable futHar (verbSuffixes ! agr) ;
-              VImperative    =>
-                base ;
-              VInfinitive    =>
-                inf ;
-              Gerund _  Acc  =>
-                case aorHar.vow of {
-                  Ih_Har  => mek + "si" ;
-                  I_Har   => mek + "sı" ;
-                  U_Har   => "TODO" ;
-                  Uh_Har  => "TODO"
-                } ;
-              Gerund _  _    => mek ;
-              VNoun n Gen =>
-                case aorHar.vow of {
-                  Ih_Har => base + "tiği" ;
-                  I_Har  => base + "tığı" ;
-                  U_Har  => base + "duğu" ;
-                  Uh_Har => base + "düğü"
-                } ;
-              VNoun n Ablat =>
-                case aorHar.vow of {
-                  Ih_Har => base + "tıktan" ;
-                  I_Har  => base + "tıktan" ;
-                  U_Har  => base + "duktan" ;
-                  Uh_Har => base + "dükten"
-                } ;
-              VNoun n _ =>
-                case aorHar.vow of {
-                  Ih_Har => base + "(TODO: makeVerb)" ;
-                  I_Har  => base + "(TODO: makeVerb)" ;
-                  U_Har  => base + "(TODO: makeVerb)" ;
-                  Uh_Har => base + "(TODO: makeVerb)"
-                }
+            case getHarConP base of {
+              SVow => tk 1 base ;
+              _    => softBase
             } ;
-        } ;
+          h = getHarmony base
+      in lin V {
+           s = inf ;
+           stems = table {
+                      VBase Hard => base ;
+                      VBase Soft => softBase ;
+                      VProg => progBase ;
+                      VFuture => futBase ;
+                      VPass => case last softBase of {
+                                 #vowel => softBase + "n" ;
+                                 "l"    => softBase + suffixStr h passiveInSuffix ;
+                                 _      => softBase + suffixStr h passiveIlSuffix
+                               }
+                   } ;
+           aoristType = aoristType ;
+           h = h
+         } ;
 
     -- Implementation of noun paradigms
-    mkNoun sn sa sd sg sl sabl sgabPos sgabNeg sgs pln har =
+    mkNoun sn sa sd sg sl sabl sgabPos sgabNeg si sgs pln har =
         let plHar = getHarmony pln ;
         in
       lin N {
@@ -329,7 +276,8 @@ resource ParadigmsTur = open
                         Loc       => sl ;
                         Ablat     => sabl ;
                         Abess Pos => sgabPos ;
-                        Abess Neg => sgabNeg
+                        Abess Neg => sgabNeg ;
+                        Instr     => si
                       } ;
                 Pl => table {
                         Abess Pos => addSuffix sgabPos plHar plSuffix;
@@ -359,15 +307,16 @@ resource ParadigmsTur = open
       in
       mkNoun sn
             (addSuffix sg irHar accSuffix)
-      (addSuffix sg irHar datSuffix)
+            (addSuffix sg irHar datSuffix)
             (addSuffix sg har genSuffix)
             (addSuffix sn har locSuffix)
-      (addSuffix sn har ablatSuffix)
-      (addSuffix sn har abessPosSuffix)
-      (addSuffix sn har abessNegSuffix)
-      sg
-            pln
-            har ;
+            (addSuffix sn har ablatSuffix)
+            (addSuffix sn har abessPosSuffix)
+            (addSuffix sn har abessNegSuffix)
+            (addSuffix sn har instrSuffix)
+             sg
+             pln
+             har ;
 
     regN sn =
       let har = getHarmony sn ;
@@ -377,35 +326,41 @@ resource ParadigmsTur = open
       mkNoun sn
             (addSuffix bt har accSuffix)
             (addSuffix bt har datSuffix)
-      (addSuffix bt har genSuffix)
-      (addSuffix bt har locSuffix)
-      (addSuffix bt har ablatSuffix)
-      (addSuffix bt har abessPosSuffix)
-      (addSuffix bt har abessNegSuffix)
-      (bt ! Soft)
-      pln
-      har ;
+            (addSuffix bt har genSuffix)
+            (addSuffix bt har locSuffix)
+            (addSuffix bt har ablatSuffix)
+            (addSuffix bt har abessPosSuffix)
+            (addSuffix bt har abessNegSuffix)
+            (addSuffix bt har instrSuffix)
+            (bt ! Soft)
+             pln
+             har ;
 
     regPN sn = makePN sn sn ;
 
-    makeHarPN sn sy har =
+    makeHarNoun sn sy har =
       let bn = sn + "'" ;
           by = sy + "'" ;
-          pln = add_number Pl bn har.vow ;
-      in
-      mkNoun sn
-            (addSuffix by har accSuffix)
-            (addSuffix by har datSuffix)
-      (addSuffix by har genSuffix)
-      (addSuffix bn har locSuffix)
-      (addSuffix bn har ablatSuffix)
-            (addSuffix bn har abessPosSuffix)
-      (addSuffix bn har abessNegSuffix)
-      by
-            pln
-            har ;
+          pln = add_number Pl bn har.vow
+      in mkNoun sn
+                (addSuffix by har accSuffix)
+                (addSuffix by har datSuffix)
+                (addSuffix by har genSuffix)
+                (addSuffix bn har locSuffix)
+                (addSuffix bn har ablatSuffix)
+                (addSuffix bn har abessPosSuffix)
+                (addSuffix bn har abessNegSuffix)
+                (addSuffix bn har instrSuffix)
+                by
+                pln
+                har ;
 
-    makePN sn sy = makeHarPN sn sy (getHarmony sn) ;
+    makePN sn sy = 
+      let noun = makeHarNoun sn sy (getHarmony sn)
+      in lin PN { s = \\c => noun.s ! Sg ! c ;
+                  h = noun.h ;
+                  n = Sg
+                } ;
 
     linkNoun n1 n2 lt ct =
         let n1sn = n1.s ! Sg ! Nom ;--tere
@@ -437,7 +392,8 @@ resource ParadigmsTur = open
                           Loc     => addSuffix sn sgHar locSuffixN ; --tereyağında
                           Ablat   => addSuffix sn sgHar ablatSuffixN ; --tereyağından
                           Abess Pos => sgAbessPos ; --tereyağlı
-                          Abess Neg => sgAbessNeg   --tereyağsız
+                          Abess Neg => sgAbessNeg ; --tereyağsız
+                          Instr   => addSuffix sn sgHar instrSuffix
                         } ;
                   Pl => table {
                           Nom     => pn ;--tereyağları
@@ -447,7 +403,8 @@ resource ParadigmsTur = open
                           Loc     => addSuffix pn plHar locSuffixN ; --tereyağlarında
                           Ablat   => addSuffix pn plHar ablatSuffixN ; --tereyağlarından
                           Abess   Pos => addSuffix sgAbessPos plHar abessPosSuffix ; --tereyağlılar
-                          Abess   Neg => addSuffix sgAbessNeg plHar abessNegSuffix   --tereyağsızlar
+                          Abess   Neg => addSuffix sgAbessNeg plHar abessNegSuffix ; --tereyağsızlar
+                          Instr   => addSuffix pn plHar instrSuffix
                       }
                   } ;
           gen = case ct of {
@@ -500,6 +457,8 @@ resource ParadigmsTur = open
       -- pürdikkat
       mkA : (base, base1 : Str) -> (ih_har : HarVowP) -> A = \base,base1,ih_har -> (irregN_h base base ih_har) ** lin A {adv = addSuffix base (mkHar ih_har (getHarConP base)) adjAdvSuffix};
     } ;
+
+    irregAdv  : A -> Str -> A = \a,adv -> a ** {adv = adv};
 
     mkAS v = v ;
     mkAV v = v ;
@@ -565,8 +524,8 @@ resource ParadigmsTur = open
       in
       {
         s = table {
-    NCard => (makeHarPN card card harCard).s ;
-    NOrd  => (makeHarPN ordi ordi harOrd).s
+              NCard => (makeHarNoun card card harCard).s ;
+              NOrd  => (makeHarNoun ordi ordi harOrd).s
         } ;
         n = num
       } ;
@@ -615,12 +574,7 @@ resource ParadigmsTur = open
 
     mkQuant : Str -> Quant = \s -> lin Quant {s=s; useGen = NoGen} ;
 
-  param
-    AoristType =
-        PlSyl -- more than one syllable, takes -ir
-      | SgSylConIrreg -- one syllable ending with consonant, but takes -ir
-                      -- (here is the list: al-, bil-, bul-, dur-, gel-, gör-,
-                      -- kal-, ol-, öl-, var-, ver-, vur-, san- )
-      | SgSylConReg ; -- one syllable ending with consonant, takes -er
+  oper
+    mkMU : Str -> MU = \s -> lin MU {s=s; isPre=False} ;
 
 }

@@ -1,4 +1,4 @@
-concrete NumeralKor of Numeral = CatKor [Numeral,Digits] **
+concrete NumeralKor of Numeral = CatKor [Numeral,Digits,Decimal] **
   open Prelude, ResKor in {
 
 lincat
@@ -6,7 +6,9 @@ lincat
   Sub10,
   Sub100,
   Sub1000,
-  Sub1000000 = ResKor.Numeral ;
+  Sub1000000,
+  Sub1000000000,
+  Sub1000000000000 = ResKor.Numeral ;
 
 lin
   -- : Sub1000000 -> Numeral ;              -- 123456 [coercion to top category]
@@ -84,6 +86,9 @@ lin
   -- : Sub1000 -> Sub1000 -> Sub1000000 ;   -- m * 1000 + n
   pot3plus m n = TODO ;
 
+  pot3as4 x = x ;
+  pot4as5 x = x ;
+
 oper
   LinDigit : Type = ResKor.Numeral ** {isTwo : Bool ; ten : Str} ;
 
@@ -149,6 +154,16 @@ lin
   D_7 = mkDig "7" ;
   D_8 = mkDig "8" ;
   D_9 = mkDig "9" ;
+  
+  PosDecimal d = d ** {hasDot=False} ;
+  NegDecimal d = {s=\\o=>"-" ++ BIND ++ d.s ! o; hasDot=False; n = Pl} ;
+  IFrac d i = {
+    s=\\o=>d.s ! NCard ++
+           if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+           i.s ! o ;
+    hasDot=True;
+    n = Pl
+    } ;
 
 oper
   mk2Dig : Str -> Str -> TDigit = \c,o -> mk3Dig c o numNumber ;

@@ -1,6 +1,6 @@
 --# -path=.:../abstract:../common:../../prelude
 
-concrete NumeralRus of Numeral = CatRus [Numeral,Digits] ** open ResRus, InflectionRus, Prelude in {
+concrete NumeralRus of Numeral = CatRus [Numeral,Digits,Decimal] ** open ResRus, InflectionRus, Prelude in {
 
 flags  coding=utf8 ;
 
@@ -11,7 +11,7 @@ lincat Digit = {s : DForm => DetTable ; size : NumSize ; o : DForm => PronForms}
 lincat Sub10 = {s : Place => DForm => DetTable ; size : NumSize ; o : Place => DForm => PronForms ; just1 : Bool} ;
 lincat Sub100 = {s : Place => DetTable ; size : NumSize ; o : Place => PronForms; just1 : Bool} ;
 lincat Sub1000 = {s : Place => DetTable ; size : NumSize ; o : Place => PronForms; just1 : Bool} ;
-lincat Sub1000000 = {s : DetTable ; size : NumSize ; o : PronForms; just1 : Bool} ;
+lincat Sub1000000, Sub1000000000, Sub1000000000000 = {s : DetTable ; size : NumSize ; o : PronForms; just1 : Bool} ;
 -- just1 to correctly generate exactly 1000
 
 -- : Sub1000000 -> Numeral ; -- 123456 [coercion to top category]
@@ -403,19 +403,23 @@ lin pot3plus n m = {
   just1 = False ;
   size = Num5
   } ;
+lin pot3as4 n = n ;
+
+lin pot4as5 n = n ;
 
 -- numerals as sequences of digits
 
 lincat
   Dig = TDigit ;
 
-lin
-  IDig d = {s = d.s ; n = d.n ; size = d.size} ;
+  lin
+    IDig d = d ** {tail = T1} ;
 
-  IIDig d i = {
-    s = d.s ++ BIND ++ i.s ;
+    IIDig d i = {
+    s = d.s ++ spaceIf i.tail ++ i.s ;
     n = Pl ;
-    size = i.size
+    size = i.size ;
+    tail = inc i.tail
   } ;
 
   D_0 = mk2Dig "0" Num5 ;
@@ -429,7 +433,36 @@ lin
   D_8 = mk2Dig "8" Num5 ;
   D_9 = mk2Dig "9" Num5 ;
 
-oper
+  PosDecimal d = d ** {hasDot=False} ;
+  NegDecimal d = {
+    s = "-" ++ BIND ++ d.s ;
+    n = Pl ;
+    size = d.size ;
+    hasDot=False
+  } ;
+  IFrac d i = {
+    s=d.s ++
+      if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+      i.s;
+    n = Pl ;
+    size = d.size ;
+    hasDot=True
+  } ;
+
+  oper
+    spaceIf : DTail -> Str = \t -> case t of {
+      T3 => SOFT_SPACE ;
+      _  => BIND
+      } ;
+
+    inc : DTail -> DTail = \t -> case t of {
+      T1 => T2 ;
+      T2 => T3 ;
+      T3 => T1
+      } ;
+
+  oper
+
   mk3Dig : Str -> Str -> NumSize -> TDigit = \c,o,size -> mk4Dig c o Pl size ;
   mk2Dig : Str -> NumSize -> TDigit = \c,size -> mk3Dig c (c + "o") size ;
   mk4Dig : Str -> Str -> Number -> NumSize -> TDigit = \c,o,n,size -> {

@@ -120,6 +120,11 @@ concrete NounEst of Noun = CatEst ** open ResEst, HjkEst, MorphoEst, Prelude in 
       } ;
     OrdDigits numeral = {s = \\nc => numeral.s ! NOrd nc} ;
 
+    NumDecimal numeral = {
+      s = \\n,c => numeral.s ! NCard (NCase n c) ;
+      n = numeral.n
+      } ;
+
     NumNumeral numeral = {
       s = \\n,c => numeral.s ! NCard (NCase n c) ;
       n = numeral.n
@@ -214,10 +219,15 @@ concrete NounEst of Noun = CatEst ** open ResEst, HjkEst, MorphoEst, Prelude in 
 
     ApposCN cn np = cn ** {postmod = cn.postmod ++ linNP (NPCase Nom) np} ; --- luvun x
 
+    QuantityNP n m = emptyNP ** {
+      s = \\c => preOrPost m.isPre m.s (n.s ! NCard (NCase Sg Nom)) ;
+      a = agrP3 n.n ;
+      isPron = False
+      } ;
+
   oper
     numN : NForm -> Number = \nf -> case nf of {
-      NCase n _ => n ;
-      _ => Sg ---
+      NCase n _ => n
       } ;
 
 

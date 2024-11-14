@@ -180,4 +180,10 @@ oper
       Neut => ANeut
     } ;
 
+  sex2agender : Sex -> AGender = \g ->
+    case g of {
+      Male => AMasc Animate ;
+      Female => AFem
+    } ;
+
 }

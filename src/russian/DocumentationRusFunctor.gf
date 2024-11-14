@@ -4,10 +4,6 @@ incomplete concrete DocumentationRusFunctor of Documentation = CatRus ** open
   Terminology, -- the interface
   ResRus,
   ParadigmsRus,
-  (G = GrammarRus),
-  (S = SyntaxRus),
-  (ST = StructuralRus),
-  (L = LexiconRus),
   Prelude,
   HTML
 in {
@@ -26,115 +22,145 @@ oper
 
 lin
   InflectionN, InflectionN2, InflectionN3 = \noun -> {
-    t  = "s" ;
-    s1 = heading1 (heading noun_Category) ;
-    s2 = inflNoun noun
+    t  = "сущ." ;
+    s1 = heading1 (heading noun_Category ++
+                   case noun.g of {
+                     Masc => "(м.р.)" ;
+                     Fem  => "(ж.р.)" ;
+                     Neut => "(ср.р.)"
+                   }) ;
+    s2 = inflNoun noun ++
+         case noun.rt of {
+           GenType => [] ;
+           AdjType => heading1 (heading adjective_Category) ++
+                      inflAdj noun.rel
+         }
+    } ;
+
+  InflectionPN = \pn -> {
+    t  = "сущ.с." ;
+    s1 = heading1 ("Существительное Собственное" ++
+                   case pn.g of {
+                     Masc => "(м.р.)" ;
+                     Fem  => "(ж.р.)" ;
+                     Neut => "(ср.р.)"
+                   }) ;
+    s2 = frameTable (
+          tr (th (heading nominative_Parameter) ++ td (pn.s!Nom)) ++
+          tr (th (heading genitive_Parameter) ++ td (pn.s!Gen)) ++ 
+          tr (th (heading dative_Parameter) ++ td (pn.s!Dat)) ++ 
+          tr (th (heading accusative_Parameter) ++ td (pn.s!Acc)) ++ 
+          tr (th ("творительный") ++ td (pn.s!Ins)) ++ 
+          tr (th ("предложный") ++ td (pn.s!Pre)) ++ 
+          tr (th (heading partitive_Parameter) ++ td (pn.s!Ptv)) ++
+          tr (th ("местный") ++ td (pn.s!Loc)) ++
+          tr (th ("звательный") ++ td (pn.s ! VocRus))
+          ) ;
+    } ;
+
+  InflectionGN = \gn -> {
+    t  = "сущ.с." ;
+    s1 = heading1 (case gn.g of {
+                     Male   => "Мужское Личное Имя" ;
+                     Female => "Женское Личное Имя"
+                   });
+    s2 = frameTable (
+          tr (th (heading nominative_Parameter) ++ td (gn.s ! Nom)) ++
+          tr (th (heading genitive_Parameter) ++ td (gn.s ! Gen)) ++ 
+          tr (th (heading dative_Parameter) ++ td (gn.s ! Dat)) ++ 
+          tr (th (heading accusative_Parameter) ++ td (gn.s ! Acc)) ++ 
+          tr (th ("творительный") ++ td (gn.s ! Ins)) ++ 
+          tr (th ("предложный") ++ td (gn.s ! Pre)) ++ 
+          tr (th (heading partitive_Parameter) ++ td (gn.s ! Ptv)) ++
+          tr (th ("местный") ++ td (gn.s ! Loc)) ++
+          tr (th ("звательный") ++ td (gn.s ! VocRus))
+          )
+    } ;
+
+  InflectionSN = \sn -> {
+    t  = "сущ.с." ;
+    s1 = heading1 "Фамилия" ;
+    s2 = frameTable (
+          tr (th (heading nominative_Parameter) ++ td (sn.s ! Male ! Nom)) ++
+          tr (th (heading genitive_Parameter) ++ td (sn.s ! Male ! Gen)) ++ 
+          tr (th (heading dative_Parameter) ++ td (sn.s ! Male ! Dat)) ++ 
+          tr (th (heading accusative_Parameter) ++ td (sn.s ! Male ! Acc)) ++ 
+          tr (th ("творительный") ++ td (sn.s ! Male ! Ins)) ++ 
+          tr (th ("предложный") ++ td (sn.s ! Male ! Pre)) ++ 
+          tr (th (heading partitive_Parameter) ++ td (sn.s ! Male ! Ptv)) ++
+          tr (th ("местный") ++ td (sn.s ! Male ! Loc)) ++
+          tr (th ("звательный") ++ td (sn.s ! Male ! VocRus))
+          )
+    } ;
+
+  InflectionLN = \ln -> {
+    t  = "сущ.с." ;
+    s1 = heading1 ("Название Местоположения" ++
+                   case ln.g of {
+                     Masc => "(м.р.)" ;
+                     Fem  => "(ж.р.)" ;
+                     Neut => "(ср.р.)"
+                   }) ;
+    s2 = frameTable (
+          tr (th (heading nominative_Parameter) ++ td (ln.s ! Nom)) ++
+          tr (th (heading genitive_Parameter) ++ td (ln.s ! Gen)) ++ 
+          tr (th (heading dative_Parameter) ++ td (ln.s ! Dat)) ++ 
+          tr (th (heading accusative_Parameter) ++ td (ln.s ! Acc)) ++ 
+          tr (th ("творительный") ++ td (ln.s ! Ins)) ++ 
+          tr (th ("предложный") ++ td (ln.s ! Pre)) ++ 
+          tr (th (heading partitive_Parameter) ++ td (ln.s ! Ptv)) ++
+          tr (th ("местный") ++ td (ln.s ! Loc)) ++
+          tr (th ("звательный") ++ td (ln.s ! VocRus))
+          ) ++
+          heading2 (heading adverb_Category) ++
+          paragraph (ln.c.s ++ ln.s ! ln.c.c)
     } ;
 
   InflectionA, InflectionA2 = \adj -> {
-    t  = "a" ;
+    t  = "пр" ;
     s1 = heading1 (heading adjective_Category) ;
-    s2 = heading2 (heading feminine_Parameter) ++
-         inflNoun (makeNFFromAF adj Fem Inanimate) ++
-         heading2 (heading masculine_Parameter) ++
-         inflNoun (makeNFFromAF adj Masc Inanimate) ++
-         heading2 (heading neuter_Parameter) ++
-         inflNoun (makeNFFromAF adj Neut Inanimate) ++
-         heading2 (heading comparative_Parameter) ++
-         frameTable (tr (tr (adj.comp)))
+    s2 = inflAdj adj
     } ;
 
   InflectionAdv, InflectionAdV, InflectionAdA, InflectionAdN = \adv -> {
-    t  = "adv" ;
+    t  = "нар" ;
     s1 = heading1 (heading adverb_Category) ;
     s2 = paragraph adv.s
     } ;
 
   InflectionPrep p = {
-    t  = "prep" ;
+    t  = "пред" ;
     s1 = heading1 (heading preposition_Category) ;
-    s2 = paragraph ((S.mkAdv (lin Prep p) S.it_NP).s ++ ";" ++ (S.mkAdv (lin Prep p) S.we_NP).s)
+    s2 = paragraph (p.s ++ "+" ++
+                    case p.c of {
+                      Nom   => "именительный" ;
+                      Gen   => "родительный" ;
+                      Dat   => "дательный" ;
+                      Acc   => "винительный" ;
+                      Ins   => "творительный" ;
+                      Pre   => "предложный" ;
+                      Ptv   => "разделительный" ;
+                      Loc   => "местный" ;
+                      VocRus=>"звательный"
+                    })
     } ;
 
-  InflectionV v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v)) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionV2 v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v S.something_NP)) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionV3 v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v S.something_NP S.something_NP)) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionV2V v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v S.we_NP (S.mkVP (L.sleep_V)))) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionV2S v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v S.we_NP (lin S {s : Mood=>Str = \\m=>"..."}))) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionV2Q v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v S.we_NP (lin QS {s: QForm=>Str = \\m=>"..."}))) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionV2A v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v S.we_NP L.beautiful_A)) ;
+  InflectionV, InflectionV2, InflectionV3,
+  InflectionV2V, InflectionV2S, InflectionV2Q,
+  InflectionV2A, InflectionVS, InflectionVQ,
+  InflectionVA = \v -> {
+    t  = "гл" ;
+    s1 = heading1 (heading verb_Category) ;
     s2 = inflVerb v
     } ;
 
   InflectionVV vv = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP vv (S.mkVP (L.sleep_V)))) ;
+    t  = "гл" ;
+    s1 = heading1 (heading verb_Category) ;
     s2 = inflVerb vv.v
     } ;
 
-  InflectionVS v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v (lin S {s : Mood=>Str = \\m=>"..."}))) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionVQ v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v (lin QS {s : Mood=>Str = \\m=>"..."}))) ;
-    s2 = inflVerb v
-    } ;
-
-  InflectionVA v = {
-    t  = "v" ;
-    s1 = heading1 (heading verb_Category) ++
-         paragraph (verbExample (S.mkCl S.she_NP v L.beautiful_A)) ;
-    s2 = inflVerb v
-    } ;
-
 oper
-  verbExample : CatRus.Cl -> Str = \cl -> (S.mkUtt cl).s ;
 {-
 -} --# notpresent
   inflVerb : CatRus.V -> Str = \v ->
@@ -209,6 +235,16 @@ oper
           tr (th ("местный") ++ td (nf.sloc) ++ td ("-")) ++
           tr (th ("звательный") ++ td (nf.svoc) ++ td ("-"))
           ) ;
+
+  inflAdj : AdjForms -> Str = \adj ->
+    heading2 (heading masculine_Parameter) ++
+    inflNoun (makeNFFromAF adj Masc Inanimate) ++
+    heading2 (heading feminine_Parameter) ++
+    inflNoun (makeNFFromAF adj Fem Inanimate) ++
+    heading2 (heading neuter_Parameter) ++
+    inflNoun (makeNFFromAF adj Neut Inanimate) ++
+    heading2 (heading comparative_Parameter) ++
+    frameTable (tr (tr (adj.comp))) ;
 
 lin
   -- : String -> Definition ;

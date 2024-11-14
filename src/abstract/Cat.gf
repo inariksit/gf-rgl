@@ -93,6 +93,7 @@ abstract Cat = Common ** {
 
     Numeral ; -- cardinal or ordinal in words       e.g. "five/fifth"
     Digits ;  -- cardinal or ordinal in digits      e.g. "1,000/1,000th"
+    Decimal ; -- decimal number                     e.g. "1/2/3.14/-1"
 
 --2 Structural words
 
@@ -126,7 +127,10 @@ abstract Cat = Common ** {
     N ;     -- common noun                         e.g. "house"
     N2 ;    -- relational noun                     e.g. "son"
     N3 ;    -- three-place relational noun         e.g. "connection"
-    PN ;    -- proper name                         e.g. "Paris"
+    GN ;    -- given name                          e.g. "George"
+    SN ;    -- second name                         e.g. "Washington"
+    LN ;    -- location name                       e.g. "Sweden"
+    PN ;    -- proper name
 
 -- DEPRECATED: QuantSg, QuantPl
 ---    QuantSg ;-- quantifier ('nucleus' of sing. Det) e.g. "every"

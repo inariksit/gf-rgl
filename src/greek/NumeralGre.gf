@@ -1,4 +1,4 @@
-concrete NumeralGre of Numeral = CatGre [Numeral,Digits] ** open ResGre,Prelude in {
+concrete NumeralGre of Numeral = CatGre [Numeral,Digits,Decimal] ** open ResGre,Prelude in {
 
  flags coding= utf8 ;
 
@@ -6,9 +6,11 @@ concrete NumeralGre of Numeral = CatGre [Numeral,Digits] ** open ResGre,Prelude 
 lincat 
   Digit = {s : DForm => CardOrd => Str} ;
   Sub10 = {s : DForm => CardOrd => Str ; n : Number} ;
-  Sub100     = {s : CardOrd =>  Str ; n : Number} ;
-  Sub1000    = {s :  CardOrd => Str ; n : Number} ;
-  Sub1000000 = {s : CardOrd =>  Str ; n : Number} ;
+  Sub100           = {s : CardOrd =>  Str ; n : Number} ;
+  Sub1000          = {s :  CardOrd => Str ; n : Number} ;
+  Sub1000000       = {s : CardOrd =>  Str ; n : Number} ;
+  Sub1000000000    = {s : CardOrd =>  Str ; n : Number} ;
+  Sub1000000000000 = {s : CardOrd =>  Str ; n : Number} ;
 
 
 
@@ -58,6 +60,9 @@ lin pot3plus n m = {
         Sg => Xilias co n.s n.n ++   cardOrdXiliaSg  "χίλια" "χιλιοστός" ! co ++ m.s ! co ;
         Pl =>  Xilias co n.s n.n ++  cardOrdXiliaPl "χιλιάδες"   "χιλιοστός" ! co ++ m.s ! co }
     } ** {n = Pl} ; 
+
+lin pot3as4 n = n ;
+lin pot4as5 n = n ;
 
 
 oper 
@@ -285,6 +290,20 @@ Xilias : CardOrd -> (CardOrd => Str) -> Number -> Str = \co,d,n ->
     D_7 = mk2Dig "7" Pl;
     D_8 = mk2Dig "8" Pl;
     D_9 = mk2Dig "9" Pl ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = \\o => "-" ++ BIND ++ d.s ! o ;
+      n = Pl ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s = \\o => d.s ! NCard Neut Nom ++
+                 if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+                 i.s ! o ;
+      n = Pl ;
+      hasDot=True
+      } ;
 
   oper
   

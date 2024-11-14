@@ -129,13 +129,56 @@ oper
 --
 -- Proper names, with a regular genitive, are formed from strings.
 
+oper
   mkPN : overload {
 
     mkPN : Str -> PN ;
+    mkPN : Str -> Gender -> PN ;
 
 -- Sometimes a common noun can be reused as a proper name, e.g. "Bank"
 
     mkPN : N -> PN --%
+  } ;
+
+  mkLN = overload {
+    mkLN : Str -> LN = \s ->
+      lin LN {s = table {Gen => s + "'s" ; _ => s} ; 
+              prep = InPrep ;
+              art = False ;
+              n = Sg} ;
+
+    mkLN : Str -> Number -> LN = \s,n ->
+      lin LN {s = table {Gen => s + "'s" ; _ => s} ;
+              prep = InPrep ;
+              art = False ;
+              n = n} ;
+  } ;
+
+  defLN : LN -> LN = \n -> n ** {art = True} ;
+  onLN : LN -> LN = \n -> n ** {prep = OnPrep} ;
+  atLN : LN -> LN = \n -> n ** {prep = AtPrep} ;
+
+  mkGN = overload {
+    mkGN : Str -> GN = \s ->
+      lin GN {s = table {Gen => s + "'s" ; _ => s} ; 
+              g = Male} ;
+
+    mkGN : Str -> Sex -> GN = \s,g ->
+      lin GN {s = table {Gen => s + "'s" ; _ => s} ;
+              g = g} ;
+  } ;
+
+  mkSN = overload {
+    mkSN : Str -> SN = \s ->
+      lin SN {s = \\_ => table {Gen => s + "'s" ; _ => s} ;
+              p = table {Gen => s + "'s" ; _ => s}} ;
+    mkSN : Str -> Str -> Str -> SN = \male,female,pl ->
+      lin SN {s = table {
+                    Male  => table {Gen => male + "'s" ; _ => male} ;
+                    Female => table {Gen => female + "'s" ; _ => female}
+                  } ;
+              p = table {Gen => pl + "'s" ; _ => pl}
+             } ;
   } ;
 
 -- To extract the number of a noun phrase
@@ -378,6 +421,8 @@ mkVoc s = lin Voc (ss s) ;
   nonhuman = Neutr ;
   masculine = Masc ;
   feminine = Fem ;
+  male = Male ;
+  female = Female ;
   singular = Sg ;
   plural = Pl ;
   nominative = npNom ;
@@ -435,6 +480,7 @@ mkVoc s = lin Voc (ss s) ;
 
   mkPN = overload {
     mkPN : Str -> PN = regPN ;
+    mkPN : Str -> Gender -> PN = regGenPN ;
     mkPN : N -> PN = nounPN
   } ;
 
@@ -596,6 +642,8 @@ mkVoc s = lin Voc (ss s) ;
   us_britishV : Str -> V = \s -> case s of {
     _ + ("el" | "al" | "ol") => regV s | mkV s (s + "s") (s + "led") (s + "led") (s + "ling") ;
     _ + "or" => regV s | regV (Predef.tk 2 s + "our") ;
+    _ + "ise" => regV (Predef.tk 2 s + "ze") | regV s ;
+    _ + "ize" => regV s | regV (Predef.tk 2 s + "se") ;
     _ => regV s
     } ;
 
@@ -774,6 +822,8 @@ mkVoc s = lin Voc (ss s) ;
 
   mk2Conj : Str -> Str -> Number -> Conj = \x,y,n ->
     lin Conj (sd2 x y ** {n = n}) ;
+
+  mkMU : Str -> MU = \s -> lin MU {s=s; isPre=False} ;
 
 ---- obsolete
 

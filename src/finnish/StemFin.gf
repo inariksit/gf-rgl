@@ -38,7 +38,9 @@ oper
 
   SPN : Type = {s : Case  => Str} ;
 
-  snoun2spn : SNoun -> SPN = \n -> {s = \\c => n.s ! NCase Sg c} ;
+
+  snoun2spn : SNoun -> SPN = \n -> snoun2spnGen n Sg ;
+  snoun2spnGen : SNoun -> Number -> SPN = \n,nb -> {s = \\c => n.s ! NCase nb c} ;
 
   exceptNomSNoun : SNoun -> Str -> SNoun = \noun,nom -> {
       s = table {
@@ -378,7 +380,8 @@ oper
       s = \\t,a,b =>
         let
           agrfin = case vp.sc of {
-                    SCNom => <agr,True> ;
+                    SCNom => <agr, True> ;
+		    SCAcc => <agrP3 Sg, True> ;
                     _ => <agrP3 Sg,False>      -- minun täytyy, minulla on
                     } ;
           verb  = vp.s ! VIFin t ! a ! b ! agrfin.p1 ;

@@ -9,6 +9,7 @@ oper
 -- should always use these constants instead of the constructors
 -- defined in $ResSom$.
 
+  noPrep : Prep = mkPrep "" ;
 
 --2 Nouns
 
@@ -26,7 +27,9 @@ oper
     mkA : (adj : Str) -> A ;
   } ;
 
-  -- mkA2 : Str -> Prep -> A2 ;
+  mkA2 : overload {
+    mkA2 : (adj : Str) -> Prep -> A2 ;
+  } ;
 
 --2 Verbs
 
@@ -51,20 +54,37 @@ oper
     mkVV : Str -> VV ;
    } ;
 
-  --
-  -- mkVA : Str -> VA
-  --   = \s -> lin VA (regV s) ;
+  mkVS : overload {
+    mkVS : V -> VS ;
+  } ;
+
+  mkVA : overload {
+    mkVA : V -> VA ;
+  } ;
+
+  mkV2V : overload {
+    mkV2V : Str -> V2V ;
+    mkV2V : V -> Prep -> Prep -> V2V ;
+  } ;
+
+  mkV2S : overload {
+    mkV2S : Str -> V2S ;
+    mkV2S : V -> Prep -> V2S ;
+  } ;
+
   -- mkVQ : Str -> VQ
   --   = \s -> lin VQ (regV s) ;
-  -- mkVS : Str -> VS
-  --   = \s -> lin VS (regV s) ;
+
+  mkV2A : overload {
+    mkV2A : Str -> V2A ;
+  } ;
   --
   -- mkV2A : Str -> V2A
   --   = \s -> lin V2A (regV s ** {c2 = noPrep}) ;
-  -- mkV2V : Str -> V2V
-  --   = \s -> lin V2V (regV s ** {c2 = noPrep}) ;
-  -- mkV2Q : Str -> V2Q
-  --   = \s -> lin V2Q (regV s ** {c2 = noPrep}) ;
+  mkV2Q : overload {
+    mkV2Q : Str -> V2Q ;
+    mkV2Q : V -> Prep -> V2Q ;
+  } ;
 
   -----
 
@@ -93,12 +113,19 @@ oper
 
   mkN = overload {
     mkN : Str -> N = \s -> lin N (mkNoun s) ;
+    mkN : Str -> Animacy -> N = \s,a -> lin N (mkNoun s) ;
     } ;
 
 
   mkN2 = overload {
     mkN2 : Str -> N2 = \s -> lin N2 (mkNoun s ** {c2 = dirPrep}) ;
     mkN2 : N   -> N2 = \n -> lin N2 (n ** {c2 = dirPrep}) ;
+   } ;
+
+  mkN3 = overload {
+    mkN3 : Str -> N3 = \s -> lin N3 (mkNoun s ** {c2,c3 = dirPrep}) ;
+    mkN3 : N   -> N3 = \n -> lin N3 (n ** {c2,c3 = dirPrep}) ;
+    mkN3 : N   -> Prep -> Prep -> N3 = \n,c2,c3 -> lin N3 (n ** {c2,c3 = dirPrep}) ;
    } ;
 
   mkPN = overload {
@@ -109,9 +136,16 @@ oper
     mkA : (adj : Str) -> A = \s -> lin A (mkAdj s) ;
     } ;
 
+  mkA2 = overload {
+    mkA2 : (adj : Str) -> A2 = \s -> lin A2 ((mkAdj s) ** {c2 = emptyPrep}) ;
+    mkA2 : A -> A2 = \a -> lin A2 (a ** {c2 = emptyPrep}) ;
+    mkA2 : A -> Prep -> A2 = \a,p -> lin A2 (a ** {c2 = p}) ;
+    mkA2 : (adj : Str) -> Prep -> A2 = \a,p -> lin A2 ((mkAdj a) ** {c2 = p}) ;
+    } ;
+
   mkV = overload {
-    mkV : Str           -> V = \v   -> lin V (mkVerb v Ber) ;
-    mkV : Str -> Prefix -> V = \v,p -> lin V (mkVerb v p)
+    mkV : Str           -> V = \v   -> lin V (regVerb v Ber) ;
+    mkV : Str -> Prefix -> V = \v,p -> lin V (regVerb v p) ;
     } ;
 
   prefixV : V -> V = \v -> v ** {
@@ -122,7 +156,7 @@ oper
     } ;
 
   mkV2 = overload {
-    mkV2 : Str       -> V2 = \v2  -> lin V2 (mkVerb2 (mkVerb v2 Meng) dirPrep) ;
+    mkV2 : Str       -> V2 = \v2  -> lin V2 (mkVerb2 (regVerb v2 Meng) dirPrep) ;
     mkV2 : V -> Prep -> V2 = \v,p -> lin V2 (mkVerb2 v p)
     } ;
 
@@ -133,10 +167,37 @@ oper
       lin V3 (mkVerb3 v p q)
     } ;
 
- mkVV = overload {
-   mkVV : Str -> VV = \vv -> lin VV (ss vv)
-   } ;
+  mkV4 = overload {
+    mkV4 : Str       -> Str -> V2 = \v2,str  ->
+      lin V2 (mkVerb4 (regVerb v2 Meng) dirPrep str) ;
+    mkV4 : V -> Prep -> Str -> V2 = \v,p,str -> lin V2 (mkVerb4 v p str)
+    } ;
 
+  mkVV = overload {
+    mkVV : Str -> VV = \vv -> lin VV (ss vv)
+    } ;
+
+  mkVS = overload {
+    mkVS : V -> VS = \v -> lin VS (v)
+    } ;
+
+  mkVA = overload {
+    mkVA : V -> VA = \v -> lin VA (v)
+    } ;
+
+  mkV2V = overload {
+    mkV2V : Str -> V2V = \v -> lin V2V (mkVerb2 (regVerb v Meng) dirPrep) ;
+    mkV2V : V -> Prep -> Prep -> V2V = \v,p1,p2 -> lin V2V (mkVerb3 v p1 p2)
+  } ;
+
+  mkV2S = overload {
+    mkV2S : Str -> V2S = \v -> lin V2S (mkVerb2 (regVerb v Meng) dirPrep) ;
+    mkV2S : V -> Prep -> V2S = \v,p -> lin V22 (mkVerb2 v p)
+  } ;
+
+--   lin like_V2 = let like' : V2 = mkV2 "suka" in like' ** {
+--   s = table {Passive => "disukai" ; _ => "suka"} ;
+-- } ;
 --------------------------------------------------------------------------------
 
 }

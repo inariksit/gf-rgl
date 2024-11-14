@@ -28,6 +28,24 @@ lin
     s2 = paragraph (pn.s ! NPNom)
     } ;
 
+  InflectionLN = \ln -> {
+    t  = "pn" ;
+    s1 = heading1 "Naam" ;
+    s2 = paragraph (ln.s ! Strong ! NPNom)
+    } ;
+
+  InflectionGN = \pn -> {
+    t  = "vnm" ;
+    s1 = heading1 "Voornaam" ;
+    s2 = paragraph (pn.s ! NPNom)
+    } ;
+
+  InflectionSN = \pn -> {
+    t  = "van" ;
+    s1 = heading1 "Van" ;
+    s2 = paragraph (pn.s ! Male ! NPNom)
+    } ;
+
   InflectionA, InflectionA2 = \adj ->
     let
       gforms : AForm -> Str = \a ->

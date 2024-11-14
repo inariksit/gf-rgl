@@ -75,6 +75,7 @@ concrete CatPol of Cat = CommonX - [CAdv] ** open ResPol, Prelude, (R = ParamX) 
                 a:Accom; n:Number };
     Ord = {  s: AForm => Str };
     Digits = { s:Str; o:Str; a:Accom; n:Number };
+    Decimal = { s:Str; o:Str; a:Accom; n:Number; hasDot : Bool };
 
 
 ---- Structural
@@ -113,19 +114,20 @@ concrete CatPol of Cat = CommonX - [CAdv] ** open ResPol, Prelude, (R = ParamX) 
 
 
 -- Substantives moreover have an inherent gender. 
-    N  = CommNoun;   
+    N  = Noun;
 
-    N2 = CommNoun2;
+    N2 = Noun ** { c : Complement } ;
 
-    N3 = CommNoun3;-- ** { c, c2 : Complement } ;
+    N3 = Noun ** { c1, c2 : Complement } ;
 
-    PN = NounPhrase;
+    GN, SN, LN, PN = NounPhrase;
     
     CAdv = {s,p,sn,pn : Str} ;
 
   linref
     A = \a -> a.pos.s1 ;
     A2 = \a -> a.pos.s1 ++ a.c.s ;
+    PN = \pn -> pn.nom ;
 
 };
 

@@ -1,4 +1,4 @@
-concrete NumeralIta of Numeral = CatIta [Numeral,Digits] ** 
+concrete NumeralIta of Numeral = CatIta [Numeral,Digits,Decimal] ** 
   open CommonRomance, ResRomance, MorphoIta, PhonoIta, Prelude in {
 
 lincat 
@@ -7,6 +7,8 @@ lincat
   Sub100 = {s : CardOrd => Str ; n : Number} ;
   Sub1000 = {s : CardOrd => Str ; n : Number} ;
   Sub1000000 = {s : CardOrd => Str ; n : Number} ;
+  Sub1000000000 = {s : CardOrd => Str ; n : Number} ;
+  Sub1000000000000 = {s : CardOrd => Str ; n : Number} ;
 
 lin num x = x ;
 
@@ -72,6 +74,9 @@ lin pot3 n = spl (\\co => n.s ! NCard Masc ++ nBIND n.n ++
 
 lin pot3plus n m = {s = \\g => n.s ! NCard Masc ++ nBIND n.n ++ mille ! n.n ++ "e" ++ m.s ! g ; n = Pl} ;
 
+lin pot3as4 n = n ;
+lin pot4as5 n = n ;
+
 oper
   nBIND : Number -> Str = \n -> case n of {Sg => [] ; _ => BIND} ; -- no BIND after silent 1
 
@@ -115,11 +120,12 @@ param Pred = pred | indip ;
     Dig = TDigit ;
 
   lin
-    IDig d = d ;
+    IDig d = d ** {tail = T1} ;
 
     IIDig d i = {
-      s = \\o => d.s ! NCard Masc ++ BIND ++ i.s ! o ;
-      n = Pl
+      s = \\o => d.s ! NCard Masc ++ spaceIf i.tail ++ i.s ! o ;
+      n = Pl ;
+      tail = inc i.tail
     } ;
 
     D_0 = mkDig "0" ;
@@ -132,6 +138,32 @@ param Pred = pred | indip ;
     D_7 = mkDig "7" ;
     D_8 = mkDig "8" ;
     D_9 = mkDig "9" ;
+    
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = \\o => "-" ++ BIND ++ d.s ! o ;
+      n = Pl ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s = \\o => d.s ! NCard Masc ++
+                 if_then_Str d.hasDot BIND (BIND++","++BIND) ++
+                 i.s ! o;
+      n = Pl ;
+      hasDot=True
+      } ;
+
+  oper
+    spaceIf : DTail -> Str = \t -> case t of {
+      T3 => SOFT_SPACE ;
+      _  => BIND
+      } ;
+
+    inc : DTail -> DTail = \t -> case t of {
+      T1 => T2 ;
+      T2 => T3 ;
+      T3 => T1
+      } ;
 
   oper
     mkDig : Str -> TDigit = \c -> mk2Dig c Pl ;

@@ -1,4 +1,4 @@
---# -path=../common:../abstract
+--# -path=../common:../abstract:../common
 
 concrete ExtendRus of Extend =
   CatRus ** ExtendFunctor - [
@@ -23,6 +23,9 @@ concrete ExtendRus of Extend =
     --ConjRNP, Cons_nr_RNP, Cons_rr_RNP,
     DetNPMasc,
     DetNPFem,
+    UseDAP,
+    UseDAPMasc,
+    UseDAPFem,
     -- EmbedPresPart, EmptyRelSlash,
     ExistsNP,
     -- ExistCN, ExistMassCN, ExistPluralCN,
@@ -33,7 +36,7 @@ concrete ExtendRus of Extend =
     -- GerundAdv, GerundCN, GerundNP, IAdvAdv, ICompAP,
     InOrderToVP,
     -- NominalizeVPSlashNP,
-    -- PassAgentVPSlash,
+    PassAgentVPSlash,
     PassVPSlash,
     -- ProgrVPSlash,
     PastPartAP,
@@ -99,7 +102,42 @@ lin
   youFem_Pron = personalPron (Ag (GSg Fem) P2) ;
 
   -- : N -> N -> N ;
-  CompoundN n1 n2 = mkCompoundN n1 "-" n2 ;
+  -- CompoundN n1 n2 = mkCompoundN n1 n2 ;
+
+  CompoundN n1 n2 = case n1.rt of {
+                          GenType => n2 ** {snom = n2.snom ++ n1.sgen ;
+                                            sgen = n2.sgen ++ n1.sgen ;
+                                            sdat = n2.sdat ++ n1.sgen;
+                                            sacc = n2.sacc ++ n1.sgen;
+                                            sins = n2.sins ++ n1.sgen;
+                                            sprep = n2.sprep ++ n1.sgen;
+                                            sloc = n2.sloc ++ n1.sgen;
+                                            sptv = n2.sptv ++ n1.sgen;
+                                            svoc = n2.svoc ++ n1.sgen;
+                                            pnom = n2.pnom ++ n1.sgen;
+                                            pgen = n2.pgen ++ n1.sgen;
+                                            pdat = n2.pdat ++ n1.sgen;
+                                            pacc = n2.pacc ++ n1.sgen;
+                                            pins = n2.pins ++ n1.sgen;
+                                            pprep = n2.pprep ++ n1.sgen;
+                                            } ;
+                          AdjType => n2 ** {snom = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Nom ++ n2.snom;
+                                            sgen = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Gen ++ n2.sgen ;
+                                            sdat = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Dat ++ n2.sdat ;
+                                            sacc = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Acc ++ n2.sacc ;
+                                            sins = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Ins ++ n2.sins ;
+                                            sprep = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Loc ++ n2.sprep ;
+                                            sloc = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Loc ++ n2.sloc ;
+                                            sptv = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Gen ++ n2.sptv ;
+                                            svoc = (adjFormsAdjective n1.rel).s ! (gennum n2.g Sg) ! n2.anim ! Nom ++ n2.svoc ;
+                                            pnom = (adjFormsAdjective n1.rel).s ! (gennum n2.g Pl) ! n2.anim ! Nom ++ n2.pnom ;
+                                            pgen = (adjFormsAdjective n1.rel).s ! (gennum n2.g Pl) ! n2.anim ! Gen ++ n2.pgen ;
+                                            pdat = (adjFormsAdjective n1.rel).s ! (gennum n2.g Pl) ! n2.anim ! Dat ++ n2.pdat ;
+                                            pacc = (adjFormsAdjective n1.rel).s ! (gennum n2.g Pl) ! n2.anim ! Acc ++ n2.pacc ;
+                                            pins = (adjFormsAdjective n1.rel).s ! (gennum n2.g Pl) ! n2.anim ! Ins ++ n2.pins ;
+                                            pprep = (adjFormsAdjective n1.rel).s ! (gennum n2.g Pl) ! n2.anim ! Loc ++ n2.pprep ;
+                                            }
+                        } ;
 
   -- VPSlash -> AP ; -- lost (opportunity) ; (opportunity) lost in space
   PastPartAP vps = {
@@ -107,14 +145,19 @@ lin
       vps.adv ! (genNumAgrP3 gn)
       ++ shortPastPassPart vps.verb gn
       ++ vps.dep
-      ++ vps.compl ! Pos ! (genNumAgrP3 gn) ;
+      ++ vps.compl1 ! Pos ! (genNumAgrP3 gn)
+      ++ vps.compl2 ! Pos ! (genNumAgrP3 gn);
     short=\\a =>
       vps.adv ! a
       ++ shortPastPassPart vps.verb (agrGenNum a)
       ++ vps.dep
-      ++ vps.compl ! Pos ! a
+      ++ vps.compl1 ! Pos ! a
+      ++ vps.compl2 ! Pos ! a
       ++ vps.c.s ; --
-    isPost = False ;
+    isPost = case vps.isSimple of {
+               True  => False ;
+               False => True
+             } ;
     preferShort=PreferFull
     } ;
 
@@ -125,24 +168,46 @@ lin
       ++ shortPastPassPart vps.verb gn
       ++ vps.dep
       ++ applyPolPrep Pos vps.c np
-      ++ vps.compl ! Pos ! (genNumAgrP3 gn) ;
+      ++ vps.compl1 ! Pos ! (genNumAgrP3 gn)
+      ++ vps.compl2 ! Pos ! (genNumAgrP3 gn);
     short=\\a =>
       vps.adv ! a
       ++ shortPastPassPart vps.verb (agrGenNum a)
       ++ vps.dep
       ++ applyPolPrep Pos vps.c np
-      ++ vps.compl ! Pos ! a ;
+      ++ vps.compl1 ! Pos ! a
+      ++ vps.compl2 ! Pos ! a ;
     isPost = False ;
     preferShort=PreferFull
     } ;
 
   -- : VPSlash -> VP ; -- be forced to sleep
-  PassVPSlash vps = vps ** {
+  PassVPSlash vps = case vps.verb.asp of {
+  Perfective => vps ** {
     verb=copulaEll ;
-    compl=\\p,a => vps.compl ! p ! a ++ shortPastPassPart vps.verb (agrGenNum a) ++ vps.c.s
+    compl=\\p,a => shortPastPassPart vps.verb (agrGenNum a) ++ vps.compl1 ! p ! a ++ vps.compl2 ! p ! a ++ vps.c.s
     } ;
+  Imperfective => vps ** {
+    verb=(passivate vps.verb);
+    compl=\\p,a => shortPastPassPart vps.verb (agrGenNum a) ++ vps.compl1 ! p ! a ++ vps.compl2 ! p ! a ++ vps.c.s
+  }
+     };
+
   -- PresPartAP    : VP -> AP ;   -- (the man) looking at Mary
   -- use PlP2 + "ый"
+
+  -- : VPSlash -> VP
+  PassAgentVPSlash vps np = case vps.verb.asp of {
+      Perfective => vps ** {
+        verb=copulaEll ;
+        compl=\\p,a => shortPastPassPart vps.verb (agrGenNum a) ++ vps.c.s ++ vps.compl1 ! p ! a ++ vps.compl2 ! p ! a ++ np.s ! Ins
+        } ;
+      Imperfective => vps ** {
+        verb=(passivate vps.verb);
+        compl=\\p,a => vps.compl1 ! p ! a ++ vps.compl2 ! p ! a ++ np.s ! Ins
+      }
+     };
+
 
   -- : Pron -> Pron ;  -- unstressed subject pronoun becomes empty: "am tired"
   ProDrop pron = {
@@ -214,6 +279,42 @@ lin
       a=Ag (gennum g (numSizeNumber det.size)) P3
       } ;
 
+  UseDAP det =
+    let g = Neut in {
+      s=case det.type of {
+        EmptyIndef => \\cas => a_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
+        EmptyDef => \\cas => the_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
+        _ => \\cas => det.s ! g ! Inanimate ! cas
+        } ;
+      pron=False ;
+      a=Ag (gennum g (numSizeNumber det.size)) P3
+      } ;
+
+  -- : DAP -> NP ;
+  UseDAPFem det =
+    let g = Fem in {
+      s=case det.type of {
+        EmptyIndef => \\cas => a_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
+        EmptyDef => \\cas => the_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
+        _ => \\cas => det.s ! g ! Inanimate ! cas
+        } ;
+      pron=False ;
+      a=Ag (gennum g (numSizeNumber det.size)) P3
+      } ;
+
+  -- : Det -> NP ;
+  UseDAPMasc det =
+    let g = Masc in {
+      s=case det.type of {
+        EmptyIndef => \\cas => a_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
+        EmptyDef => \\cas => the_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
+        _ => \\cas => det.s ! g ! Inanimate ! cas
+        } ;
+      pron=False ;
+      a=Ag (gennum g (numSizeNumber det.size)) P3
+      } ;
+
 oper
   rus_quoted : Str -> Str = \s -> "«" ++ s ++ "»" ; ---- TODO bind ; move to Prelude?
+
 } ;

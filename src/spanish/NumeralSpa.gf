@@ -1,4 +1,4 @@
-concrete NumeralSpa of Numeral = CatSpa [Numeral,Digits] ** 
+concrete NumeralSpa of Numeral = CatSpa [Numeral,Digits,Decimal] ** 
   open CommonRomance, ResRomance, MorphoSpa, Prelude in {
   flags coding=utf8 ;
 
@@ -8,6 +8,8 @@ lincat
   Sub100 = {s : CardOrd => Str ; n : Number} ;
   Sub1000 = {s : CardOrd => Str ; n : Number} ;
   Sub1000000 = {s : CardOrd => Str ; n : Number} ;
+  Sub1000000000 = {s : CardOrd => Str ; n : Number} ;
+  Sub1000000000000 = {s : CardOrd => Str ; n : Number} ;
 
 lin num x = x ;
 
@@ -66,6 +68,9 @@ lin pot2as3 n = n ;
 lin pot3 n = spl (\\g => n.s ! NCard Masc ++ mil g) ;
 lin pot3plus n m = {s = \\g => n.s ! NCard Masc ++ mil g ++ m.s ! g ; n = Pl} ;
 
+lin pot3as4 n = n ;
+lin pot4as5 n = n ;
+
 oper
   mkTal : (x1,_,_,_,_,_,_,x8 : Str) -> {s : DForm => CardOrd => Str} =
     \due,dodici,venti,ducento,secondo,dodicesimo,ventesimo,ducentesimo -> 
@@ -109,11 +114,12 @@ param
     Dig = TDigit ;
 
   lin
-    IDig d = d ;
+    IDig d = d ** {tail = T1} ;
 
     IIDig d i = {
-      s = \\o => d.s ! NCard Masc ++ BIND ++ i.s ! o ;
-      n = Pl
+      s = \\o => d.s ! NCard Masc ++ spaceIf i.tail ++ i.s ! o ;
+      n = Pl ;
+      tail = inc i.tail
     } ;
 
     D_0 = mkDig "0" ;
@@ -126,6 +132,32 @@ param
     D_7 = mkDig "7" ;
     D_8 = mkDig "8" ;
     D_9 = mkDig "9" ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = \\o => "-" ++ BIND ++ d.s ! o ;
+      n = Pl ;
+      hasDot=False
+    } ;
+    IFrac d i = {
+      s = \\o => d.s ! NCard Masc ++
+                 if_then_Str d.hasDot BIND (BIND++","++BIND) ++
+                 i.s ! o ;
+      n = Pl ;
+      hasDot=True
+      } ;
+
+  oper
+    spaceIf : DTail -> Str = \t -> case t of {
+      T3 => SOFT_SPACE ;
+      _  => BIND
+      } ;
+
+    inc : DTail -> DTail = \t -> case t of {
+      T1 => T2 ;
+      T2 => T3 ;
+      T3 => T1
+      } ;
 
   oper
     mk2Dig : Str -> Str -> TDigit = \c,o -> mk3Dig c o Pl ;

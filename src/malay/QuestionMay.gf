@@ -8,9 +8,18 @@ concrete QuestionMay of Question = CatMay ** open
 -- determiners, with or without a noun.
 lin
   -- : IDet -> CN -> IP ;       -- which five songs
-  IdetCN idet cn = NM.DetCN idet cn ** {
-    sp = \\nf => idet.sp ! nf ++ cn.s ! nf
-  } ;
+--   IdetCN idet cn = NM.DetCN idet cn ** {
+--     sp = \\nf => idet.sp ! nf ++ cn.s ! nf
+-- } ;
+  IdetCN idet cn = emptyNP ** {
+    s = \\poss =>
+      idet.pr
+      ++ case idet.poss of {
+        Bare => cn.s ! NF (toNum idet.n) idet.poss ;
+        _ => cn.s ! NF (toNum idet.n) idet.poss -- TODO check if this make sense
+      } ++ idet.s ++ cn.heavyMod ;
+    sp = \\nf => idet.sp ! nf ++ cn.s ! nf;
+    } ;
 
   -- : IDet       -> IP ;       -- which five
   IdetIP idet = NM.DetNP idet ** {sp = idet.sp};
@@ -21,7 +30,8 @@ lin
     -- if isPre is True, then: "berapa kucing"
     s = case iquant.isPre of { False => iquant.s ; True => [] };
     -- if isPre is False, use s: "kucing berapa"
-    n = num.n
+    n = num.n ;
+    count = "" ;
   } ;
 
   -- : IP -> ClSlash -> QCl ; -- whom does John love
@@ -58,7 +68,6 @@ lin
       False => cls.pred ! iadv.vf ! pol ++ iadv.s
     } ;
   } ;
-
 
   -- : IP -> IComp ;
   CompIP ip = {s = ip.s ! Bare } ;    -- who (is it)

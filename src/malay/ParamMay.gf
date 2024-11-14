@@ -27,8 +27,11 @@ oper
 
   prefix : Prefix -> Str -> Str = \p -> case p of {
     Meng => prefixMeng ;
-    Ber  => prefixBer
+    Ber  => prefixBer ;
+    NoPrefix => prefixNone
     } ;
+  
+  prefixNone : Str -> Str = \belajar -> belajar ;
 
   prefixMeng : Str -> Str = \makan -> case makan of {
 
@@ -63,8 +66,6 @@ oper
     } ;
 
   prefixBer : Str -> Str = \jalan -> case jalan of {
-    -- Exception
-    "ajar" => "belajar" ;
 
     -- Drop the r
     (#c  + "er" + _  -- be+kerja
@@ -84,6 +85,8 @@ param
   NForm = NF Number Possession ;
 
   NPAgr = NotPron | IsPron Person ;
+
+  Animacy = Animate | Inanimate ;
 
 oper
   poss2str : Possession -> Str = \p -> case p of {
@@ -130,17 +133,24 @@ param
 param
   PrepType = DirObj | EmptyPrep | OtherPrep ;
 
+
+--------------------------------------------------------------------------------
+-- Adverbs
+
 --------------------------------------------------------------------------------
 -- Verbs
 param
   VForm =
       Root  -- infinitive, imperative, …
     | Active
+    | Passive
+    | Imperative
     ;
 
  Prefix =
       Meng
     | Ber
+    | NoPrefix
     ; -- TODO more?
 
 --------------------------------------------------------------------------------

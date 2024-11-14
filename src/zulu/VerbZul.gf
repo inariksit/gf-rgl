@@ -5,19 +5,53 @@ concrete VerbZul of Verb = CatZul ** open ResZul, Prelude, ParamX in {
   lin
     UseV v = {
       s = table {
-        MainCl => \\a,p,t => let
+        MainCl => \\a,p,t,l => let
           vform = VFIndic MainCl p t ;
+          vpref = verb_prefix_no_oc vform l v.r a ;
           tp = tensePref vform v.r v.syl ; -- [] / zo- / zuku-
-          r = v.s!(rform (VFIndic MainCl p t) True) -- hamba
+          r = v.s!(rform vform l) -- hamba
           -- rest of verb prefix built later (eg no "ya" with certain question words)
-        in tp ++ r ;
-        RelCl => \\a,p,t => let
+        in vpref ++ tp ++ r ;
+        RelCl => \\a,p,t,l => let
           vform = VFIndic RelCl p t ;
           rc = relConc vform a v.r ; -- o-
           tp = tensePref vform v.r v.syl ; -- [] / zo- / zuku-
-          r = v.s!(rform vform True) ; -- hamba
-          suf = relSuf vform -- [] / -yo
+          r = v.s!(rform vform l) ; -- hamba
+          suf = case l of {
+            True => relSuf vform ;
+            False => []
+          } ;
         in rc ++ tp ++ r ++ suf
+      } ;
+      imp_s = table {
+        Sg => table {
+          Pos => case v.syl of {
+            SylMono => "yi"++BIND++v.s!R_a ;
+            SylMult => v.s!R_a
+          } ;
+          Neg => "unga" ++BIND++ v.s!R_i
+        } ;
+        Pl => table {
+          Pos => case v.syl of {
+            SylMono => "yi"++BIND++v.s!R_a ++BIND++"ni" ;
+            SylMult => v.s!R_a ++BIND++"ni"
+          } ;
+          Neg => "ninga" ++BIND++ v.s!R_i
+        }
+      } ;
+      inf_s = table {
+        NFull => table {
+          Pos => "uku" ++BIND++ v.s!R_a ;
+          Neg => "uku" ++BIND++ "nga" ++BIND++ v.s!R_i
+        } ;
+        NReduced | NPoss => table {
+          Pos => "ku" ++BIND++ v.s!R_a ;
+          Neg => "ku" ++BIND++ "nga" ++BIND++ v.s!R_i
+        } ;
+        NLoc => table {
+          Pos => "e" ++BIND++ "ku"++BIND++v.s!R_e ++BIND++ "ni" ;
+          Neg => "e" ++BIND++ "ku"++BIND++"nga"++BIND++v.s!R_e ++BIND++ "ni"
+        }
       } ;
       iadv, advs, comp = [] ;
       -- ap_comp = \\_ => [] ;
@@ -27,7 +61,62 @@ concrete VerbZul of Verb = CatZul ** open ResZul, Prelude, ParamX in {
       vptype = NoComp
     } ;
 
---     ComplVV v vp = insertObj (\\a => infVP v.typ vp False Simul CPos a) (predVV v) ;  ---- insertExtra?
+    ComplVV v vp = {
+      s = table {
+        MainCl => \\a,p,t,l => let
+          vform = VFIndic MainCl p t ;
+          tp = tensePref vform v.r v.syl ; -- [] / zo- / zuku-
+          r = v.s!(rform (VFIndic MainCl p t) l) -- hamba
+          -- rest of verb prefix built later (eg no "ya" with certain question words)
+        in tp ++ r ++ "uku" ++ BIND ++ vp.s!MainCl!(First Sg)!Pos!PresTense!False ;
+        RelCl => \\a,p,t,l => let
+          vform = VFIndic RelCl p t ;
+          rc = relConc vform a v.r ; -- o-
+          tp = tensePref vform v.r v.syl ; -- [] / zo- / zuku-
+          r = v.s!(rform vform l) ; -- hamba
+          suf = case l of {
+            True => relSuf vform ;
+            False => []
+          } ;
+        in rc ++ tp ++ r ++ vp.inf_s!NFull!Pos
+      } ;
+      imp_s = table {
+        Sg => table {
+          Pos => case v.syl of {
+            SylMono => "yi"++BIND++v.s!R_a ++ vp.inf_s!NFull!Pos ;
+            SylMult => v.s!R_a
+          } ;
+          Neg => "unga" ++BIND++ v.s!R_i ++ vp.inf_s!NFull!Pos
+        } ;
+        Pl => table {
+          Pos => case v.syl of {
+            SylMono => "yi"++BIND++v.s!R_a ++BIND++"ni" ++ vp.inf_s!NFull!Pos ;
+            SylMult => v.s!R_a ++BIND++"ni" ++ vp.inf_s!NFull!Pos
+          } ;
+          Neg => "ninga" ++BIND++ v.s!R_i ++ vp.inf_s!NFull!Pos
+        }
+      } ;
+      inf_s = table {
+        NFull => table {
+          Pos => "uku" ++BIND++ v.s!R_a ++ vp.inf_s!NFull!Pos ;
+          Neg => "uku" ++BIND++ "nga" ++BIND++ v.s!R_i ++ vp.inf_s!NFull!Pos
+        } ;
+        NReduced | NPoss => table {
+          Pos => "ku" ++BIND++ v.s!R_a ++ vp.inf_s!NFull!Pos ;
+          Neg => "ku" ++BIND++ "nga" ++BIND++ v.s!R_i ++ vp.inf_s!NFull!Pos
+        } ;
+        NLoc => table {
+          Pos => "ku"++BIND++poss_pron_stem!(Third C15 Sg) ++ "uku"++BIND++v.s!R_a ++ vp.inf_s!NFull!Pos ;
+          Neg => "ku"++BIND++poss_pron_stem!(Third C15 Sg) ++ "uku"++BIND++"nga"++BIND++v.s!R_i ++ vp.inf_s!NFull!Pos
+        }
+      } ;
+      iadv, advs, comp = [] ;
+      -- ap_comp = \\_ => [] ;
+      hasComp = True ;
+      r = v.r ;
+      syl = v.syl ;
+      vptype = VNPCompl
+    } ;
 
     -- ComplVS vs s = vs ** {
     --   -- s = vs.s ;
@@ -192,7 +281,10 @@ concrete VerbZul of Verb = CatZul ** open ResZul, Prelude, ParamX in {
     --   }
     -- } ;
 
-    AdvVP vp adv = vp ** { advs = vp.advs ++ adv.s } ;
+    AdvVP vp adv = vp ** {
+      advs = vp.advs ++ adv.s ;
+      hasComp = True
+    } ;
     -- {
     --   s = vp.s ;
     --   oc = vp.oc ;

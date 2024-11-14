@@ -22,9 +22,11 @@ lin
   GenModNP num np cn = DetCN (DetQuant DefArt num) (AdvCN cn (PrepNP possess_Prep np)) ;     -- this man's car(s) ; DEFAULT the car of this man
   GenModIP = variants {} ;     -- Num -> IP -> CN -> IP ; -- whose car(s)
   CompBareCN cn = CompCN cn ; -- (is) teacher ; DEFAULT is a teacher
-  StrandQuestSlash = QuestSlash ; -- whom does John live with ; DEFAULT with whom does John live
-  StrandRelSlash = RelSlash ; -- that he lives in ; DEFAULT in which he lives
-  EmptyRelSlash = RelSlash IdRP ; -- he lives in ; DEFAULT in which he lives
+  StrandQuestSlash = QuestSlash ; -- whom does John live with (default in Eng)
+  StrandRelSlash = RelSlash ; -- that he lives in (standard in Eng)
+  PiedPipingQuestSlash = QuestSlash ; -- with whom does John live (default in most languages)
+  PiedPipingRelSlash = RelSlash ; -- in which he lives  (default in most languages)
+  EmptyRelSlash = RelSlash IdRP ; -- he lives in ; that he lives in
   MkVPS vp = variants {} ;     -- Temp -> Pol -> VP -> VPS ; -- hasn't slept
   ConjVPS = variants {} ;     -- Conj -> [VPS] -> VPS ; -- has walked and won't sleep
   PredVPS = variants {} ;     -- NP -> VPS -> S ; -- has walked and won't sleep
@@ -114,6 +116,7 @@ lin
   weFem_Pron = we_Pron ;  -- DEFAULT we (masc)
   youPlFem_Pron = youPl_Pron ;  -- DEFAULT you plural (masc)
   theyFem_Pron = they_Pron ;  -- DEFAULT they (masc)
+  theyNeutr_Pron = they_Pron ;  -- DEFAULT they (masc)
   youPolFem_Pron = youPol_Pron ;  -- DEFAULT you polite (masc)
   youPolPl_Pron = youPl_Pron ;  -- DEFAULT you plural (masc)
   youPolPlFem_Pron = youPl_Pron ;  -- DEFAULT you plural (masc)
@@ -124,6 +127,8 @@ lin
   UttDatIP ip = UttAccIP (lin IP ip) ; -- whom (dative) ; DEFAULT who
   UttVPShort = UttVP ; -- have fun, as opposed to "to have fun" ; DEFAULT UttVP
 
+  TPastSimple = Grammar.TPast ;   --# notpresent
+
   SQuestVPS = variants {} ; -- : NP   -> VPS -> QS ;         -- has she walked
   QuestVPS = variants {} ; --  : IP   -> VPS -> QS ;         -- who has walked
 
@@ -132,8 +137,14 @@ lin
   ExistNPQS t p np = UseQCl t p (QuestCl (ExistNP np)) ;
   ExistIPQS t p np = UseQCl t p (ExistIP np) ;
 
+  SubjunctRelCN cn rs = RelCN cn rs ; -- no difference from indicative
+
 lincat
   X = {s : Str} ;
+
+lin
+  UseComp_estar = UseComp ;
+  UseComp_ser = UseComp ;
 
 lin
   CardCNCard = variants {} ;

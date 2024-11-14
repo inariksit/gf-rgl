@@ -61,6 +61,7 @@ concrete NounIna of Noun = CatIna ** open ResIna, Prelude in {
     NumCard c = c ;
 
     NumDigits n = {s = n.s ! NCard ; n = n.n} ;
+    NumDecimal n = {s = n.s ! NCard ; n = n.n} ;
 
     OrdDigits n = {s = n.s ! NOrd} ;
 
@@ -116,5 +117,11 @@ concrete NounIna of Noun = CatIna ** open ResIna, Prelude in {
       a = np.a ;
       isPronoun = np.isPronoun ---- ?? AR
       } ;
+
+    QuantityNP n m = {
+      s = \\c => preOrPost m.isPre m.s (n.s ! NCard) ;
+      a = agrP3 n.n ;
+      isPronoun = False
+    } ;
 
 }

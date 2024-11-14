@@ -78,6 +78,7 @@ lincat
   Numeral = {s : CardOrd => Gender => Case => Str ; num : Number} ;
 
   Digits = {s : CardOrd => Str ; num : Number} ;
+  Decimal = {s : CardOrd => Str ; num : Number ; hasDot : Bool} ;
 
   -- Structural words
 
@@ -109,7 +110,8 @@ lincat
 
   N3 = Noun ** {prep1, prep2 : Preposition ; isPre1, isPre2 : Bool} ;
 
-  PN = ProperNoun ;
+  PN,LN,GN = ProperNoun ;
+  SN = {s : Sex => Case => Str; pl : Case => Str} ;
 
   -- Overriden from CommonX
 

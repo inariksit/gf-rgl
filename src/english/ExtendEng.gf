@@ -16,9 +16,10 @@ concrete ExtendEng of Extend =
     FocusAP, FocusAdV, FocusAdv, FocusObj, GenIP, GenModIP, GenModNP, GenNP, GenRP,
     GerundAdv, GerundCN, GerundNP, IAdvAdv, ICompAP, InOrderToVP, NominalizeVPSlashNP,
     PassAgentVPSlash, PassVPSlash, ProgrVPSlash, PastPartAP, PastPartAgentAP, PositAdVAdj,  PredVPSVV, PredetRNP, PrepCN,
-    EmbedSSlash, PredIAdvVP, PresPartAP, PurposeVP, ReflPoss, ReflPron, ReflRNP, SlashBareV2S, SlashV2V, StrandQuestSlash, StrandRelSlash,
+    EmbedSSlash, PredIAdvVP, PresPartAP, PurposeVP, ReflPoss, ReflPron, ReflRNP, SlashBareV2S, SlashV2V,
+    StrandQuestSlash, StrandRelSlash, PiedPipingQuestSlash, PiedPipingRelSlash,
     UncontractedNeg, UttAccIP, UttAccNP, UttAdV, UttDatIP, UttDatNP, UttVPShort, WithoutVP, A2VPSlash, N2VPSlash,
-    CardCNCard, ProDrop
+    CardCNCard, ProDrop, theyFem_Pron, theyNeutr_Pron
    ]
   with
     (Grammar = GrammarEng) **
@@ -49,6 +50,15 @@ concrete ExtendEng of Extend =
 
     GenModNP num np cn = DetCN (DetQuant (GenNP (lin NP np)) num) cn ;
     GenModIP num ip cn = IdetCN (IdetQuant (GenIP (lin IP ip)) num) cn ;
+
+    PiedPipingRelSlash rp slash = {
+      s = \\t,a,p,agr =>
+          slash.c2 ++ rp.s ! RPrep (fromAgr agr).g ++ slash.s ! t ! a ! p ! oDir ;
+      c = NPAcc
+      } ;
+
+    PiedPipingQuestSlash ip slash =
+      mkQuestion (ss (slash.c2 ++ ip.s ! NPAcc)) slash ;
 
     StrandQuestSlash ip slash =
       {s = \\t,a,b,q =>
@@ -108,7 +118,18 @@ concrete ExtendEng of Extend =
           ODir _ => []
         }
       } ;
-
+    baseVPS2 : VPS2 -> OneFinVPS = \vps2 -> {
+      s = \\o,a => let vp = vps2.s ! o ! a in
+        case o of {
+          OQuest => vp.inf ++ vps2.c2 ;
+          ODir _ => vp.fin ++ vp.inf ++ vps2.c2
+        } ;
+      fin = \\o,a => let vp = vps2.s ! o ! a in
+        case o of {
+          OQuest => vp.fin ;
+          ODir _ => []
+        }
+      } ;
   lin
     BaseVPI = twoTable2 VVType Agr ;
     ConsVPI = consrTable2 VVType Agr comma ;
@@ -159,8 +180,13 @@ concrete ExtendEng of Extend =
     MkVPS2 t p vpsl = mkVPS (lin Temp t) (lin Pol p) (lin VP vpsl) ** {c2 = vpsl.c2} ;
     MkVPI2 vpsl = mkVPI (lin VP vpsl) ** {c2 = vpsl.c2} ;
 
-    BaseVPS2 x y = BaseVPS x y ** {c2 = y.c2} ; ---- just remembering the prep of the latter verb
-    ConsVPS2 x xs = ConsVPS x xs ** {c2 = xs.c2} ;
+    BaseVPS2 x y =
+      let baseX : OneFinVPS = baseVPS2 x ;
+          baseY : OneFinVPS = baseVPS y ;
+       in twoTable2 Order Agr baseX baseY ** {fin = baseX.fin ; c2 = y.c2} ;
+    ConsVPS2 x xs =
+      let baseX : OneFinVPS = baseVPS2 x ;
+       in consrTable2 Order Agr comma baseX xs ** {fin = baseX.fin ; c2 = xs.c2} ;
 
     BaseVPI2 x y = twoTable2 VVType Agr x y ** {c2 = y.c2} ; ---- just remembering the prep of the latter verb
     ConsVPI2 x xs = consrTable2 VVType Agr comma x xs ** {c2 = xs.c2} ;
@@ -191,13 +217,13 @@ concrete ExtendEng of Extend =
             inf = verb.adv ++ vp.ad ! a ++ verb.fin ++ verb.inf ++ vp.p ++ compl} ;
       } ;
 
-    linVPS : Agr -> {s : Order => Agr => {fin,inf : Str}} -> Str = \agr,vps -> let vpss = vps.s ! ODir True ! agr in vpss.fin ++ vpss.inf ;
+    linVPS : Agr -> {s : Order => Agr => {fin,inf : Str}} -> Str = \agr,vps -> let vpss = vps.s ! ODir False ! agr in vpss.fin ++ vpss.inf ;
 
     mkVPI : VP -> VPI = \vp -> lin VPI {
       s = table {
-            VVAux      => \\a =>         vp.ad ! a ++ vp.inf ++ vp.p ++ vp.s2 ! a ;
-            VVInf      => \\a => "to" ++ vp.ad ! a ++ vp.inf ++ vp.p ++ vp.s2 ! a ;
-            VVPresPart => \\a =>         vp.ad ! a ++ vp.prp ++ vp.p ++ vp.s2 ! a
+            VVAux      => \\a =>         vp.ad ! a ++ vp.inf ++ vp.p ++ vp.s2 ! a ++ vp.ext ;
+            VVInf      => \\a => "to" ++ vp.ad ! a ++ vp.inf ++ vp.p ++ vp.s2 ! a ++ vp.ext ;
+            VVPresPart => \\a =>         vp.ad ! a ++ vp.prp ++ vp.p ++ vp.s2 ! a ++ vp.ext
             }
       } ;
 
@@ -470,5 +496,22 @@ lin UseDAPFem dap = {
 
 lin CardCNCard card cn =
   {s,sp = \\d,c => card.s ! d ! Nom ++ cn.s ! card.n ! c ; n = Pl} ;
+
+lin theyFem_Pron = mkPron "they" "them" "their" "theirs" plural P3 feminine ;
+lin theyNeutr_Pron = mkPron "they" "them" "their" "theirs" plural P3 nonhuman ;
+
+lin AnaphPron np =
+      case np.a of {
+        AgP1 Sg      => i_Pron ;
+        AgP1 Pl      => we_Pron ;
+        AgP2 Sg      => youSg_Pron ;
+        AgP2 Pl      => youPl_Pron ;
+        AgP3Sg Masc  => he_Pron ;
+        AgP3Sg Fem   => she_Pron ;
+        AgP3Sg Neutr => it_Pron ;
+        AgP3Pl Masc  => they_Pron ;
+        AgP3Pl Fem   => theyFem_Pron ;
+        AgP3Pl Neutr => theyNeutr_Pron
+    } ;
 
 }

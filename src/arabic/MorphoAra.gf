@@ -153,7 +153,8 @@ oper
         w + "ف" + x + "ع" + y + "ل" + z
           => { h = w ; m1 = x; m2 = y; t = z} ;
         w + "ف" + x + ("ع"|"ل") + y
-          => { h = w ; m1 = x; m2 = ""; t = y}
+          => { h = w ; m1 = x; m2 = ""; t = y} ;
+	_ => Predef.error("cannot get FCL pattern from" ++ pat)
       } ;
 
   --opers to interdigitize (make words out of roots and patterns:
@@ -204,7 +205,8 @@ oper
                     => mkAssimilated pat (mkRoot3 rS) ;
             ? + ? + _ => mkBilit pat (mkRoot2 rS) ; --2=>
             _=> error rS ---- AR error "expected 3--6"
-        }
+        } ;
+     _ => Predef.error("cannot get FCL pattern from" ++ pS)
     };
 
 -----------------------------------------------------------------------------
@@ -489,6 +491,28 @@ oper
       AComp d c => indeclN aHmar ! d ! c
     };
 
+--  NTable = Number => State => Case => Str;
+--  Adj  : Type = {s : AForm => Str} ;
+--  AForm = APosit Gender Number State Case | AComp State Case ;
+
+  ntablesAdj : (masc, fem, comp : NTable) -> Adj = \masc, fem, comp -> {
+    s = table {
+      APosit Masc n d c => masc ! n ! d ! c ;
+      APosit Fem n d c => fem ! n ! d ! c ;
+      AComp d c => comp ! Sg ! d ! c
+      }
+   } ;
+	
+  mascFemCompAdj : (kabir, kabira, akbar : Str) -> Adj =
+    \kabir, kabira, akbar ->
+    ntablesAdj (positAdj kabir ! Masc) (positAdj kabir ! Fem) (positAdj akbar ! Masc) ;
+  
+  mascFemAdj : (kabir, kabira : Str) -> Adj = \kabir, kabira ->
+    mascFemCompAdj kabir kabira kabir ; ---- comp
+
+  mascAdj : (kabir : Str) -> Adj = \kabir ->
+    mascFemAdj kabir (kabir + "َة") ;
+    
 
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------

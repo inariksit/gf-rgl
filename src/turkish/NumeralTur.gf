@@ -1,6 +1,6 @@
 --# -path=.:../abstract:../common:../../prelude
 
-concrete NumeralTur of Numeral = CatTur [Numeral,Digits] ** open Prelude, ResTur, ParadigmsTur in {
+concrete NumeralTur of Numeral = CatTur [Numeral,Digits,Decimal] ** open Prelude, ResTur, ParadigmsTur in {
 
 flags
   coding = utf8 ;
@@ -8,9 +8,11 @@ flags
 lincat
   Digit = {s : DForm => CardOrd => Number => Case => Str} ;
   Sub10 = {s : DForm => CardOrd => Number => Case => Str ; n : Number ; blank : Str} ; -- the field blank is used to get rid of metavariables at parsing
-  Sub100     = {s : CardOrd => Number => Case => Str ; n : Number ; blank : Str} ;
-  Sub1000    = {s : CardOrd => Number => Case => Str ; n : Number ; blank : Str} ;
-  Sub1000000 = {s : CardOrd => Number => Case => Str ; n : Number} ;
+  Sub100           = {s : CardOrd => Number => Case => Str ; n : Number ; blank : Str} ;
+  Sub1000          = {s : CardOrd => Number => Case => Str ; n : Number ; blank : Str} ;
+  Sub1000000       = {s : CardOrd => Number => Case => Str ; n : Number} ;
+  Sub1000000000    = {s : CardOrd => Number => Case => Str ; n : Number} ;
+  Sub1000000000000 = {s : CardOrd => Number => Case => Str ; n : Number} ;
 
 lin num x = x ;
 
@@ -48,6 +50,11 @@ lin pot3plus n m = {s = \\t,num,c => case n.n of {
 			         Sg => n.blank ;
 			         Pl => n.s ! NCard ! Sg !Nom
 			       } ++ "bin" ++ m.s ! t ! num ! c; n = Pl} ;
+
+lin pot3as4 n = n ;
+lin pot4as5 n = n ;
+
+
 lincat
   Dig = {s : CardOrd => Number => Case => Str ; n : Number} ;
 lin
@@ -65,6 +72,21 @@ lin
   D_7 = mkDig "7" ;
   D_8 = mkDig "8" ;
   D_9 = mkDig "9" ;
+
+  PosDecimal d = d ** {hasDot=False} ;
+  NegDecimal d = {
+    s = \\t,num,c => "-" ++ BIND ++ d.s ! t ! num ! c;
+    n = Pl;
+    hasDot=False
+    } ;
+  IFrac d i = {
+    s=\\t,num,c => d.s ! NCard ! Sg ! Nom ++
+                   if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+                   i.s ! t ! num ! c;
+    n = Pl ;
+    hasDot=True
+  } ;
+
 oper
   commaIf : DTail -> Str = \t -> case t of {
 				   T3 => BIND++","++BIND ;

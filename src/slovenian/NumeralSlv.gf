@@ -1,11 +1,13 @@
-concrete NumeralSlv of Numeral = CatSlv [Numeral,Digits] ** open Prelude, ResSlv in {
+concrete NumeralSlv of Numeral = CatSlv [Numeral,Digits,Decimal] ** open Prelude, ResSlv in {
 
 lincat 
-  Digit      = {s : DForm  => Case => Str; n : NumAgr} ;
-  Sub10      = {s : Gender => Case => Str; h : Case => Str; e : Str; n : NumAgr} ;
-  Sub100     = {s : Gender => Case => Str; e : Str; n : NumAgr} ;
-  Sub1000    = {s : Gender => Case => Str; e : Str; n : NumAgr} ;
-  Sub1000000 = {s : Gender => Case => Str; n : NumAgr} ;
+  Digit            = {s : DForm  => Case => Str; n : NumAgr} ;
+  Sub10            = {s : Gender => Case => Str; h : Case => Str; e : Str; n : NumAgr} ;
+  Sub100           = {s : Gender => Case => Str; e : Str; n : NumAgr} ;
+  Sub1000          = {s : Gender => Case => Str; e : Str; n : NumAgr} ;
+  Sub1000000       = {s : Gender => Case => Str; n : NumAgr} ;
+  Sub1000000000    = {s : Gender => Case => Str; n : NumAgr} ;
+  Sub1000000000000 = {s : Gender => Case => Str; n : NumAgr} ;
 
 lin num x = x ;
 
@@ -143,6 +145,9 @@ lin pot110 = {s=\\g => table {
       n = UseGen
     } ;
 
+    pot3as4 x = x ;
+    pot4as5 x = x ;
+
 oper mkDigit : (_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_ : Str) -> Gender => Case => Str;
      mkDigit nomMasc nomFem nomNeut accMasc accFem accNeut 
              genMasc genFem genNeut datMasc datFem datNeut
@@ -195,12 +200,12 @@ oper mkDigit2 : (_,_,_,_,_,_ : Str) -> Gender => Case => Str;
     Dig = TDigit ;
 
   lin
-    IDig d = d ;
+    IDig d = d ** {n=UseNum d.n};
 
     IIDig d i = {
       s = d.s ++ BIND ++ i.s ;
 ----      s = \\o => d.s ! NCard Masc ++ BIND ++ i.s ! o ;
-      n = Pl
+      n = UseNum Pl
     } ;
 
     D_0 = mkDig "0" ;
@@ -213,6 +218,20 @@ oper mkDigit2 : (_,_,_,_,_,_ : Str) -> Gender => Case => Str;
     D_7 = mkDig "7" ;
     D_8 = mkDig "8" ;
     D_9 = mkDig "9" ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = "-" ++ BIND ++ d.s ;
+      n = UseNum Pl ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s = d.s ++
+          if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+          i.s ;
+      n = UseNum Pl ;
+      hasDot=True
+      } ;
 
   oper
     mkDig : Str -> TDigit = \c -> mk2Dig c Pl ;

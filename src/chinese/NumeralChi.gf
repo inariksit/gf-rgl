@@ -1,4 +1,4 @@
-concrete NumeralChi of Numeral = CatChi [Numeral,Digits] ** open ResChi, Prelude in {
+concrete NumeralChi of Numeral = CatChi [Numeral,Digits,Decimal] ** open ResChi, Prelude in {
 
 flags coding = utf8 ;
 
@@ -20,7 +20,7 @@ lincat Digit = {s,p : Str} ;    -- s/p: without/with classifier (er/liang)
 lincat Sub10 = {s,p,t : Str} ;  -- t: with "shi wan"
 lincat Sub100  = {end0,beg0 : Zero ; s,p : Bform => Str} ;  -- end0: ends with zeros, e.g.  20 ; beg0: begins with zeros, e.g. 02
 lincat Sub1000 = {end0,beg0 : Zero ; s,p : Qform => Str} ;  -- end0: ends with zeros, e.g. 210 ; beg0: begins with zeros, e.g. 021
-lincat Sub1000000 = {s,p : Str} ;
+lincat Sub1000000, Sub1000000000, Sub1000000000000 = {s,p : Str} ;
 lin num x0 = x0 ;
 
 -- 一二三四五六七八九十一百千
@@ -137,7 +137,9 @@ lin pot3 n =
   {s,p = n.s ! shiwan} ;
 lin pot3plus n m =
   {s,p = (n.s ! shiwan0) ++ (ling ! <n.end0,m.beg0>) ++ m.s ! bai0} ;
+lin pot3as4 n = n ;
 
+lin pot4as5 n = n ;
 
 -- numerals as sequences of digits
 
@@ -159,5 +161,17 @@ lin pot3plus n m =
     D_7 = ss "7" ;
     D_8 = ss "8" ;
     D_9 = ss "9" ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = "-" ++ BIND ++ d.s ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s=d.s ++
+        if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+        i.s;
+      hasDot=True
+    } ;
 
 }

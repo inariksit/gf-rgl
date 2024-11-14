@@ -54,7 +54,7 @@ concrete CatAra of Cat = CommonX - [Utt]  ** open ResAra, Prelude, ParamX in {
     Card = ResAra.NumOrdCard ;
     Predet = ResAra.Predet ;
 
-    Det = ResAra.Det ;
+    DAP, Det = ResAra.Det ;
 --  {s : Species => Gender => Case => Str ;
 --   d : State; n : Size; isNum : Bool } ;
     Quant = ResAra.Quant ;
@@ -67,6 +67,8 @@ concrete CatAra of Cat = CommonX - [Utt]  ** open ResAra, Prelude, ParamX in {
                n : Size } ;
     Digits = {s : Str;
               n : Size};
+    Decimal = {s : Str;
+              n : Size; hasDot : Bool};
 
 -- Structural
 
@@ -90,7 +92,8 @@ concrete CatAra of Cat = CommonX - [Utt]  ** open ResAra, Prelude, ParamX in {
     N = ResAra.Noun ;
     N2 = ResAra.Noun2 ;
     N3 = ResAra.Noun3 ;
-    PN = {s : Case => Str; g : Gender; h : Species} ;
+    GN, SN, PN = {s : Case => Str; g : Gender; h : Species} ;
+    LN = ResAra.NP ;
 
 linref
 

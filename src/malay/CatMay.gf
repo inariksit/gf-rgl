@@ -80,6 +80,7 @@ concrete CatMay of Cat = CommonX - [IAdv] ** open ResMay, Prelude in {
     Card = ResMay.CardNum ;
     Numeral = ResMay.CardOrdNum ;
     Digits = ResMay.DigNum ;
+    Decimal = ResMay.DigNum**{hasDot : Bool} ;
 
 
 
@@ -120,4 +121,16 @@ concrete CatMay of Cat = CommonX - [IAdv] ** open ResMay, Prelude in {
     N2 = ResMay.Noun2 ;
     N3 = ResMay.Noun3 ;
     PN = ResMay.PNoun ;
+
+    linref
+        CN = linCN ;
+        ClSlash = linClSlash ;
+        RCl = linRCl ;
+        Cl = linCl ;
+        Det = linDet ;
 }
+
+--   Determiner : Type = Quant ** {
+--     pr : Str ; -- prefix for numbers
+--     n : NumType ; -- number as in 5 (noun in singular), Sg or Pl
+--     } ;

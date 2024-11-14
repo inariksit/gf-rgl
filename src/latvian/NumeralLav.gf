@@ -1,6 +1,6 @@
 --# -path=.:abstract:common:prelude
 
-concrete NumeralLav of Numeral = CatLav [Numeral,Digits] ** open ResLav, ParadigmsLav, Prelude in {
+concrete NumeralLav of Numeral = CatLav [Numeral,Digits,Decimal] ** open ResLav, ParadigmsLav, Prelude in {
 
 flags coding = utf8 ;
 
@@ -12,6 +12,8 @@ lincat
   Sub100 = { s : CardOrd => Gender => Case => Str ; num : Number } ;
   Sub1000 = { s : CardOrd => Gender => Case => Str ; num : Number } ;
   Sub1000000 = { s : CardOrd => Gender => Case => Str ; num : Number } ;
+  Sub1000000000 = { s : CardOrd => Gender => Case => Str ; num : Number } ;
+  Sub1000000000000 = { s : CardOrd => Gender => Case => Str ; num : Number } ;
 
 lin
 
@@ -80,6 +82,9 @@ lin
     num = e.num
   } ;
 
+  pot3as4 n = n ;
+  pot4as5 n = n ;
+
 -- Numerals as sequences of digits:
 
 lincat
@@ -103,6 +108,20 @@ lin
   D_7 = mkDig "7" ;
   D_8 = mkDig "8" ;
   D_9 = mkDig "9" ;
+
+  PosDecimal d = d ** {hasDot=False} ;
+  NegDecimal d = {
+    s = \\o => "-" ++ BIND ++ d.s ! o ;
+    num = Pl ;
+    hasDot=False
+  } ;
+  IFrac d i = {
+    s = \\o => d.s ! NCard ++
+               if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+               i.s ! o;
+    num = Pl ;
+    hasDot=True
+    } ;
 
 oper
   mkDig : Str -> Dig = \c -> mk2Dig c Pl ;

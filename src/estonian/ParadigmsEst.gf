@@ -42,6 +42,9 @@ resource ParadigmsEst = open
 -- defined in $ResEst$.
 
 oper
+  male = Male ;
+  female = Female ;
+
   Number   : Type ;
 
   singular : Number ;
@@ -82,6 +85,12 @@ oper
   postPrep    : Case -> Str -> Prep ;  -- postposition, e.g. genitive "taga"
   postGenPrep :         Str -> Prep ;  -- genitive postposition, e.g. "taga"
   casePrep    : Case ->        Prep ;  -- just case, e.g. adessive
+
+  mkPrep : overload {
+    mkPrep : Str -> Prep ;         -- API-friendly version of postGenPrep—many applications assume there is a `mkX : Str -> X' available for any X
+    mkPrep : Case -> Prep ;        -- API-friendly version of casePrep
+    mkPrep : Case -> Str -> Prep ; -- API-friendly version of postPrep
+  } ;
 
 
 --2 Conjunctions, adverbs
@@ -311,19 +320,25 @@ oper
   infDa = InfDa ; infMa = InfMa ; infMast = InfMast ;
   infDes = InfDes ; infMas = InfMas ; infMaks = InfMaks ; infMata = InfMata ; infMine = InfMine ;
 
-  mkPrep : (isPre : Bool) -> Case -> Str ->  Prep = \isPre,c,p -> lin Prep {
+  mkAdposition : (isPre : Bool) -> Case -> Str ->  Prep = \isPre,c,p -> lin Prep {
     c = casep2npformp c ;
     s = p ;
     isPre = isPre
     } ;
-  prePrep  : Case -> Str -> Prep = mkPrep True ;
-  postPrep : Case -> Str -> Prep = mkPrep False ;
+  prePrep  : Case -> Str -> Prep = mkAdposition True ;
+  postPrep : Case -> Str -> Prep = mkAdposition False ;
   postGenPrep : Str -> Prep = postPrep genitive ;
+  mkPrep = overload {
+    mkPrep : Str -> Prep  = postGenPrep ;
+    mkPrep : Case -> Prep = casePrep ;
+    mkPrep : Case -> Str -> Prep = postPrep ;
+    mkPrep : (isPre : Bool) -> Case -> Str -> Prep = mkAdposition
+  } ;
 
   -- The Prep's isPre field is used in a special (hacky) way in mkN3 and mkN2.
   -- Used to be able to match whether the Prep's case is Gen, but now several
   -- Preps use the genitive stem, so we need to check if it's actually genitive.
-  casePrep : Case -> Prep = \c -> mkPrep (isActuallyGenitive c) c [] ;
+  casePrep : Case -> Prep = \c -> mkAdposition (isActuallyGenitive c) c [] ;
 
   -- NPAcc is different, it's not formed from a Case(Plus)
   accPrep : Prep = lin Prep {
@@ -598,6 +613,55 @@ oper
 
   mkPN_1 : Str -> PN = \s -> lin PN {s = \\c => (mk1N s).s ! NCase Sg c} ;
 
+  mkLN = overload {
+    mkLN : Str -> LN = 
+      \s -> lin LN {s = \\c => (mk1N s).s ! NCase Sg c ;
+                    n = Sg} ;
+    mkLN : Str -> Number -> LN =
+      \s,n -> lin LN {s = \\c => (mk1N s).s ! NCase n c ;
+                      n = n} ;
+    mkLN : N -> LN = 
+      \noun -> lin LN {s = \\c => noun.s ! NCase Sg c ;
+                       n = Sg} ;
+    mkLN : N -> Number -> LN =
+      \noun,n -> lin LN {s = \\c => noun.s ! NCase n c ;
+                         n = n} ;
+    } ;
+
+  mkGN = overload {
+    mkGN : Str -> GN = 
+      \s -> lin GN {s = \\c => (mk1N s).s ! NCase Sg c ;
+                    g = Male} ;
+    mkGN : Str -> Sex -> GN =
+      \s,g -> lin GN {s = \\c => (mk1N s).s ! NCase Sg c ;
+                      g = g} ;
+    mkGN : N -> GN = 
+      \noun -> lin GN {s = \\c => noun.s ! NCase Sg c ;
+                       g = Male} ;
+    mkGN : N -> Sex -> GN =
+      \noun,g -> lin GN {s = \\c => noun.s ! NCase Sg c ;
+                         g = g} ;
+    } ;
+
+  mkSN = overload {
+    mkSN : Str -> SN = 
+      \s -> lin SN {s = \\_,c => (mk1N s).s ! NCase Sg c ;
+                    pl = \\c => (mk1N s).s ! NCase Sg c} ;
+    mkSN : Str -> Str -> Str -> SN = 
+      \male,female,pl -> lin SN {s = table {Male  =>\\c => (mk1N male).s ! NCase Sg c ;
+                                            Female=>\\c => (mk1N female).s ! NCase Sg c} ;
+                                 pl = \\c => (mk1N pl).s ! NCase Sg c} ;
+    mkSN : N -> SN =
+      \noun -> lin SN {s = \\_,c => noun.s ! NCase Sg c ;
+                       pl = \\c => noun.s ! NCase Sg c} ;
+    mkSN : N -> N -> N -> SN =
+      \male,female,pl -> lin SN {s = table {Male  =>\\c => male.s ! NCase Sg c ;
+                                            Female=>\\c => female.s ! NCase Sg c} ;
+                                 pl = \\c => pl.s ! NCase Sg c} ;
+    } ;
+
+  prepLN : LN -> Prep -> LN = \n,s -> n ** {c = s} ;
+
 -- adjectives
 
   mkA = overload {
@@ -605,9 +669,10 @@ oper
     mkA : N -> A = \n -> noun2adjDeg n ** {infl = Regular} ;
     mkA : N -> (parem,parim : Str) -> A = regAdjective ;
     mkA : N -> (infl : Infl) -> A = \n,infl -> noun2adjDeg n ** {infl = infl} ;
-    -- TODO: temporary usage of regAdjective1
     mkA : N -> (valmim,valmeim : Str) -> (infl : Infl) -> A =
-		\n,c,s,infl -> (regAdjective1 n c s) ** {infl = infl} ;
+		\n,c,s,infl ->
+      let regA : A = regAdjective n c s
+       in regA ** {infl = infl} ;
   } ;
 
   invA balti = lin A {s = \\_,_ => balti ; infl = Invariable} ;
@@ -631,11 +696,6 @@ oper
       (noun2adj posit)
       (noun2adjComp False (nForms2N (hjk_type_IVb_audit compar "a")))
       (noun2adjComp False (nForms2N (hjk_type_IVb_audit superl "a"))) ;
-
-  -- TODO: this is a temporary hack that converts A ~> Adjective.
-  -- The caller needs this otherwise ** fails.
-  -- This should be cleaned up but I don't know how (K).
-  regAdjective1 : Noun -> Str -> Str -> Adjective = regAdjective ;
 
   -- Adjectives whose comparison forms can be derived from the sg gen.
   -- In case of comparative this fails only for 70 adjectives.
@@ -913,5 +973,7 @@ oper
   mkA2S a p = mkA2 a p ;
   mkAV  a = a ;
   mkA2V a p = mkA2 a p ;
+
+  mkMU : Str -> MU = \s -> lin MU {s=s; isPre=False} ;
 
 } ;

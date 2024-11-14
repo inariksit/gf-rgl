@@ -24,8 +24,6 @@ fun
   entschuldigen_bei_fuer_rV3 : V3 ;
   raechen_am_fuer_rV3 : V3 ;
 
-  neugierig_auf_A2 : A2 ;
-
   wagen_VV : VV ;
   versuchen_VV : VV ;
 
@@ -33,11 +31,20 @@ fun
   warnen_V2V : V2V ;          -- -aux,         object control
   versprechen_dat_V2V : V2V ; -- -aux,         subject control
   lassen_V2V : V2V ;          -- +aux(inf),    object control
+  -- aci verb:                -- +aux(inf),    object control
+  sehen_V2V : V2V ;
+  hoeren_V2V : V2V ; 
 
 cat 
   V4 ;
 fun
   kaufen_bei_fuer_V4 : V4 ;
   mieten_von_fuer_V4 : V4 ;
+
+  -- Adjectives
+
+  neugierig_auf_A2 : A2 ;
+  treu_A2 : A2 ;  -- Ger: dative complement
+  stolz_A2 : A2 ;
 
 }

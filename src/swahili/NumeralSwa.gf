@@ -1,12 +1,14 @@
-concrete NumeralSwa of Numeral = CatSwa [Numeral,Digits] ** 
+concrete NumeralSwa of Numeral = CatSwa [Numeral,Digits,Decimal] ** 
 open Prelude,DiffSwa,MorphoSwa in {
 
 lincat 
   Digit = {s : DForm => CardOrd => Gender => Str} ;
   Sub10 = {s : DForm => CardOrd => Gender => Str ; n : Number} ;
-  Sub100     = {s : CardOrd => Gender => Str ; n : Number} ;
-  Sub1000    = {s : CardOrd => Gender => Str ; n : Number} ;
-  Sub1000000 = {s : CardOrd => Gender => Str ; n : Number} ;
+  Sub100           = {s : CardOrd => Gender => Str ; n : Number} ;
+  Sub1000          = {s : CardOrd => Gender => Str ; n : Number} ;
+  Sub1000000       = {s : CardOrd => Gender => Str ; n : Number} ;
+  Sub1000000000    = {s : CardOrd => Gender => Str ; n : Number} ;
+  Sub1000000000000 = {s : CardOrd => Gender => Str ; n : Number} ;
 
 lin num x = x ;
 lin n2 = mkNumn "ili"   "ishirini"  "pili" ;
@@ -35,7 +37,7 @@ lin pot2plus d e = {s = table {
       NCard => \\g => d.s ! hund ! NCard ! g ++  "na" ++ e.s !NCard ! g ;
       NOrd => \\g =>Ordprefix g++ d.s ! hund ! NCard ! g ++  "na" ++ e.s ! NCard ! g } ;
                    n = Pl} ;
- lin pot2as3 n = n ;
+lin pot2as3 n = n ;
 lin pot3 n = { s = table {
       NCard => \\g => mkCard NCard "elfu" ! g ++ n.s ! NCard ! g ;
       NOrd => \\g =>Ordprefix g++ mkCard NCard "elfu" ! g ++ n.s ! NCard ! g } ;
@@ -44,6 +46,9 @@ lin pot3plus n m = { s = table {
       NCard => \\g => "elfu" ++ n.s ! NCard !g ++  m.s ! NCard ! g ;
       NOrd => \\g =>Ordprefix g++ "elfu" ++ n.s ! NCard !g ++  m.s ! NCard ! g} ;
                  n = Pl} ;
+
+lin pot3as4 n = n ;
+lin pot4as5 n = n ;
 
 -- numerals as sequences of digits0'
 
@@ -70,6 +75,16 @@ lin pot3plus n m = { s = table {
     D_7 = mkDig "7" ;
     D_8 = mkDig "8" ;
     D_9 = mkDig "9" ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {s=\\o,g=>"-" ++ BIND ++ d.s ! o ! g;  hasDot=False; n = Pl} ;
+    IFrac d i = {
+        s=\\o,g=>d.s ! NCard ! g ++
+                 if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+                 i.s ! o ! g ;
+        hasDot=True;
+        n = Pl
+    } ;
 
   oper
     mk2Dig : Str -> Str -> TDigit = \c,o -> mk3Dig c o Pl ;

@@ -15,7 +15,6 @@ concrete ConjunctionRus of Conjunction =
       preferShort : ShortFormPreference
       } ;
     [DAP] = {s1,s2 : DetTable ;
-      g : Gender ;
       c : Case ;
       size : NumSize
       } ;
@@ -67,7 +66,6 @@ concrete ConjunctionRus of Conjunction =
 
     -- : DAP -> DAP -> ListDAP ;       --
     BaseDAP x y = twoTable3 Gender Animacy Case x y ** {
-      g = conjGender x.g y.g ;
       c = y.c ;
       size = conjSize x.size y.size ;  -- different genders -> plural?
       } ;
@@ -142,7 +140,9 @@ concrete ConjunctionRus of Conjunction =
       s = \\n,cas => conj.s1 ++ xs.s1 ! n ! cas ++ conj.s2 ++ xs.s2 ! n ! cas ;
       g = xs.g ;
       mayben = JustPl ;
-      anim = xs.anim
+      anim = xs.anim ;
+      rel = (guessAdjectiveForms "");
+      rt = GenType ;
     } ;
 
     -- : NP -> NP -> ListNP ;      -- John, Mary
@@ -169,8 +169,10 @@ concrete ConjunctionRus of Conjunction =
     -- : Conj -> ListNP -> NP ;     -- she or we
     ConjNP conj xs = {
       s = \\c => conj.s1 ++ xs.s1 ! c ++ conj.s2 ++ xs.s2 ! c ;
-      --prep = \\c => conj.s1 ++ xs.prep1 ! c ++ conj.s2 ++ xs.prep2 ! c ;
-      a = xs.a ; -- TODO: dep. on conj as well?
+      a = case conj.n of {
+            Sg => xs.a ;
+            Pl => case xs.a of {Ag gn p => Ag GPl p}
+          } ;
       pron = xs.pron ;
       anim = xs.anim
     } ;

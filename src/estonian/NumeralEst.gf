@@ -1,4 +1,4 @@
-concrete NumeralEst of Numeral = CatEst [Numeral,Digits] **  open Prelude, ParadigmsEst, MorphoEst in {
+concrete NumeralEst of Numeral = CatEst [Numeral,Digits,Decimal] **  open Prelude, ParadigmsEst, MorphoEst in {
 
 -- Notice: possessive forms are not used. They get wrong, since every
 -- part is made to agree in them.
@@ -6,7 +6,7 @@ concrete NumeralEst of Numeral = CatEst [Numeral,Digits] **  open Prelude, Parad
 flags optimize=all_subs ; coding=utf8;
 
 lincat
-  Sub1000000 = {s : CardOrd => Str ; n : MorphoEst.Number} ;
+  Sub1000000, Sub1000000000, Sub1000000000000 = {s : CardOrd => Str ; n : MorphoEst.Number} ;
   Digit = {s : CardOrd => Str} ;
   Sub10, Sub100, Sub1000 = {s : NumPlace => CardOrd => Str ; n : MorphoEst.Number} ;
 
@@ -65,6 +65,9 @@ lin
     s = \\c => d.s ! NumAttr ! c ++ tuhattaN.s ! d.n ! c ++ e.s ! NumIndep ! c
     } ;
 
+  pot3as4 n = n ;
+  pot4as5 n = n ;
+
 oper
   co : (c,o : {s : NForm => Str}) -> {s : CardOrd => Str} = \c,o -> {
     s = table {
@@ -73,7 +76,7 @@ oper
       }
     } ;
 
-  nBIND : Number -> Str = \n -> case n of {Sg => [] ; _ => BIND} ; -- no BIND after silent 1
+  nBIND : MorphoEst.Number -> Str = \n -> case n of {Sg => [] ; _ => BIND} ; -- no BIND after silent 1
 
 param
   NumPlace = NumIndep | NumAttr  ;
@@ -142,6 +145,20 @@ oper
     D_7 = mkDig "7" ;
     D_8 = mkDig "8" ;
     D_9 = mkDig "9" ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = \\o => "-" ++ BIND ++ d.s ! o ;
+      n = Pl ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s = \\o => d.s ! NCard (NCase Sg Nom) ++
+                 if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+                 i.s ! o ;
+      n = Pl ;
+      hasDot=True
+      } ;
 
   oper
     mk2Dig : Str -> Str -> TDigit = \c,o -> mk3Dig c o MorphoEst.Pl ;

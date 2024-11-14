@@ -1,6 +1,6 @@
 concrete NumeralSlo of Numeral =
 
-  CatSlo [Numeral,Digits] **
+  CatSlo [Numeral,Digits,Decimal] **
   
   open
     ResSlo,
@@ -21,6 +21,8 @@ lincat Sub10 = LinDigit ;
 lincat Sub100 = LinNumeral ;
 lincat Sub1000 = LinNumeral ;
 lincat Sub1000000 = LinNumeral ;
+lincat Sub1000000000 = LinNumeral ;
+lincat Sub1000000000000 = LinNumeral ;
 
 oper mkNum : Determiner -> Str -> Str -> Str -> LinDigit = 
   \dva, dvanast, dvadsat, dveste -> {
@@ -85,6 +87,9 @@ lin pot3plus n m = {
   size = tfSize m.size
   } ;
 
+lin pot3as4 n = n ;
+lin pot4as5 n = n ;
+
 oper tfSize : NumSize -> NumSize = \sz -> 
   table {Num1 => Num5 ; other => other} ! sz ; 
 
@@ -116,5 +121,19 @@ oper determinerStr : Determiner -> Str = \d -> d.s ! Masc Anim ! Nom ;
     D_7 = { s = "7" ; size = Num5} ;
     D_8 = { s = "8" ; size = Num5} ;
     D_9 = { s = "9" ; size = Num5} ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = "-" ++ Predef.BIND ++ d.s ;
+      size = d.size ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s = d.s ++
+          if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+          i.s;
+      size = d.size ;
+      hasDot=True
+      } ;
 
 }

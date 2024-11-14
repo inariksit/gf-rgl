@@ -13,7 +13,7 @@ concrete CatEst of Cat = CommonX ** open HjkEst, ResEst, Prelude in {
 
 -- Sentence
 
-    Cl    = {s : ResEst.Tense => Anteriority => Polarity => SType => Str} ;
+    Cl    = {s : ResEst.Tense => Anteriority => Polarity => Str} ;
     ClSlash = {s : ResEst.Tense => Anteriority => Polarity => Str ; c2 : Compl} ;
     Imp   = {s : Polarity => Agr => Str} ;
 
@@ -22,7 +22,7 @@ concrete CatEst of Cat = CommonX ** open HjkEst, ResEst, Prelude in {
     QCl    = {s : ResEst.Tense => Anteriority => Polarity => Str} ;
     IP     = ResEst.IPhrase ;
     IComp  = {s : Agr => Str} ;
-    IDet   = {s : Case => Str ; n : Number ; isNum : Bool} ;
+    IDet   = ResEst.IDeterminer ;
     IQuant = {s : Number => Case => Str} ;
 
 -- Relative
@@ -63,6 +63,7 @@ concrete CatEst of Cat = CommonX ** open HjkEst, ResEst, Prelude in {
 
     Numeral = {s : CardOrd => Str ; n : Number} ;
     Digits  = {s : CardOrd => Str ; n : Number} ;
+    Decimal = {s : CardOrd => Str ; n : Number ; hasDot : Bool} ;
 
 -- Structural
 
@@ -92,14 +93,17 @@ concrete CatEst of Cat = CommonX ** open HjkEst, ResEst, Prelude in {
             isPre,isPre2 : Bool
             } ;
     PN = {s : Case  => Str} ;
+    LN = {s : Case  => Str; n : Number} ;
+    GN = {s : Case  => Str; g : Sex} ;
+    SN = {s : Sex => Case => Str; pl : Case => Str} ;
 
   linref
     VP = \vp -> linV vp.v ;
     NP = linNP (NPCase Nom) ;
     CN = linCN (NCase Sg Nom) ;
     V,VS,VQ = linV ;
-    V2,VA,V2S,V2Q = linV2 ;
-
+    V2,VA,V2S,V2Q,V3 = linV2 ;
+    IDet = linIDet ;
 
 
 }

@@ -68,6 +68,8 @@ concrete CatGre of Cat = CommonGre ** open ResGre, Prelude in {
     Numeral = {s : CardOrd => Str ; n : Number } ;
 
     Digits  = {s : CardOrd => Str ; n : Number} ;
+    
+    Decimal = {s : CardOrd => Str ; n : Number ; hasDot : Bool} ;
 
 -- Structural
    
@@ -89,7 +91,6 @@ concrete CatGre of Cat = CommonGre ** open ResGre, Prelude in {
     A = ResGre.Adj ; --{s : Degree => Gender => Number => Case => Str } ;
 
     A2 = {s :Degree => Gender => Number => Case => Str ; adv : Degree => Str ;c2 : Compl }  ;
-    
 
     N = Noun;
 
@@ -98,5 +99,7 @@ concrete CatGre of Cat = CommonGre ** open ResGre, Prelude in {
     N3 = {s : Number => Case => Str ; g : Gender} ** {c2,c3 : Compl} ;
 
     PN = PName ;
+    
+    LN, GN, SN = {s : Str} ;
 
 }

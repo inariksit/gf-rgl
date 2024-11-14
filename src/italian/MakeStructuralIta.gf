@@ -34,6 +34,7 @@ oper
       in lin Quant {
         s = \\b => questo ;
         sp = questo ;
+        spn= \\c => prepCase c ++ s ;
         s2 = [] ;
         isNeg = False
       } ;
@@ -53,27 +54,37 @@ oper
       in lin Quant {
         s = \\b => questo ;
         sp = questo ;
+        spn= \\c => prepCase c ++ tutto ;
         s2 = [] ;
         isNeg = False
       } ;
   } ;
 
   mkDet = overload {
-    -- Does not inflect for number
-    mkDet : Str -> Number -> Det = \piu,n -> lin Det {
+    -- singular, does not inflect for gender
+    mkDet : Str ->  Det = \piu -> lin Det {
       s,sp = \\_,_ => piu ;
-      n = n ;
-      s2 = [] ;
+      spn = \\_ => piu ;
+      n = Sg ;
+      s2 = \\g => [] ;
       isNeg = False
     } ;
-    -- Inflects for number
+    mkDet : Str -> Number -> Det = \piu,n -> lin Det {
+      s,sp = \\_,_ => piu ;
+      spn = \\_ => piu ;
+      n = n ;
+      s2 = \\g => [] ;
+      isNeg = False
+    } ;
+    -- Inflects for gender
     mkDet : Str -> Str -> Number -> Det = \alcuni,alcune,n -> lin Det {
       s,sp = table {
         Masc => \\_ => alcuni ;
         Fem  => \\_ => alcune
       } ;
+      spn = \\_ => alcuni ;
       n = n ;
-      s2 = [] ;
+      s2 = \\g => [] ;
       isNeg = False
     } ;
   } ;

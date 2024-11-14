@@ -3,41 +3,35 @@
 concrete SymbolGer of Symbol = CatGer ** open Prelude, ResGer in {
 
 lin
-  SymbPN i = {s = \\c => i.s ; g = Neutr} ; --- c
-  IntPN i  = {s = \\c => i.s ; g = Neutr} ; --- c
-  FloatPN i  = {s = \\c => i.s ; g = Neutr} ; --- c
-  NumPN i  = {s = i.s ! Neutr ; g = Neutr} ; --- c
+  SymbPN i = {s = \\c => i.s ; g = Neutr ; n = Sg} ; --- c
+  IntPN i  = {s = \\c => i.s ; g = Neutr ; n = Sg} ; --- c
+  FloatPN i  = {s = \\c => i.s ; g = Neutr ; n = Sg} ; --- c
+  NumPN i  = {s = \\c => i.s ! APred ; g = Neutr ; n = Sg} ; --- c  -- HL
 
   CNIntNP cn i = {
-    s = \\c => cn.s ! Weak ! Sg ! Nom ++ i.s ;
+    s = \\_,c => cn.s ! Weak ! Sg ! Nom ++ i.s ;
     a = agrP3 Sg ;
-    -- isPron = False ;
-    -- isLight = True ; 
     w = WLight ;
-    ext,rc = [] -- added
+    ext,rc = []
     } ;
   CNSymbNP det cn xs = let g = cn.g in {
-    s = \\c => det.s ! g ! c ++ 
-               (let k = (prepC c).c in cn.s !  adjfCase det.a k ! det.n ! k) ++ xs.s ; 
+    s = \\b,c => det.s ! b ! g ! c ++ cn.s ! adjfCase det.a c ! det.n ! c ++ xs.s ; 
     a = agrP3 det.n ;
-    -- isPron = False ;
-    -- isLight = True ; 
     w = WLight ;
-    ext,rc = [] -- added
+    ext,rc = []
     } ;
   CNNumNP cn i = {
-    s = \\c => artDefContr (GSg cn.g) c ++ cn.s ! Weak ! Sg ! Nom ++ i.s ! Neutr ! (prepC c).c ;
-    a = agrP3 Sg ;
-    -- isPron = False ;
-    -- isLight = True ; 
-    w = WLight ;
-    ext,rc = [] -- added
+    s = \\b,c => case b of {True => [] ; False => artDef ! (GSg cn.g) ! c}
+                 ++ cn.s ! Weak ! Sg ! Nom ++ i.s ! AMod (GSg Neutr) c ;
+    a = agrgP3 cn.g Sg ;  -- HL 27.9.2023
+    w = WDefArt ;         -- im Haus 14
+    ext,rc = []
     } ;
 
   SymbS sy = {s = \\_ => sy.s} ;
 
-  SymbNum n = {s = \\_,_ => n.s ; n = Pl ; isNum = True} ;
-  SymbOrd n = {s = \\_   => glue n.s "."} ;
+  SymbNum n = {s = \\_ => n.s ; n = Pl ; isNum = True} ;
+  SymbOrd n = {s = \\_ => glue n.s "."} ;
 
 
 lincat 

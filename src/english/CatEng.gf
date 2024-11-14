@@ -81,6 +81,7 @@ concrete CatEng of Cat = CommonX - [Pol,CAdv] ** open ResEng, Prelude in {
 
     Numeral = {s : Bool => CardOrd => Case => Str ; n : Number} ;
     Digits  = {s : CardOrd => Case => Str ; n : Number ; tail : DTail} ;
+    Decimal = {s : CardOrd => Case => Str ; n : Number ; hasDot : Bool} ;
 
 -- Structural
 
@@ -107,6 +108,13 @@ concrete CatEng of Cat = CommonX - [Pol,CAdv] ** open ResEng, Prelude in {
     N2 = {s : Number => Case => Str ; g : Gender} ** {c2 : Str} ;
     N3 = {s : Number => Case => Str ; g : Gender} ** {c2,c3 : Str} ;
     PN = {s : Case => Str ; g : Gender} ;
+    GN = {s : Case => Str ; g : Sex} ;
+    SN = {s : Sex => Case => Str; p : Case => Str} ;
+    LN = {s  : Case => Str;
+          prep : LNPrep;   -- preposition "in Scandinavia", "on the Balkans", "at the South Pole"
+          art : Bool; -- plain name "United States" vs "the United States"
+          n  : Number;
+         } ;
 
   lindef
     SSlash = \s -> {s = s; c2 = ""} ;

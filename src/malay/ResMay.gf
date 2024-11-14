@@ -13,6 +13,7 @@ oper
   CNoun : Type = Noun ** {
     heavyMod : Str ; -- heavy stuff like relative clauses after determiner
     } ;
+  linCN : CNoun -> Str = \cn -> cn.s ! NF Sg Bare ++ cn.heavyMod ;
 
   PNoun : Type = Noun ;
 
@@ -60,6 +61,12 @@ oper
     empty = []
     } ;
 
+  mkNounPhrase : Str -> NounPhrase = \str -> {
+    s = \\_ => str ;
+    a = NotPron ;
+    empty = []
+    } ;
+
   mkIP : Str -> IPhrase = \str -> {
     s = \\_ => str ;
     a = NotPron ;
@@ -81,9 +88,14 @@ oper
     isPre : Bool ;
   } ;
 
+  linDet : Determiner -> Str = \det -> det.pr ++ det.s ;
+
+-- add field in determiner for kedua-dua numbers
+
   Determiner : Type = Quant ** {
     pr : Str ; -- prefix for numbers
     n : NumType ; -- number as in 5 (noun in singular), Sg or Pl
+    count: Str ;
     } ;
 
   CardNum : Type = {
@@ -127,16 +139,17 @@ oper
     sp = \\_ => str
     } ;
 
-  mkDet : Str -> Number -> Determiner = \str, num -> mkQuant str ** {
+  mkDet : Str -> Str -> Number -> Determiner = \cnt, str, num -> mkQuant str ** {
     pr = "" ;
     n = NoNum num ;
+    count = "" ;
   } ;
 
-  mkIdet : Str -> Str -> Number -> Bool -> Determiner = \str, standalone, num, isPre -> mkDet str num ** {
+  mkIdet : Str -> Str -> Str -> Number -> Bool -> Determiner = \cnt, str, standalone, num, isPre -> mkDet cnt str num ** {
     pr = case isPre of {True => str ; False => [] } ;
     -- if isPre is True, then: "berapa kucing"
     s = case isPre of { False => str ; True => [] };
-
+    count = cnt ;
     sp = \\_ => standalone ;
   } ;
 
@@ -193,7 +206,9 @@ oper
 
   mkAdj : Str -> Adjective = \str -> {s = str} ;
 
-  AdjPhrase : Type = Adjective ; -- ** {compar : Str} ;
+  AdjPhrase = {
+    s : Str
+    } ; -- ** {compar : Str} ;
 --------------------------------------------------------------------------------
 -- Verbs
 
@@ -202,31 +217,54 @@ oper
     } ;
   Verb2 : Type = Verb ** {
     c2 : Preposition ;
-    passive : Str
     } ;
 
   Verb3 : Type = Verb2 ** {
     c3 : Preposition
     } ;
 
+  Verb4 : Type = Verb ** {
+    c2 : Preposition ;
+    } ;
+
 --  VV : Type = Verb ** {vvtype : VVForm} ;
 
-  mkVerb : Str -> Prefix -> Verb = \str,p -> {
+  regVerb : Str -> Prefix -> Verb = \str,p ->
+    mkVerb str (prefix p str) ("di" + str) (str ++ BIND ++ "kan") ;
+
+  mkVerb : (makan, memakan, dimakan, makankan : Str) -> Verb = \rt,act,pass,imp -> {
     s = table {
-      Root => str ;
-      Active => prefix p str
+      Root => rt ;
+      Active => act ;
+      Passive => pass ;
+      Imperative => imp
       }
     } ;
 
   mkVerb2 : Verb -> Preposition -> Verb2 = \v,pr -> v ** {
     c2 = pr ;
-    passive = "di" + v.s ! Root -- TODO check
     } ;
 
   mkVerb3 : Verb -> (p,q : Preposition) -> Verb3 = \v,p,q ->
     mkVerb2 v p ** {c3 = q} ;
 
+  mkVerb4 : Verb -> Preposition -> Str -> Verb4 = \v,pr,str -> v ** {
+    s = \\_ => v.s ! Active ++ str;
+    c2 = pr ;
+    -- passive = "di" ++ BIND ++ v.s ! Root ++ str
+    } ;
+
   copula : Verb = {s = \\_ => "ada"} ; -- TODO
+
+  -- insertObjc : (Agr => Str) -> SlashVP -> SlashVP = \obj,vp ->
+  -- insertObj obj vp ** {c2 = vp.c2 ; gapInMiddle = vp.gapInMiddle ; missingAdv = vp.missingAdv } ;
+  insertObj : Str -> VerbPhrase -> VerbPhrase = \str,vp -> vp ** {
+    s = \\vf,pol => str ++ vp.s ! Active ! Pos ;
+    } ;
+
+  insertComp : AdjPhrase -> VerbPhrase -> VerbPhrase = \ap,vp -> vp ** {
+  s = \\vf,pol => vp.s ! Active ! Pos ++ ap.s ;
+  } ;
 ------------------
 -- Adv
 
@@ -254,11 +292,17 @@ oper
   useV : Verb -> VerbPhrase = \v -> v ** {
     s = \\vf,pol => verbneg pol ++ v.s ! vf
     } ;
-
+  
   useComp : Str -> VerbPhrase = \s -> {
+    s = \\vf,pol => verbneg pol ++ s ;
+    } ;
+  useCompN : Str -> VerbPhrase = \s -> {
     s = \\vf,pol => nounneg pol ++ s ;
     } ;
 
+  linVP : VerbPhrase -> Str = \vp -> vp.s ! Active ! Pos;
+
+-- https://www.reddit.com/r/indonesian/comments/gsizsv/when_to_use_tidak_bukan_jangan_belum/
 
   verbneg : Polarity -> Str = \pol -> case pol of {
     Neg => "tidak" ; -- or "tak"?
@@ -269,6 +313,11 @@ oper
     Neg => "bukan" ;
     Pos => []
     } ;
+
+  impneg : Polarity -> Str = \pol -> case pol of {
+    Neg => "jangan" ;
+    Pos => []
+  } ;
 --------------------------------------------------------------------------------
 -- Cl, S
 
@@ -277,16 +326,22 @@ oper
     pred : VForm => Polarity => Str -- Cl may become relative clause, need to keep open VForm
     } ;
 
+  linCl : Clause -> Str = \cl -> cl.subj ++ cl.pred ! Active ! Pos ;
+
   RClause : Type = {
     subj : Str ;
     pred : Person => Polarity => Str
     } ;
 
+  linRCl : RClause -> Str = \cl -> cl.subj ++ cl.pred ! P1 ! Pos ;
+
   RS : Type = {s : Person => Str} ;
 
   ClSlash : Type = Clause ** {c2 : Preposition} ;
+  linClSlash : ClSlash -> Str = \cl -> cl.subj ++ cl.pred ! Root ! Pos ++ cl.c2.s ;
 
   Sentence : Type = {s : Str} ;
+
 
   predVP : NounPhrase -> VerbPhrase -> Clause = \np,vp -> {
     subj = np.s ! Bare ;
@@ -295,6 +350,8 @@ oper
 
   predVPSlash : NounPhrase -> VPSlash -> ClSlash = \np,vps ->
     predVP np <vps : VerbPhrase> ** {c2 = vps.c2} ;
+
+  linS : Sentence -> Str = \sent -> sent.s ;
 
 
   -- mkClause : Str -> NounPhrase -> VPSlash -> Clause = \str,np,vp -> {

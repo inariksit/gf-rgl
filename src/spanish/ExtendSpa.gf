@@ -7,7 +7,6 @@ concrete ExtendSpa of Extend = CatSpa ** ExtendRomanceFunctor -
  ExistsNP,
  EmbedSSlash,
  GenRP,
- GenRP,
  IAdvAdv,
  ICompAP,
  InOrderToVP,
@@ -19,7 +18,11 @@ concrete ExtendSpa of Extend = CatSpa ** ExtendRomanceFunctor -
  youPlFem_Pron,
  youPolFem_Pron,
  youPolPlFem_Pron,
- youPolPl_Pron
+ youPolPl_Pron,
+ PassVPSlash, PassAgentVPSlash,
+ UseComp_estar, UseComp_ser,
+ ExistNP
+
     ]                   -- don't forget to put the names of your own
                        -- definitions here
   with
@@ -30,7 +33,8 @@ concrete ExtendSpa of Extend = CatSpa ** ExtendRomanceFunctor -
   MorphoSpa,
   Coordination,
   Prelude,
-  ParadigmsSpa in {
+  ParadigmsSpa,
+  (I=IrregSpa) in {
     -- put your own definitions here
 
   lin
@@ -70,10 +74,14 @@ concrete ExtendSpa of Extend = CatSpa ** ExtendRomanceFunctor -
          (predV (mkV "existir"))) ;
 
     CompoundN noun noun2 = { -- order is different because that's needed for correct translation from english
-      s = \\n => noun2.s ! n
-        ++ variants {"de" ; genForms "del" "de la" ! noun.g}
-        ++ noun.s ! Sg ;
-      g = noun2.g
+      s = \\n => noun2.s ! n ++
+                 case noun2.relType of {
+                   NRelPrep p => prepCase (CPrep p) ;  -- tasa de suicidio
+                   NRelNoPrep => []                    -- connessione internet = internet connection
+                 } ++
+                 noun.s ! Sg ;
+      g = noun2.g ;
+      relType = noun2.relType
       } ;
 
     CompoundAP noun adj = {
@@ -99,5 +107,30 @@ concrete ExtendSpa of Extend = CatSpa ** ExtendRomanceFunctor -
         s = \\agr => ant.s ++ p.s ++ "de" ++ neg.p1 ++ infVP vp RPos agr ;
         cop = serCopula
       } ;
+
+lin UseComp_estar comp = insertComplement comp.s (predV I.estar_V) ;
+    UseComp_ser comp = insertComplement comp.s (predV copula) ;
+
+lin PassVPSlash vps = passVPSlash vps [] ;
+    PassAgentVPSlash vps np = passVPSlash 
+      vps (let by = <Grammar.by8agent_Prep : Prep> in by.s ++ (np.s ! by.c).ton) ;
+
+oper
+    passVPSlash : VPSlash -> Str -> VP = \vps, agent -> 
+      let auxvp = predV auxPassive 
+      in
+      vps ** {
+         s = auxvp.s ;
+         agr = auxvp.agr ;
+         comp  = \\a => vps.comp ! a ++ (let agr = complAgr a in vps.s.s ! VPart agr.g agr.n) ++ agent ;
+        } ;
+
+lin AnaphPron np = agr2pron ! np.a ;
+
+    ExistsNP np =
+      mkClause [] True False np.a
+      (insertComplement (\\_ => (np.s ! Nom).ton)
+         (predV (mkV "existir"))) ;
+
 
 } ;

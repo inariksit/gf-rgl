@@ -14,6 +14,9 @@ fun
   InflectionN2  : N2 -> Inflection ;
   InflectionN3  : N3 -> Inflection ;
   InflectionPN  : PN -> Inflection ;
+  InflectionLN  : LN -> Inflection ;
+  InflectionGN  : GN -> Inflection ;
+  InflectionSN  : SN -> Inflection ;
   InflectionA   : A -> Inflection ;
   InflectionA2  : A2 -> Inflection ;
   InflectionV   : V -> Inflection ;

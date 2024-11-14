@@ -266,13 +266,44 @@ oper
 
 --2 Proper Names
 --
+
+  masculine : Gender = Masc ;
+  feminine : Gender = Fem ;
+  neutr : Gender = Neut ;
+
+  male : Sex = Male ;
+  female : Sex = Female ;
+
+  mkGN : Str -> Sex -> GN =
+     \s,g -> lin GN {s = s; g = g} ;
+  mkSN = overload {
+    mkSN : Str -> SN =
+      \s -> lin SN {s = \\_ => s; pl = s} ;
+    mkSN : Str -> Str -> Str -> SN =
+      \m,f,pl -> lin SN {s = table Sex [m; f]; pl = pl} ;
+  } ;
+
   mkPN = overload {
+    mkPN : Str -> PN = \s -> {s = s; gn = GSg Masc ; lock_PN = <>} ;
     mkPN : Str -> Gender -> PN = 
       \s,g -> {s = s; gn = GSg g ; lock_PN = <>} ;
     mkPN : Str -> GenNum -> PN = 
       \s,gn -> {s = s; gn = gn ; lock_PN = <>} ;
   } ;
 
+  mkLN = overload {
+    mkLN : Str -> LN = \s -> lin LN {s = \\_ => s; defNom=s; onPrep = False; hasArt = False; gn = GSg Masc} ;
+    mkLN : Str -> Gender -> LN =
+      \s,g -> lin LN {s = \\_ => s; defNom=s; onPrep = False; hasArt = False; gn = GSg g} ;
+    mkLN : Str -> GenNum -> LN =
+      \s,gn -> lin LN {s = \\_ => s; defNom=s; onPrep = False; hasArt = False; gn = gn} ;
+    mkLN : Str -> Str -> GenNum -> LN =
+      \s1,s2,gn -> lin LN {s = table Species [s2; s1]; defNom=s2; onPrep = False; hasArt = True; gn = gn} ;
+    mkLN : Str -> Str -> Str -> LN =
+      \s1,s2,s3 -> lin LN {s = table Species [s3; s2]; defNom=s1; onPrep = False; hasArt = True; gn = GSg Masc} ;
+  } ;
+
+  onLN : LN -> LN = \n -> n ** {onPrep = True} ;
 
 --2 IAdv
 --

@@ -19,9 +19,9 @@ lin
 
   -- : PN -> NP ;          -- John
   UsePN pn = {
-    s=\\cas => (nounFormsNoun pn).s ! Sg ! cas ;
+    s=pn.s ;
     pron=False;
-    a=Ag (gennum pn.g Sg) P3
+    a=Ag (gennum pn.g pn.n) P3
     } ;   -- Does NP need animacy?
 
   -- : Pron -> NP ;
@@ -45,7 +45,7 @@ lin
 
   -- : Det -> NP ;        -- these five
   DetNP det =
-    let g = det.g in {
+    let g = Neut in {
       s=case det.type of {
         EmptyIndef => \\cas => a_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
         EmptyDef => \\cas => the_Det.s ! g ! Inanimate ! cas ++ det.s ! g ! Inanimate ! cas ;
@@ -68,15 +68,19 @@ lin
     s=\\n,cas=> (nounFormsNoun n2).s ! n ! cas ++ n2.c2.s ++ np.s ! n2.c2.c ;
     g=n2.g ;
     mayben=n2.mayben ;
-    anim=n2.anim
+    anim=n2.anim ;
+    rel=n2.rel;
+    rt=n2.rt;
     } ;
   -- : N3 -> NP -> N2 ;    -- distance from this city (to Paris)
   ComplN3 n3 np = let n3_noun = nounFormsNoun n3 in nounToNounForm {
     s=\\n,g=>n3_noun.s ! n ! g ++ n3.c2.s ++ np.s ! n3.c2.c ;
     g=n3.g ;
     mayben=n3.mayben ;
-    anim=n3.anim
-  } ** {c2=n3.c3} ;
+    anim=n3.anim ;
+    rel=n3.rel;
+    rt=n3.rt ;
+  } ** {c2=n3.c3; rt = n3.rt} ;
 
 --------------
 -- Determiners
@@ -86,6 +90,8 @@ lin
   NumCard card = card ;
   -- : Digits -> Card ;  -- 51
   NumDigits n = {s = \\_,_,_ => n.s ; size = n.size } ;
+
+  NumDecimal n = {s = \\_,_,_ => n.s ; size = n.size } ;
 
   -- : Quant -> Num -> Det ;  -- these five
   DetQuant quant num = {
@@ -100,7 +106,7 @@ lin
   DetQuantOrd quant num ord = {
     s=\\g,a,cas => num.s ! g ! a ! cas
       ++ quant.s ! (gennum g (numSizeNumber num.size)) ! a ! cas
-      ++ (adjFormsAdjective ord).s ! gennum quant.g (animNumSizeNum Inanimate cas num.size) ! Inanimate ! numSizeCase cas num.size ;
+      ++ (adjFormsAdjective ord).s ! gennum g (animNumSizeNum Inanimate cas num.size) ! Inanimate ! numSizeCase cas num.size ;
     type=quant.type ;
     g=quant.g ;
     c=quant.c ;
@@ -137,7 +143,6 @@ lin
     s=mkPronTable pron.poss ;
     type=NormalDet ;
     short=\\a=>[] ;
-    g=Neut ;
     c=Nom ;
     preferShort=PreferFull
     } ;
@@ -167,6 +172,7 @@ lin
   -- : N3 -> N2 ; -- distance (to Paris)
   Use3N3 n3 = lin N2 n3 ;
 
+
   -- : CN -> RS -> CN ;   -- house that John bought
   RelCN cn rs = cn ** {
     s = \\n,c => cn.s ! n ! c ++ embedInCommas (rs.s ! gennum cn.g (forceMaybeNum cn.mayben n) ! cn.anim ! c)
@@ -190,7 +196,7 @@ lin
 
   -- : CN -> NP -> CN ;     -- house of Paris, house of mine
   PossNP cn np = cn ** {
-    s=\\n,cas => np.s ! Gen ++ cn.s ! n ! cas ;   -- TODO: possessive pronouns P1, P2
+    s=\\n,cas => cn.s ! n ! cas ++ np.s ! Gen ;   -- TODO: possessive pronouns P1, P2
     } ;
 
   -- : CN -> NP -> CN ;     -- glass of wine - стакан чаю (чая)
@@ -224,7 +230,6 @@ lin
     type=EmptyDef ;
     short=\\a=>[] ;
     c=Nom ;
-    g=Neut ;
     size=Num1 ;
     preferShort=PreferFull
     } ;
@@ -234,9 +239,14 @@ lin
     type=EmptyIndef ;
     short=\\a=>[] ;
     c=Nom ;
-    g=Neut ;
     size=Num1 ;
     preferShort=PreferFull
+    } ;
+
+  QuantityNP n m = {
+    s = \\cas => preOrPost m.isPre m.s n.s;
+    pron=False ;
+    a=Ag (gennum Masc (numSizeNumber n.size)) P3
     } ;
 
 }

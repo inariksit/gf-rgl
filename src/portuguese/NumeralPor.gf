@@ -1,4 +1,4 @@
-concrete NumeralPor of Numeral = CatPor [Numeral,Digits] **
+concrete NumeralPor of Numeral = CatPor [Numeral,Digits,Decimal] **
   open CommonRomance, ResRomance, MorphoPor, Prelude, Predef in {
 
   flags coding=utf8 ;
@@ -14,6 +14,8 @@ concrete NumeralPor of Numeral = CatPor [Numeral,Digits] **
     Sub100 = {s : CardOrd => Str ; n : Number} ;
     Sub1000 = {s : CardOrd => Str ; n : Number} ;
     Sub1000000 = {s : CardOrd => Str ; n : Number} ;
+    Sub1000000000 = {s : CardOrd => Str ; n : Number} ;
+    Sub1000000000000 = {s : CardOrd => Str ; n : Number} ;
 
   lin
     num x = x ;
@@ -111,6 +113,33 @@ concrete NumeralPor of Numeral = CatPor [Numeral,Digits] **
             ++ m.s ! co ;
           n = Pl} ;
 
+
+    pot3as4 n = n ;
+
+    pot4 n = {s = table CardOrd {co => n.s ! NCard Masc ++ milhao ! co } ; n = Pl} ;
+
+    pot4plus n m = {s = \\co => n.s ! NCard Masc
+                      ++ milhao ! co
+                      ++ e_CardOrd co ++ m.s ! co ;
+                    n = Pl
+      } ;
+
+    pot21 = mkNum "cem" "centésimo" ;
+
+    pot31 = mkNum "mil" "milésimo" ;
+
+    -- cem, mil, but um milhão, um bilhão
+    pot41 = mkNum "um milhão" "milhonésimo" ;
+
+    pot4as5 n = n ;
+
+  oper
+    milhao : CardOrd => Str ;
+    milhao = mkNumStr "milhão" "milhonésimo" ;
+
+    mkNum : Str -> Str -> {s : CardOrd => Str ; n : Number} ;
+    mkNum cem centesimo = spl (mkNumStr cem centesimo) ;
+
   oper
     mkTal : (_,_,_,_,_,_,_ : Str) -> {s : DForm => CardOrd => Str} =
       \dois,doze,vinte,duzentos,segundo,vigesimo,duocentesimo ->
@@ -160,11 +189,12 @@ concrete NumeralPor of Numeral = CatPor [Numeral,Digits] **
     Dig = TDigit ;
 
   lin
-    IDig d = d ;
+    IDig d = d ** {tail = T1} ;
 
     IIDig d i = {
-      s = \\o => d.s ! NCard Masc ++ BIND ++ i.s ! o ;
-      n = Pl
+      s = \\o => d.s ! NCard Masc ++ spaceIf i.tail ++ i.s ! o ;
+      n = Pl ;
+      tail = inc i.tail
       } ;
 
     D_0 = mkDig "0" Sg ;
@@ -177,6 +207,32 @@ concrete NumeralPor of Numeral = CatPor [Numeral,Digits] **
     D_7 = mkDig "7" ;
     D_8 = mkDig "8" ;
     D_9 = mkDig "9" ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = \\o => "-" ++ BIND ++ d.s ! o ;
+      n = Pl ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s = \\o => d.s ! NCard Masc ++
+          if_then_Str d.hasDot BIND (BIND++","++BIND) ++
+          i.s ! o;
+      n = Pl ;
+      hasDot=True
+      } ;
+
+  oper
+    spaceIf : DTail -> Str = \t -> case t of {
+      T3 => SOFT_SPACE ;
+      _  => BIND
+      } ;
+
+    inc : DTail -> DTail = \t -> case t of {
+      T1 => T2 ;
+      T2 => T3 ;
+      T3 => T1
+      } ;
 
   oper
     mk4Dig : Str -> Str -> Str -> Number -> TDigit = \c,o,a,n -> {

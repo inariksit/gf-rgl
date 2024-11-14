@@ -1,4 +1,4 @@
-concrete NumeralDut of Numeral = CatDut [Numeral,Digits] ** open ResDut, Prelude in {
+concrete NumeralDut of Numeral = CatDut [Numeral,Digits,Decimal] ** open ResDut, Prelude in {
 
 flags optimize = all_subs ;
     coding=utf8 ;
@@ -6,7 +6,7 @@ flags optimize = all_subs ;
 lincat 
   Digit = {s : DForm => CardOrd => Str ; en : Str} ;
   Sub10 = {s : DForm => CardOrd => Str ; n : Number ; en : Str ; attr : Str} ;
-  Sub100, Sub1000, Sub1000000 = 
+  Sub100, Sub1000, Sub1000000, Sub1000000000, Sub1000000000000 =
           {s :          CardOrd => Str ; n : Number ; attr : Str} ;
 
 lin 
@@ -49,6 +49,8 @@ lin
   pot3plus n m = 
     addAttr {s = \\g => n.attr ++ "duizend" ++ m.s ! g ; n = Pl} ;
 
+  pot3as4 n = n ;
+  pot4as5 n = n ;
 
   lincat 
     Dig = TDigit ;
@@ -71,6 +73,20 @@ lin
     D_7 = mkDig "7" ;
     D_8 = mkDig "8" ;
     D_9 = mkDig "9" ;
+
+    PosDecimal d = d ** {hasDot=False} ;
+    NegDecimal d = {
+      s = \\o => "-" ++ BIND ++ d.s ! o ;
+      n = Pl ;
+      hasDot=False
+      } ;
+    IFrac d i = {
+      s = \\o => d.s ! invNum ++
+                 if_then_Str d.hasDot BIND (BIND++"."++BIND) ++
+                 i.s ! o ;
+      n = Pl ;
+      hasDot=True
+      } ;
 
   oper
     mk2Dig : Str -> Str -> TDigit = \c,o -> mk3Dig c o Pl ;
