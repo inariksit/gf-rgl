@@ -204,17 +204,17 @@ nomObjSameN : Str -> LinN = \s -> {
       not needed, or use and refine if needed.
 -}
 
-param
+-- param
   -- These params are just for inspiration, not used anywhere currently.
   -- Agr = SgP1             -- I
   --     | SgP2 Politeness  -- e.g. tū, tum, āp (Hindi) — note that the verb really inflects differently for all three!
   --     | SgP3 Gender      -- e.g. he, she (verb inflects the same, but distinction in reflexive: himself / herself)
   --     | FillInTheRestYourself ;
-  Politeness = Intimate | Familiar | Polite ;
+  -- Politeness = Intimate | Familiar | Polite ;
 
 oper
   LinPron : Type = {
-    s : Str ;
+    s : Case => Str ;
     -- Alternative if your language has case and pronouns inflect in case (e.g. English I/me/my, she/her/hers)
     -- s : Case => Str ;
     n : Number ;
@@ -223,16 +223,40 @@ oper
     -- a : Agr -- sketched above, lines 97-103
     } ;
 
-  mkPron : (_ : Str) -> Person -> Number -> LinPron = \str,per,num -> {
-    s = str ;
-    {- If there is case inflection, you need a table here
-        table {
-              _ => str -- Pronoun inflection is often irregular, so possibly this constructor requires several forms as argument, even if mkNoun is nice and regular
-            } ;
-    -}
+  mkPron : (i, me, my, mine : Str) -> Person -> Number -> LinPron
+   = \i, me, my, mine, per, num -> {
+    s = table {
+      Nom => i;
+      Gen => me;
+      Obj => my;
+      Loc => mine
+    } ;
     p = per ;
     n = num
     } ;
+
+i_Pron = mkPron "আমি"	"আমার"	"আমাকে"	"আমার" P1 Sg ;
+we_Pron = mkPron "আমরা"	"আমাদের"	"আমাদের"	"আমাদের" P1 Pl ;
+
+youIntSg_Pron = mkPron "তুই"	"তোর"	"তোকে"	"তোর" P2 Sg ;
+youIntPl_Pron = mkPron "তোরা"	"তোদের"	"তোদের"	"তোদের" P2 Pl ;
+youSg_Pron = mkPron "তুমি" 	"তোমার"	"তোমাকে"	"তোমার" P2 Sg ;
+youPl_Pron = mkPron "তোমরা"	"তোমাদের"	"তোমাদের"	"তোমাদের" P2 Pl ;
+youPolSg_Pron = mkPron "আপনি"	"আপনার"	"আপনাকে"	"আপনার" P2 Sg ;
+youPolPl_Pron = mkPron "আপনারা"	"আপনাদের"	"আপনাদের"	"আপনাদের" P2 Pl ;
+
+he_Pron = mkPron "সে"	"তার"	"তাকে"	"তার" P3 Sg ;
+she_Pron = he_Pron ;
+they_Pron = mkPron "তারা"	"তাদের"	"তাদের"	"তাদের"	P3 Pl ;
+hePol_Pron = mkPron "তিনি"	"তাঁর"	"তাঁকে"	"তাঁর" P3 Sg ;
+shePol_Pron = hePol_Pron ;
+theyPol_Pron = mkPron "তাঁরা"	"তাঁদের"	"তাঁদের"	"তাঁদের"	P3 Pl ;
+
+it_Pron = mkPron "এটা" 	"এটার" 	"এটাকে"	"এটাতে"	P3 Sg ;
+this_Pron = it_Pron ;
+these_Pron = mkPron "এগুলো" "এগুলোর"	"এগুলোকে"	"এগুলোর"	P3 Pl ;
+that_Pron = mkPron "ওটা" "ওটার" "ওটাকে" "ওটাতে" P3 Sg ;
+those_Pron = mkPron "ওগুলো" "ওগুলোর" "ওগুলোকে" "ওগুলোর"	P3 Pl ;
 
 ---------------------------------------------
 -- NP
