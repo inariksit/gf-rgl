@@ -49,21 +49,103 @@ https://inariksit.github.io/gf/2018/08/28/gf-gotchas.html#my-naming-scheme-for-l
  -}
 
 param
-  Gender = Gender1 | Gender2 ;   -- Just a placeholder, see lines 34-39 above
-  Case = Case1 | Case2 | Case3 ; -- Just a placeholder, see lines 41-48 above
+  Case = Nom | Gen | Obj | Loc ;
   Number = Sg
-         | Pl
---       | Dual -- If your language has numbers other than Sg and Pl, add them to the parameter
-         ;
+         | Pl ;
+  Article = Indefinite | Definite ;
+  Animacy = Inanimate | Animate ;
   Person = P1 | P2 | P3 ;
 
 oper
   LinN : Type = {
     s :
---      Case =>     -- uncomment if your language has case
-        Number =>   -- variable number: table {Sg => "house" ; Pl => "houses"}
+        Number =>    -- variable number: table {Sg => "house" ; Pl => "houses"}
+        Article =>
+        Case =>     -- uncomment if your language has case
         Str ;
-  --  g : Gender ;  -- inherent gender/noun class, if your language has that
+    } ;
+
+  mkLinN : Animacy -> Str -> LinN ;
+
+  mkLinN animacy str = case animacy of {
+        Animate => genLocSameN str ;
+        Inanimate => nomObjSameN str 
+  } ;
+
+  genLocSameN : Str -> LinN = \s -> {
+        s = table {
+            Sg => table {
+                Indefinite => table {
+                   Nom => "একজন" ++ s ;
+                   Obj => "একজন" ++ s + "কে" ;
+                   Gen|Loc => case s of {
+                    -- TODO Fix pattern matching
+                    _ + ("ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ" | " া" | " ি" | " ী" | " ু" | " ূ" | " ে" | " ো" | " ৈ" | " ৌ")
+                      => s + "র" ;
+                    _ => s + " ের"
+                   }
+                } ;
+                Definite => table {
+                   Nom => s + "টা" ;
+                   Obj => s + "টাকে" ;
+                   Gen|Loc => s + "টার"
+                }
+            } ;
+            Pl => table {
+                Indefinite => table {
+                   Nom => case s of {
+                    _ + ("ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ" | " া" | " ি" | " ী" | " ু" | " ূ" | " ে" | " ো" | " ৈ" | " ৌ")
+                      => s + "রা" ;
+                    _ => s + " েরা"
+                    -- TODO Add special case "য়েরা"
+                   } ;
+                   Obj => s + "দেরকে" ;
+                   Gen|Loc => s + "দের"
+                } ;
+                Definite => table {
+                   Nom => s + "গুলো" ;
+                   Obj => s + "গুলোকে" ;
+                   Gen|Loc => s + "গুলোর"
+                }
+            }
+        }
+    } ;
+
+nomObjSameN : Str -> LinN = \s -> {
+        s = table {
+            Sg => table {
+                Indefinite => table {
+                   Nom|Obj => "একটা" ++ s ;
+                   Gen => case s of {
+                    _ + ("ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ" | " া" | " ি" | " ী" | " ু" | " ূ" | " ে" | " ো" | " ৈ" | " ৌ")
+                      => "একটা" ++ s + "র" ;
+                    _ => "একটা" ++ s + " ের"
+                   } ;
+                   Loc => "একটা" ++ s + " ে"
+                } ;
+                Definite => table {
+                   Nom|Obj => s + "টা" ;
+                   Gen => s + "টার" ;
+                   Loc => s + "টায়"
+                }
+            } ;
+            Pl => table {
+                Indefinite => table {
+                   Nom|Obj => s ;
+                   Gen => case s of {
+                    _ + ("ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ" | " া" | " ি" | " ী" | " ু" | " ূ" | " ে" | " ো" | " ৈ" | " ৌ")
+                      => s + "র" ;
+                    _ => s + " ের"
+                   } ;
+                   Loc => s + " ে"
+                } ;
+                Definite => table {
+                   Nom|Obj => s + "গুলো" ;
+                   Gen => s + "গুলোর" ;
+                   Loc => s + "গুলোতে"  
+                }
+            }
+        }
     } ;
 
   -- Most often, the lincat for CN is the same as N, with possibly some additional fields.
@@ -81,17 +163,17 @@ oper
   } ;
 
   -- For inflection paradigms, see http://www.grammaticalframework.org/doc/tutorial/gf-tutorial.html#toc56
-  mkNoun : Str -> LinN = \str -> {
-    s = table {
-      _ => str -- TODO: actual morphology
-      } ;
+  -- mkNoun : Str -> LinN = \str -> {
+  --   s = table {
+  --     _ => str -- TODO: actual morphology
+  --     } ;
       -- If your nouns have gender, it should come here as inherent field.
       -- Usually you need to give the gender as an argument to mkNoun.
-    } ;
+    -- } ;
 
-  linCN : LinCN -> Str = \cn -> cn.s ! Sg
+  -- linCN : LinCN -> Str = \cn -> cn.s ! Sg !TODO: Fix LinCN
                      --      ++ cn.postmod   -- If there is another field, use here
-                                ;
+                                -- ;
 
 ---------------------------------------------
 -- Numeral
@@ -124,10 +206,10 @@ oper
 
 param
   -- These params are just for inspiration, not used anywhere currently.
-  Agr = SgP1             -- I
-      | SgP2 Politeness  -- e.g. tū, tum, āp (Hindi) — note that the verb really inflects differently for all three!
-      | SgP3 Gender      -- e.g. he, she (verb inflects the same, but distinction in reflexive: himself / herself)
-      | FillInTheRestYourself ;
+  -- Agr = SgP1             -- I
+  --     | SgP2 Politeness  -- e.g. tū, tum, āp (Hindi) — note that the verb really inflects differently for all three!
+  --     | SgP3 Gender      -- e.g. he, she (verb inflects the same, but distinction in reflexive: himself / herself)
+  --     | FillInTheRestYourself ;
   Politeness = Intimate | Familiar | Polite ;
 
 oper
