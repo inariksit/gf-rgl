@@ -5,3 +5,4 @@ dist/
 *.pgf
 *.tmp
 *~
+.DS_Store
