@@ -53,7 +53,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 -}
   -- MassNP : CN -> NP ;
     MassNP cn = emptyNP ** {
-      s = linCN cn
+      s = cn.base
       } ;
 
 

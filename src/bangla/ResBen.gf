@@ -54,7 +54,7 @@ param
          | Pl ;
   Article = Indefinite | Definite ;
   Animacy = Inanimate | Animate ;
-  Person = P1 | P2 | P3 ;
+  Person = P1 | P2H0 | P2H1 | P2H2 | P3H1 | P3H2 ;
 
 oper
   LinN : Type = {
@@ -63,6 +63,7 @@ oper
         Article =>
         Case =>     -- uncomment if your language has case
         Str ;
+    base : Str ;
     } ;
 
   mkLinN : Animacy -> Str -> LinN ;
@@ -74,6 +75,7 @@ oper
 
 -- cc -table mkLinN Animate "বেদী"
   genLocSameN : Str -> LinN = \s -> {
+        base = s ;
         s = table {
             Sg => table {
                 Indefinite => table {
@@ -120,6 +122,7 @@ oper
     } ;
 
 nomObjSameN : Str -> LinN = \s -> {
+        base = s ;
         s = table {
             Sg => table {
                 Indefinite => table {
@@ -254,26 +257,27 @@ oper
 i_Pron = mkPron "আমি"	"আমার"	"আমাকে"	"আমার" P1 Sg ;
 we_Pron = mkPron "আমরা"	"আমাদের"	"আমাদের"	"আমাদের" P1 Pl ;
 
-youIntSg_Pron = mkPron "তুই"	"তোর"	"তোকে"	"তোর" P2 Sg ;
-youIntPl_Pron = mkPron "তোরা"	"তোদের"	"তোদের"	"তোদের" P2 Pl ;
-youSg_Pron = mkPron "তুমি" 	"তোমার"	"তোমাকে"	"তোমার" P2 Sg ;
-youPl_Pron = mkPron "তোমরা"	"তোমাদের"	"তোমাদের"	"তোমাদের" P2 Pl ;
-youPolSg_Pron = mkPron "আপনি"	"আপনার"	"আপনাকে"	"আপনার" P2 Sg ;
-youPolPl_Pron = mkPron "আপনারা"	"আপনাদের"	"আপনাদের"	"আপনাদের" P2 Pl ;
+youIntSg_Pron = mkPron "তুই"	"তোর"	"তোকে"	"তোর" P2H0 Sg ;
+youIntPl_Pron = mkPron "তোরা"	"তোদের"	"তোদের"	"তোদের" P2H0 Pl ;
+youSg_Pron = mkPron "তুমি" 	"তোমার"	"তোমাকে"	"তোমার" P2H1 Sg ;
+youPl_Pron = mkPron "তোমরা"	"তোমাদের"	"তোমাদের"	"তোমাদের" P2H1 Pl ;
+youPolSg_Pron = mkPron "আপনি"	"আপনার"	"আপনাকে"	"আপনার" P2H2 Sg ;
+youPolPl_Pron = mkPron "আপনারা"	"আপনাদের"	"আপনাদের"	"আপনাদের" P2H2 Pl ;
 
-he_Pron = mkPron "সে"	"তার"	"তাকে"	"তার" P3 Sg ;
+he_Pron = mkPron "সে"	"তার"	"তাকে"	"তার" P3H1 Sg ;
 she_Pron = he_Pron ;
-they_Pron = mkPron "তারা"	"তাদের"	"তাদের"	"তাদের"	P3 Pl ;
-hePol_Pron = mkPron "তিনি"	"তাঁর"	"তাঁকে"	"তাঁর" P3 Sg ;
+they_Pron = mkPron "তারা"	"তাদের"	"তাদের"	"তাদের"	P3H1 Pl ;
+hePol_Pron = mkPron "তিনি"	"তাঁর"	"তাঁকে"	"তাঁর" P3H2 Sg ;
 shePol_Pron = hePol_Pron ;
-theyPol_Pron = mkPron "তাঁরা"	"তাঁদের"	"তাঁদের"	"তাঁদের"	P3 Pl ;
+theyPol_Pron = mkPron "তাঁরা"	"তাঁদের"	"তাঁদের"	"তাঁদের"	P3H2 Pl ;
 
-it_Pron = mkPron "এটা" 	"এটার" 	"এটাকে"	"এটাতে"	P3 Sg ;
+it_Pron = mkPron "এটা" 	"এটার" 	"এটাকে"	"এটাতে"	P3H1 Sg ;
 this_Pron = it_Pron ;
-these_Pron = mkPron "এগুলো" "এগুলোর"	"এগুলোকে"	"এগুলোর"	P3 Pl ;
-that_Pron = mkPron "ওটা" "ওটার" "ওটাকে" "ওটাতে" P3 Sg ;
-those_Pron = mkPron "ওগুলো" "ওগুলোর" "ওগুলোকে" "ওগুলোর"	P3 Pl ;
+these_Pron = mkPron "এগুলো" "এগুলোর"	"এগুলোকে"	"এগুলোর"	P3H1 Pl ;
+that_Pron = mkPron "ওটা" "ওটার" "ওটাকে" "ওটাতে" P3H1 Sg ;
+those_Pron = mkPron "ওগুলো" "ওগুলোর" "ওগুলোকে" "ওগুলোর"	P3H1 Pl ;
 
+-- who_RP who_IP
 ---------------------------------------------
 -- NP
 
@@ -301,7 +305,7 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
   emptyNP : LinNP = { -- Change when you change LinNP
     s = [] ;
     n = Sg ;
-    p = P3 ;
+    p = P3H1 ;
   } ;
 
 --------------------------------------------------------------------------------
@@ -370,26 +374,273 @@ oper
   AdjPhrase : Type = LinA ; -- ** {compar : Str} ;
 --------------------------------------------------------------------------------
 -- Verbs
+LinN : Type = {
+    s :
+        Number =>    -- variable number: table {Sg => "house" ; Pl => "houses"}
+        Article =>
+        Case =>     -- uncomment if your language has case
+        Str ;
+    } ;
+
+  mkLinN : Animacy -> Str -> LinN ;
+
+  mkLinN animacy str = case animacy of {
+        Animate => genLocSameN str ;
+        Inanimate => nomObjSameN str 
+  } ;
 
 param
   VForm = TODOVF Number Person ;
+  Tense = PreSim | PreCon | PrePer | PaSim | PaCon | PaPer | FuSim ; 
 
 oper
   LinV : Type = {
-    s : VForm => Str
+    s : 
+        Tense => 
+        Person => 
+        Str ;
     } ;
 
   LinV2 : Type = LinV ** {
     c2 : LinPrep ;
     } ;
 
-  mkVerb : Str -> LinV = \str -> {
-    s = table {
-      _ => str
-      }
-    } ;
+  mkVerb : Str -> Str -> LinV ; 
+  
+  mkVerb low high = case low of {
+    ? + "া" => cls4mkVerb low high ;
+    ? + ("ৌ" | "ৈ" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ") => cls3mkVerb low high ;
+    ? + "া" + ? | "আ" + ? => cls2mkVerb low high ;
+    ? + ("ৌ" | "ৈ" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ") + ? |
+    ? + ? | ("অ" | "ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ") + ? => cls1mkVerb low high ;
+    ? + ("া" | "ৌ" | "ৈ" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ") + ? + "া" => cls5mkVerb low high ;
+    _ => cls6mkVerb low high 
+  } ;
 
-  copula : LinV = {s = \\_ => "TODO: copula"} ; -- often useful
+  cls1mkVerb : (low, high : Str) -> LinV
+   = \low, high -> {
+    s = table {
+      PreSim => table {
+        P1 => high + "ি" ;
+        P2H1 => low ;
+        P2H0 => high + "িস" ;
+        P3H1 => low + "ে" ;
+        P2H2 | P3H2 => low + "েন" 
+      } ;
+      PreCon => table {
+        P1 => high + "ছি" ;
+        P2H1 => high + "ছো" ;
+        P2H0 => high + "ছিস" ;
+        P3H1 => high + "ছে" ;
+        P2H2 | P3H2 => high + "ছেন"
+      } ;
+      PrePer => table {
+        P1 => high + "েছি" ;
+        P2H1 => high + "েছো" ;
+        P2H0 => high + "েছিস" ;
+        P3H1 => high + "েছে" ;
+        P2H2 | P3H2 => high + "েছেন"
+      } ;
+      PaSim => table {
+        P1 => high + "লাম" ;
+        P2H1 => high + "লে" ;
+        P2H0 => high + "লি" ;
+        P3H1 => high + "লো" ;
+        P2H2 | P3H2 => high + "লেন"
+      } ;
+      PaCon => table {
+        P1 => high + "ছিলাম" ;
+        P2H1 => high + "ছিলে" ;
+        P2H0 => high + "ছিলি" ;
+        P3H1 => high + "ছিলো" ;
+        P2H2 | P3H2 => high + "ছিলেন"
+      } ;
+      PaPer => table {
+        P1 => high + "েছিলাম" ;
+        P2H1 => high + "েছিলে" ;
+        P2H0 => high + "েছিলি" ;
+        P3H1 => high + "েছিলো" ;
+        P2H2 | P3H2 => high + "েছিলেন"
+      } ;
+      FuSim => table {
+        P1 => high + "বো" ;
+        P2H1 => high + "বে" ;
+        P2H0 => high + "বি" ;
+        P3H1 => high + "বে" ;
+        P2H2 | P3H2 => high + "বেন"
+      } 
+    } ;
+   } ;
+  
+  cls2mkVerb : (low, high : Str) -> LinV
+   = \low, high -> {
+    s = table {
+      PreSim => table {
+        P1 => low + "ি" ;
+        P2H1 => low ;
+        P2H0 => low + "িস" ;
+        P3H1 => low + "ে" ;
+        P2H2 | P3H2 => low + "েন" 
+      } ;
+      PreCon => table {
+        P1 => low + "ছি" ;
+        P2H1 => low + "ছো" ;
+        P2H0 => low + "ছিস" ;
+        P3H1 => low + "ছে" ;
+        P2H2 | P3H2 => low + "ছেন"
+      } ;
+      PrePer => table {
+        P1 => high + "েছি" ;
+        P2H1 => high + "েছো" ;
+        P2H0 => high + "েছিস" ;
+        P3H1 => high + "েছে" ;
+        P2H2 | P3H2 => high + "েছেন"
+      } ;
+      PaSim => table {
+        P1 => low + "লাম" ;
+        P2H1 => low + "লে" ;
+        P2H0 => low + "লি" ;
+        P3H1 => low + "লো" ;
+        P2H2 | P3H2 => low + "লেন"
+      } ;
+      PaCon => table {
+        P1 => low + "ছিলাম" ;
+        P2H1 => low + "ছিলে" ;
+        P2H0 => low + "ছিলি" ;
+        P3H1 => low + "ছিলো" ;
+        P2H2 | P3H2 => low + "ছিলেন"
+      } ;
+      PaPer => table {
+        P1 => high + "েছিলাম" ;
+        P2H1 => high + "েছিলে" ;
+        P2H0 => high + "েছিলি" ;
+        P3H1 => high + "েছিলো" ;
+        P2H2 | P3H2 => high + "েছিলেন"
+      } ;
+      FuSim => table {
+        P1 => low + "বো" ;
+        P2H1 => low + "বে" ;
+        P2H0 => low + "বি" ;
+        P3H1 => low + "বে" ;
+        P2H2 | P3H2 => low + "বেন"
+      } 
+    } ;
+   } ;
+
+  cls3mkVerb : (low, high : Str) -> LinV
+   = \low, high -> {
+    s = table {
+      PreSim => table {
+        P1 => high + "ই" ;
+        P2H1 => low + "ও" ;
+        P2H0 => high + "স" ;
+        P3H1 => low + "য়" ;
+        P2H2 | P3H2 => low + "ন" 
+      } ;
+      PreCon => table {
+        P1 => high + "চ্ছি" ;
+        P2H1 => high + "চ্ছো" ;
+        P2H0 => high + "চ্ছিস" ;
+        P3H1 => high + "চ্ছে" ;
+        P2H2 | P3H2 => high + "চ্ছেন"
+      } ;
+      PrePer => table {
+        P1 => high + "য়েছি" ;
+        P2H1 => high + "য়েছ" ;
+        P2H0 => high + "য়েছিস" ;
+        P3H1 => high + "য়েছে" ;
+        P2H2 | P3H2 => high + "য়েছেন"
+      } ;
+      PaSim => table {
+        P1 => high + "লাম" ;
+        P2H1 => high + "লে" ;
+        P2H0 => high + "লি" ;
+        P3H1 => high + "লো" ;
+        P2H2 | P3H2 => high + "লেন"
+      } ;
+      PaCon => table {
+        P1 => high + "চ্ছিলাম" ;
+        P2H1 => high + "চ্ছিলে" ;
+        P2H0 => high + "চ্ছিলি" ;
+        P3H1 => high + "চ্ছিলো" ;
+        P2H2 | P3H2 => high + "চ্ছিলেন"
+      } ;
+      PaPer => table {
+        P1 => high + "য়েছিলাম" ;
+        P2H1 => high + "য়েছিলে" ;
+        P2H0 => high + "য়েছিলি" ;
+        P3H1 => high + "য়েছিলো" ;
+        P2H2 | P3H2 => high + "য়েছিলেন"
+      } ;
+      FuSim => table {
+        P1 => high + "বো" ;
+        P2H1 => high + "বে" ;
+        P2H0 => high + "বি" ;
+        P3H1 => high + "বে" ;
+        P2H2 | P3H2 => high + "বেন"
+      } 
+    } ;
+   } ;
+
+  cls4mkVerb : (low, high : Str) -> LinV
+   = \low, high -> {
+    s = table {
+      PreSim => table {
+        P1 => low + "ই" ;
+        P2H1 => low + "ও" ;
+        P2H0 => low + "স" ;
+        P3H1 => low + "য়" ;
+        P2H2 | P3H2 => low + "ন" 
+      } ;
+      PreCon => table {
+        P1 => low + "চ্ছি" ;
+        P2H1 => low + "চ্ছো" ;
+        P2H0 => low + "চ্ছিস" ;
+        P3H1 => low + "চ্ছে" ;
+        P2H2 | P3H2 => low + "চ্ছেন"
+      } ;
+      PrePer => table {
+        P1 => high + "য়েছি" ;
+        P2H1 => high + "য়েছো" ;
+        P2H0 => high + "য়েছিস" ;
+        P3H1 => high + "য়েছে" ;
+        P2H2 | P3H2 => high + "য়েছেন"
+      } ;
+      PaSim => table {
+        P1 => high + "লাম" ;
+        P2H1 => high + "লে" ;
+        P2H0 => high + "লি" ;
+        P3H1 => high + "লো" ;
+        P2H2 | P3H2 => high + "লেন"
+      } ;
+      PaCon => table {
+        P1 => low + "চ্ছিলাম" ;
+        P2H1 => low + "চ্ছিলে" ;
+        P2H0 => low + "চ্ছিলি" ;
+        P3H1 => low + "চ্ছিলো" ;
+        P2H2 | P3H2 => low + "চ্ছিলেন"
+      } ;
+      PaPer => table {
+        P1 => high + "য়েছিলাম" ;
+        P2H1 => high + "য়েছিলে" ;
+        P2H0 => high + "য়েছিলি" ;
+        P3H1 => high + "য়েছিলো" ;
+        P2H2 | P3H2 => high + "য়েছিলেন"
+      } ;
+      FuSim => table {
+        P1 => low + "বো" ;
+        P2H1 => low + "বে" ;
+        P2H0 => low + "বি" ;
+        P3H1 => low + "বে" ;
+        P2H2 | P3H2 => low + "বেন"
+      } 
+    } ;
+   } ;
+
+  cls5mkVerb = cls4mkVerb ;
+  cls6mkVerb = cls4mkVerb ;
+
+  -- copula : LinV = {s = \\_ => "TODO: copula"} ; TODO -- often useful
 
 ------------------
 -- VP
@@ -402,7 +653,7 @@ oper
     c2 : LinPrep ;
     } ;
 
-  linVP : LinVP -> Str = \vp -> vp.s ! TODOVF Sg P3 ;
+  -- linVP : LinVP -> Str = \vp -> vp.s ! TODOVF Sg P3 ; //TODO
 
 --------------------------------------------------------------------------------
 -- Cl, S
