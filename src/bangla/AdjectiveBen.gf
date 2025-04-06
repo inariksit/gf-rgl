@@ -10,9 +10,11 @@ concrete AdjectiveBen of Adjective = CatBen ** open ResBen, Prelude in {
   } ;
 
   -- : A  -> AP ;
-  PositA a = a ** {
-    compar = [] ;
-    } ;
+  -- PositA a = a ** {
+  --   compar = [] ;
+  -- } ;
+
+  PositA a = a ;
 
   -- : A  -> NP -> AP ;
   ComparA a np = a ** {
@@ -45,7 +47,9 @@ concrete AdjectiveBen of Adjective = CatBen ** open ResBen, Prelude in {
   --   compar = []
   --   } ;
   -- AdjOrd : Ord -> AP  =
-  AdjOrd ord = ord ;
+  AdjOrd ord = {
+    s = "সবচেয়ে" ++ ord.s ;
+  } ;
 
 -- Sentence and question complements defined for all adjectival
 -- phrases, although the semantics is only clear for some adjectives.
