@@ -7,9 +7,9 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 --2 Noun phrases
 
 -- : Det -> CN -> NP
-    DetCN det cn = emptyNP ** {
-      s = det.s ++ cn.s ! det.n
-      } ;
+    -- DetCN det cn = emptyNP ** { // TODO 
+    --   s = det.s ++ cn.s ! det.n
+    --   } ;
 {-
   -- : PN -> NP ;
   -- Assuming that lincat PN = lincat NP

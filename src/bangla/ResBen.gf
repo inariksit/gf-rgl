@@ -374,20 +374,6 @@ oper
   AdjPhrase : Type = LinA ; -- ** {compar : Str} ;
 --------------------------------------------------------------------------------
 -- Verbs
-LinN : Type = {
-    s :
-        Number =>    -- variable number: table {Sg => "house" ; Pl => "houses"}
-        Article =>
-        Case =>     -- uncomment if your language has case
-        Str ;
-    } ;
-
-  mkLinN : Animacy -> Str -> LinN ;
-
-  mkLinN animacy str = case animacy of {
-        Animate => genLocSameN str ;
-        Inanimate => nomObjSameN str 
-  } ;
 
 param
   VForm = TODOVF Number Person ;
