@@ -10,10 +10,10 @@ lin
 
   -- : NP -> VP -> Cl
   PredVP np vp = {
-    subj = np.s ; -- ! Nom, if there are cases
+    subj = np.s ! NPC Nom ;
     pred =
      -- table {something with tense+polarity =>
-            vp.s ! TODOVF np.n np.p
+            vp.s ! VF PreSim np.p
             -- TODO: all of the VP's tense and polarity should be open here!
             -- PredVP only decides the subject.
      -- }

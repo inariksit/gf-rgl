@@ -350,8 +350,8 @@ oper
 -- Verbs
 
 param
-  VForm = TODOVF Number Person ;
-  Tense = PreSim | PreCon | PrePer | PaSim | PaCon | PaPer | FuSim ; 
+  VForm = VF Tense Person ;
+  Tense = PreSim | PreCon | PrePer | PaSim | PaCon | PaPer | FuSim ;
 
 oper
   LinV : Type = {

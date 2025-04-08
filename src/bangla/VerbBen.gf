@@ -8,7 +8,9 @@ lin
   -- : V -> VP
   -- NB. assumes that lincat V = lincat VP
   -- This will most likely change when you start working with VPs
-  UseV v = v ;
+  UseV v = {s =
+    table {VF t p => v.s ! t ! p}
+  } ;
 
 {-
   --  : V2 -> VP ;

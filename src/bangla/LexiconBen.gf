@@ -87,7 +87,7 @@ lin cut_V2 = mkV2 "" ;
 -- D
 
 lin day_N = mkN "" ; -}
-lin die_V = mkV "die" ;
+lin die_V = mkV "die" "die" ;
 {-lin dig_V = mkV "" ;
 lin dirty_A = mkA "" ;
 lin distance_N3 = mkN3 (mkN "") ;
