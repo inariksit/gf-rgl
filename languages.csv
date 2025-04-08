@@ -2,6 +2,7 @@ Code,Name,Directory,Functor,Unlexer,Present,All,Try,Symbolic,Compatibility,Synop
 Afr,Afrikaans,afrikaans,,,,,,n,,y
 Amh,Amharic,amharic,,,,,n,n,,n
 Ara,Arabic,arabic,,,,,,y,,y
+Ben,Bangla,bangla,n,n,n,y,n,n,n,n
 Bul,Bulgarian,bulgarian,,,y,,,,,y
 Cat,Catalan,catalan,Romance,,y,,,,y,y
 Cgg,Rukiga,rukiga,,,y,y,n,n,y,y
