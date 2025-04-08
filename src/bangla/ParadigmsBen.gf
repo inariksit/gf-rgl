@@ -109,7 +109,7 @@ oper
 -- hidden from the document.
 
   Prep = CatBen.Prep ;
-  noPrep = mkPrep [] ;
+  noPrep = mkPrep [] Gen ;
 
   -- Add more overload instances if needed for all categories!
 
@@ -117,7 +117,8 @@ oper
   -- https://inariksit.github.io/gf/2018/05/25/subtyping-gf.html#lock-fields
 
   mkN = overload {
-    mkN : Str -> N = \s -> lin N (ResBen.mkNoun s) ;
+    mkN : Str -> N = \s -> lin N (ResBen.mkLinN Inanimate s) ;
+    mkN : Animacy -> Str -> N = \animacy, s -> lin N (ResBen.mkLinN animacy s) ;
     -- TODO: more overload instances
   } ;
 
@@ -141,7 +142,7 @@ oper
 -}
   -- Verbs
   mkV = overload {
-    mkV : Str -> V = \s -> lin V (mkVerb s) ;
+    mkV : Str -> Str -> V = \s1, s2 -> lin V (mkVerb s1 s2) ;
   } ;
 
 {-
@@ -181,7 +182,7 @@ oper
 
   -- If prepositions take case, add that as argument to mkPrep
   mkPrep = overload {
-    mkPrep : Str -> Prep = \s -> lin Prep {s = s} ;
+    mkPrep : Str -> Case -> Prep = \s, c -> lin Prep {s = s ; c = c} ;
     } ;
 {-
   mkConj = overload {

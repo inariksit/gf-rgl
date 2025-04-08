@@ -77,7 +77,7 @@ concrete CatBen of Cat = CommonX ** open ResBen, Coordination, Prelude in {
                    -- coordinating a list of NPs with that Conj.
         } ;        -- "[Ann and Bob] are children" → and_Conj.n = Pl
     Subj = SS ;
-    Prep = SS ;
+    Prep = LinPrep ;
 
 
 

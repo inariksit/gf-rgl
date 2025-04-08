@@ -53,8 +53,11 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 -}
   -- MassNP : CN -> NP ;
     MassNP cn = emptyNP ** {
-      s = cn.base
-      } ;
+      s = table {
+        NPBare => cn.s ! Bare ;
+        NPC c => cn.s ! Inflection Sg Indefinite c 
+      } 
+    } ;
 
 
 --2 Determiners
@@ -137,6 +140,10 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   -- : N -> CN
   UseN n = n ;
+
+  AdjCN ap cn = {
+    s = \\n => ap.s ++ cn.s ! n ;
+  } ;
 
 {-
   -- : N2 -> CN ;

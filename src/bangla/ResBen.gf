@@ -52,18 +52,17 @@ param
   Case = Nom | Gen | Obj | Loc ;
   Number = Sg
          | Pl ;
+  
   Article = Indefinite | Definite ;
   Animacy = Inanimate | Animate ;
   Person = P1 | P2H0 | P2H1 | P2H2 | P3H1 | P3H2 ;
-
+  NForm = Bare | Inflection Number Article Case ;
+  NPCase = NPBare | NPC Case ;
 oper
   LinN : Type = {
     s :
-        Number =>    -- variable number: table {Sg => "house" ; Pl => "houses"}
-        Article =>
-        Case =>     -- uncomment if your language has case
+        NForm =>
         Str ;
-    base : Str ;
     } ;
 
   mkLinN : Animacy -> Str -> LinN ;
@@ -75,13 +74,11 @@ oper
 
 -- cc -table mkLinN Animate "বেদী"
   genLocSameN : Str -> LinN = \s -> {
-        base = s ;
         s = table {
-            Sg => table {
-                Indefinite => table {
-                   Nom => "একজন" ++ s ;
-                   Obj => "একজন" ++ s + "কে" ;
-                   Gen|Loc => case s of {
+            Bare => s ;
+            Inflection Sg Indefinite Nom => "একজন" ++ s ;
+            Inflection Sg Indefinite Obj => "একজন" ++ s + "কে" ;
+            Inflection Sg Indefinite (Gen|Loc) => case s of {
                     -- TODO Fix pattern matching
                     ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
                       => s + "য়ের" ;
@@ -90,17 +87,11 @@ oper
                     _ + ("ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ")
                       => s + "য়ের" ;
                     _ => s + " ের"
-                   }
-                } ;
-                Definite => table {
-                   Nom => s + "টা" ;
-                   Obj => s + "টাকে" ;
-                   Gen|Loc => s + "টার"
-                }
-            } ;
-            Pl => table {
-                Indefinite => table {
-                   Nom => case s of {
+                   } ;
+           Inflection Sg Definite Nom => s + "টা" ;
+           Inflection Sg Definite Obj => s + "টাকে" ;
+           Inflection Sg Definite (Gen|Loc) => s + "টার" ;
+           Inflection Pl Indefinite Nom => case s of {
                     ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
                       => s + "য়েরা" ;
                     _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
@@ -109,25 +100,19 @@ oper
                       => s + "য়েরা" ;
                     _ => s + " েরা"
                    } ;
-                   Obj => s + "দেরকে" ;
-                   Gen|Loc => s + "দের"
-                } ;
-                Definite => table {
-                   Nom => s + "গুলো" ;
-                   Obj => s + "গুলোকে" ;
-                   Gen|Loc => s + "গুলোর"
-                }
-            }
+            Inflection Pl Indefinite Obj => s + "দেরকে" ;
+            Inflection Pl Indefinite (Gen|Loc) => s + "দের" ;
+            Inflection Pl Definite Nom => s + "গুলো" ;
+            Inflection Pl Definite Obj => s + "গুলোকে" ;
+            Inflection Pl Definite (Gen|Loc) => s + "গুলোর"
         }
-    } ;
+  } ;
 
 nomObjSameN : Str -> LinN = \s -> {
-        base = s ;
         s = table {
-            Sg => table {
-                Indefinite => table {
-                   Nom|Obj => "একটা" ++ s ;
-                   Gen => case s of {
+          Bare => s ;
+          Inflection Sg Indefinite (Nom|Obj) => "একটা" ++ s ;
+          Inflection Sg Indefinite Gen => case s of {
                     ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
                       => "একটা" ++ s + "য়ের" ;
                     _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
@@ -136,18 +121,12 @@ nomObjSameN : Str -> LinN = \s -> {
                       => "একটা" ++ s + "য়ের" ;
                     _ => "একটা" ++ s + " ের"
                    } ;
-                   Loc => "একটা" ++ s + " ে"
-                } ;
-                Definite => table {
-                   Nom|Obj => s + "টা" ;
-                   Gen => s + "টার" ;
-                   Loc => s + "টায়"
-                }
-            } ;
-            Pl => table {
-                Indefinite => table {
-                   Nom|Obj => s ;
-                   Gen => case s of {
+          Inflection Sg Indefinite Loc => "একটা" ++ s + " ে" ;
+          Inflection Sg Definite (Nom|Obj) => s + "টা" ;
+          Inflection Sg Definite Gen => s + "টার" ;
+          Inflection Sg Definite Loc => s + "টায়" ;
+          Inflection Pl Indefinite (Nom|Obj) => s ;
+          Inflection Pl Indefinite Gen => case s of {
                     ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
                       => s + "য়ের" ;
                     _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
@@ -156,14 +135,10 @@ nomObjSameN : Str -> LinN = \s -> {
                       => s + "য়ের" ;
                     _ => s + " ের"
                    } ;
-                   Loc => s + " ে"
-                } ;
-                Definite => table {
-                   Nom|Obj => s + "গুলো" ;
-                   Gen => s + "গুলোর" ;
-                   Loc => s + "গুলোতে"  
-                }
-            }
+          Inflection Pl Indefinite Loc => s + " ে" ;
+          Inflection Pl Definite (Nom|Obj) => s + "গুলো" ;
+          Inflection Pl Definite Gen => s + "গুলোর" ;
+          Inflection Pl Definite Loc => s + "গুলোতে"
         }
     } ;
 
@@ -291,7 +266,7 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
 -}
 
   LinNP : Type = {
-    s : Str ;
+    s : NPCase => Str ;
     -- Alternative: If anything inflects in case (nouns, pronouns), NP has to also inflect in case!
     -- s : Case => Str ;
     n : Number ;
@@ -300,10 +275,10 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
     -- a : Agr -- sketched on lines 97-101
     } ;
 
-  linNP : LinNP -> Str = \np -> np.s ; -- Change when you change LinNP
+  linNP : LinNP -> Str = \np -> np.s ! NPBare ; -- Change when you change LinNP
 
   emptyNP : LinNP = { -- Change when you change LinNP
-    s = [] ;
+    s = \\_ => [] ;
     n = Sg ;
     p = P3H1 ;
   } ;
@@ -354,14 +329,13 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
 oper
   LinPrep : Type = {
     s : Str ;
-
+    c : Case ;
+  } ;
     -- If your language has cases, and different prepositions choose different cases.
     -- c2 : Case ;
 
     -- If your language has both pre- and postpositions, you need an inherent parameter in Prep to record which one a given Prep is.
     -- position : PreOrPost ;
-    } ;
-
 
 --------------------------------------------------------------------------------
 -- Adjectives
