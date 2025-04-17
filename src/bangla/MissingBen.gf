@@ -1,6 +1,16 @@
-resource MissingBen = open GrammarBen, Prelude in {
+resource MissingBen = open GrammarBen, SymbolBen, Prelude in {
 -- temporary definitions to enable the compilation of RGL API
 oper AdAP : AdA -> AP -> AP  = notYet "AdAP" ;
+oper CNSymbNP : Det -> CN -> [Symb] -> NP = notYet "CNSymbNP" ;
+oper SymbPN : Symb -> PN = notYet "SymbPN" ;
+oper IntPN : Int -> PN = notYet "IntPN" ;
+oper FloatPN : Float -> PN = notYet "FloatPN" ;
+oper NumPN : Card -> PN = notYet "NumPN" ;
+oper CNNumNP : CN -> Card -> NP = notYet "CNNumNP" ;
+oper SymbS : Symb -> S = notYet "SymbS" ;
+oper SymbNum : Symb -> Card = notYet "SymbNum" ;
+oper SymbOrd : Symb -> Ord = notYet "SymbOrd" ;
+-- oper Symb : Str -> NP = notYet "Symb" ;
 oper AdAdv : AdA -> Adv -> Adv  = notYet "AdAdv" ;
 oper AdNum : AdN -> Card -> Card  = notYet "AdNum" ;
 oper AdVVP : AdV -> VP -> VP  = notYet "AdVVP" ;
