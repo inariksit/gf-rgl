@@ -67,7 +67,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   -- : Quant -> Num -> Det ;
     DetQuant quant num = quant ** {
-      s = quant.s ! num.n ++ num.s ;
+      s = quant.s ++ num.s ;
       n = num.n ;
       } ;
 
@@ -143,6 +143,10 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   AdjCN ap cn = {
     s = \\n => ap.s ++ cn.s ! n ;
+  } ;
+
+  AdvCN cn adv = {
+    s = \\n => adv.s ++ cn.s ! n ;
   } ;
 
 {-

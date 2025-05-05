@@ -1,4 +1,4 @@
-concrete CatBen of Cat = CommonX ** open ResBen, Coordination, Prelude in {
+concrete CatBen of Cat = CommonX - [Adv] ** open ResBen, Coordination, Prelude in {
 
   flags optimize=all_subs ;
 
@@ -60,6 +60,7 @@ concrete CatBen of Cat = CommonX ** open ResBen, Coordination, Prelude in {
     ACard = SS ;
     Ord = SS ;
     DAP = SS ;
+    Adv = ResBen.LinAdv ;
 
 
 --2 Numerals
@@ -108,7 +109,7 @@ concrete CatBen of Cat = CommonX ** open ResBen, Coordination, Prelude in {
     N = ResBen.LinN ;
     N2 = ResBen.LinN ;
     N3 = ResBen.LinN ;
-    PN = SS ;
+    PN = ResBen.LinPN ;
 
     -- From the Names module, not in the official API as of 2023-08
     GN = SS ; -- Given name,    e.g. "George"

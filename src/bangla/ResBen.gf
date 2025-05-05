@@ -151,7 +151,7 @@ nomObjSameN : Str -> LinN = \s -> {
     ;
 
   LinPN : Type = {
-    s : Str ;
+    s : NPCase => Str ;
     n : Number ; -- Proper nouns often have already an inherent number; you don't usually say "a Paris / many Parises"
     -- g : Gender ; -- inherent gender/noun class, if your language has that
   } ;
@@ -289,11 +289,12 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
   -- If your language has a number, it is very very very likely that
   -- Quant has a variable number and Det has inherent number.
 
-  LinQuant : Type = {
-    s,  -- quantifier in a context, e.g. 'this (cat) (is nice)'
-    sp  -- quantifier as standalone, e.g. 'this (is nice)'
-     : Number => Str ;
-    } ;
+  LinQuant : Type = SS ;
+    --  {
+    -- s,  -- quantifier in a context, e.g. 'this (cat) (is nice)'
+    -- sp  -- quantifier as standalone, e.g. 'this (is nice)'
+    --  : Number => Str ;
+    -- } ;
 
   LinDet : Type = {
     s : Str ;
@@ -625,5 +626,9 @@ oper
   } ;
 
   linCl : LinCl -> Str = \cl -> cl.subj ++ cl.pred ;
+
+--------------------------------------------------------------------------------
+-- Adverb
+  LinAdv : Type = {s : Str} ;
 
 }

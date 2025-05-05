@@ -2,9 +2,9 @@ resource MissingBen = open GrammarBen, SymbolBen, Prelude in {
 -- temporary definitions to enable the compilation of RGL API
 oper AdAP : AdA -> AP -> AP  = notYet "AdAP" ;
 oper CNSymbNP : Det -> CN -> [Symb] -> NP = notYet "CNSymbNP" ;
-oper SymbPN : Symb -> PN = notYet "SymbPN" ;
-oper IntPN : Int -> PN = notYet "IntPN" ;
-oper FloatPN : Float -> PN = notYet "FloatPN" ;
+-- oper SymbPN : Symb -> PN = notYet "SymbPN" ;
+-- oper IntPN : Int -> PN = notYet "IntPN" ;
+-- oper FloatPN : Float -> PN = notYet "FloatPN" ;
 oper NumPN : Card -> PN = notYet "NumPN" ;
 oper CNNumNP : CN -> Card -> NP = notYet "CNNumNP" ;
 oper SymbS : Symb -> S = notYet "SymbS" ;

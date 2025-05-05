@@ -3,16 +3,16 @@
 concrete SymbolBen of Symbol = CatBen **
   open Prelude, ParadigmsBen, ResBen, (Noun=NounBen) in {
 
--- lin
+lin
 
---   --  : Symb -> PN ;                -- x
---   SymbPN i = mkPN_onRuntimeToken i.s ;
+  --  : Symb -> PN ;                -- x
+  SymbPN i = mkPN_onRuntimeToken i.s ;
 
---   -- : Int -> PN ;                 -- 27
---   IntPN i  = mkPN_onRuntimeToken i.s ;
+  -- : Int -> PN ;                 -- 27
+  IntPN i  = mkPN_onRuntimeToken i.s ;
 
---   -- : Float -> PN ;               -- 3.14159
---   FloatPN i = mkPN_onRuntimeToken i.s ;
+  -- : Float -> PN ;               -- 3.14159
+  FloatPN i = mkPN_onRuntimeToken i.s ;
 
 --   -- : Card -> PN ;                -- twelve [as proper name]
 --   NumPN i = mkPN_onRuntimeToken (i.s ! NCard) ;
@@ -39,32 +39,32 @@ concrete SymbolBen of Symbol = CatBen **
 --   -- : Symb -> Ord ;
 --   SymbOrd sy = sy ; ---- TODO: nothing added to it. Lincat of Ord is just SS from the beginning.
 
---   oper
+oper
 --     -- To make Card or PN from a runtime argument, cannot use the single + operation.
 --     -- See https://inariksit.github.io/gf/2018/08/28/gf-gotchas.html#unsupported-token-gluing
 
---     mkNumeral_onRuntimeToken : Str -> LinNumeral = \str -> {
---       s = table {
---         NCard => str ;
---         NOrd  => str ++ BIND ++ "th"
---         } ;
---       n = Pl ; -- NB. probably singular for number 1
---       } ;
+    -- mkNumeral_onRuntimeToken : Str -> LinNumeral = \str -> {
+    --   s = table {
+    --     NCard => str ;
+    --     NOrd  => str ++ BIND ++ "th"
+    --     } ;
+    --   n = Pl ; -- NB. probably singular for number 1
+    --   } ;
 
---     mkPN_onRuntimeToken : Str -> LinPN = \str -> {
---       s =
---        -- table {_ =>  -- If lincat of PN changes so that it's an inflection table, uncomment this
---          str
---          -- }
---          ;
---       n = Sg ;
---       } ;
+mkPN_onRuntimeToken : Str -> LinPN = \str -> {
+  s = table {
+    NPBare => str ;
+    NPC Gen => str ++ "এর" ;
+    NPC _ => str
+  } ;
+  n = Pl ;
+  } ;
 
 lincat
   Symb, [Symb] = SS ;
 
--- lin
---   MkSymb s = s ;
+lin
+  MkSymb s = s ;
 
 --   BaseSymb = infixSS "and" ; -- this comes between the last two ones
 --   ConsSymb = infixSS "," ;

@@ -105,7 +105,9 @@ lin except_Prep = mkPrep "" ;
 lin for_Prep = mkPrep "" ;
 lin from_Prep = mkPrep "" ;
 lin in8front_Prep = mkPrep "" ;
-lin in_Prep = mkPrep "" ;
+-}
+lin in_Prep = mkPrep "" Loc ;
+{-
 lin on_Prep = mkPrep "" ;
 lin part_Prep = mkPrep ;
 lin possess_Prep = mkPrep "" ;

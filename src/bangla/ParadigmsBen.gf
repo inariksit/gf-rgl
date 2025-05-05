@@ -9,7 +9,7 @@ oper
 -- should always use these constants instead of the constructors
 -- defined in $ResSom$.
 
-  Prep : Type ;
+ -- Prep : Type ;
   noPrep : Prep ;
 
   -- Add more overload instances if needed for all categories!
@@ -108,7 +108,7 @@ oper
 -- The definitions should not bother the user of the API. So they are
 -- hidden from the document.
 
-  Prep = CatBen.Prep ;
+  -- Prep = CatBen.Prep ;
   noPrep = mkPrep [] Gen ;
 
   -- Add more overload instances if needed for all categories!
@@ -122,13 +122,16 @@ oper
     -- TODO: more overload instances
   } ;
 
+  mkA = overload {
+    mkA : Str -> A = \s -> lin A (ResBen.mkAdj s) ;
+  } ;
 {-
   mkPN = overload {
     mkPN : Str -> PN = …
   } ;
 
 --2 Adjectives
-
+  
   mkA = overload {
     mkA : Str -> A = \s -> …
   } ;
