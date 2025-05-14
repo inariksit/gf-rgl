@@ -1,4 +1,4 @@
-concrete CatBen of Cat = CommonX - [Adv] ** open ResBen, Coordination, Prelude in {
+concrete CatBen of Cat = CommonX ** open ResBen, Coordination, Prelude in {
 
   flags optimize=all_subs ;
 
@@ -60,7 +60,7 @@ concrete CatBen of Cat = CommonX - [Adv] ** open ResBen, Coordination, Prelude i
     ACard = SS ;
     Ord = SS ;
     DAP = SS ;
-    Adv = ResBen.LinAdv ;
+    -- Adv = SS ;
 
 
 --2 Numerals

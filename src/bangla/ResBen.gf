@@ -176,16 +176,9 @@ nomObjSameN : Str -> LinN = \s -> {
   param
     CardOrd = NCard | NOrd ;
 
-  oper
+  oper 
     LinNumeral : Type = {s : CardOrd => Str ; n : Number} ;
 
-    mkNumeral : Str -> LinNumeral = \s -> {
-      s = table {
-        NCard => s ;
-        NOrd  => s + "th"
-        } ;
-      n = Pl ; -- NB. probably singular for number 1
-      } ;
 
 ---------------------------------------------
 -- Pronoun
@@ -302,12 +295,16 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
     } ;
 
   -- Can you reuse your mkNoun? Do nouns and quantifiers inflect the same way?
-  mkQuant : Str -> Str -> LinQuant = \this, these -> {
-    s,
-    sp = table {
-      Sg => this ;
-      Pl => these } ;
-    };
+  -- mkQuant : Str -> Str -> LinQuant = \this, these -> {
+  --   s,
+  --   sp = table {
+  --     Sg => this ;
+  --     Pl => these } ;
+  --   };
+
+  mkQuant : Str -> LinQuant = \this -> {
+    s = this 
+  };
 
   mkDet : Str -> Number -> LinDet = \str, num -> {
     s = str ;
@@ -629,6 +626,6 @@ oper
 
 --------------------------------------------------------------------------------
 -- Adverb
-  LinAdv : Type = {s : Str} ;
+  -- LinAdv : Type = SS ;
 
 }
