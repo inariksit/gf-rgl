@@ -68,6 +68,7 @@ concrete CatBen of Cat = CommonX ** open ResBen, Coordination, Prelude in {
 -- Constructed in NumeralBen.
 
     Numeral = ResBen.LinNumeral ;
+    Decimal = {s : Str ; n : Number ; hasDot : Bool} ;
     Digits = ResBen.LinNumeral ;
 
 --2 Structural words

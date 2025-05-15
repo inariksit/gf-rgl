@@ -144,10 +144,12 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   AdjCN ap cn = {
     s = \\n => ap.s ++ cn.s ! n ;
+    numSuff = cn.numSuff ;
   } ;
 
   AdvCN cn adv = {
     s = \\n => adv.s ++ cn.s ! n ;
+    numSuff = cn.numSuff ;
   } ;
 
 {-

@@ -1,23 +1,28 @@
-concrete NumeralBen of Numeral = CatBen [Numeral,Digits] **
+concrete NumeralBen of Numeral = CatBen [Numeral,Decimal,Digits] **
   open Prelude, ResBen in {
     
 flags coding=utf8 ;
 
 
-param DForm = unit | ten ;
-param DSize = sg | r2 | r3 | r4 | r5 | r6 | r7 | r8 | r9 ;
-param Size = singl | less100 | more100 ; 
+param 
+  DForm = unit | ten ;
+  DSize = sg | r2 | r3 | r4 | r5 | r6 | r7 | r8 | r9 ;
+  Size = singl | less100 | more100 ; 
 
-oper LinDigit = {s : DForm => Str ; size : DSize ; n : Number ; ord : Str} ;
-oper LinDig : Type = {s : CardOrd => Str ; n : Number} ;
+oper 
+  LinDigit = {s : DForm => Str ; size : DSize ; n : Number ; ord : Str} ;
+  LinDig : Type = {s : CardOrd => Str ; n : Number} ;
 
-lincat Dig = LinDig ;   -- single digit 0..9
-lincat Decimal = {s : Str ; n : Number ; hasDot : Bool} ;
-lincat Digit = LinDigit ;
-lincat Sub10 = {s : DForm => Str ; size : DSize ; n : Number ; ord : Str} ;
-lincat Sub100 = {s : Str ; size : Size ; n : Number ; ord : Str} ;
-lincat Sub1000 = {s : Str ; s2 : Str ; size : Size ; n : Number ; ord : Str} ; 
-lincat Sub1000000 = {s : Str ; n : Number ; ord : Str} ;
+lincat 
+  Dig = LinDig ;   -- single digit 0..9
+  -- Decimal = {s : Str ; n : Number ; hasDot : Bool} ;
+  Digit = LinDigit ;
+  Sub10 = {s : DForm => Str ; size : DSize ; n : Number ; ord : Str} ;
+  Sub100 = {s : Str ; size : Size ; n : Number ; ord : Str} ;
+  Sub1000 = {s : Str ; s2 : Str ; size : Size ; n : Number ; ord : Str} ; 
+  Sub1000000,
+  Sub1000000000, 
+  Sub1000000000000 = {s : Str ; n : Number ; ord : Str} ;
 
 lin num x0 = {
   s = table {
@@ -68,87 +73,91 @@ oper
     r8 => mkR "আঠারো" "আঠাশ" "আটত্রিশ" "আটচল্লিশ" "আটান্ন" "আটষট্টি" "আটাত্তর" "অষ্টাশি" "আটানব্বই" ;
     r9 => mkR "উনিশ" "উনত্রিশ" "উনচল্লিশ" "উনপঞ্চাশ" "উনষাট" "উনসত্তর" "উনআশি" "উননব্বই" "নিরানব্বই" 
   } ;
+  
+  ss : Str -> {s : Str} = \s -> {s = s} ;
 
-oper ss : Str -> {s : Str} = \s -> {s = s} ;
+lin 
+  pot01 = {s = table {unit => "এক" ; _ => "দশ" } ; size = sg ; n = Sg ; ord = "প্রথম" } ;
+  pot0 d = d ; 
+  pot110 = {s = "দশ" ; size = less100 ; n = Pl ; ord = "দশম" } ; 
+  pot111 = {s = rows ! sg ! sg ; size = less100 ; n = Pl ; ord = rows ! sg ! sg  ++ BIND ++ "তম" } ;
+  pot1to19 d = {s = rows ! d.size ! sg ; size = less100 ; n = d.n ; ord = rows ! d.size ! sg ++ BIND ++ "তম" } ;
+  pot0as1 n = {s = n.s ! unit ; size = table {sg => singl ; _ => less100} ! n.size ; n = n.n ; ord = n.ord } ;
 
-lin pot01 = {s = table {unit => "এক" ; _ => "দশ" } ; size = sg ; n = Sg ; ord = "প্রথম" } ;
-lin pot0 d = d ; 
-lin pot110 = {s = "দশ" ; size = less100 ; n = Pl ; ord = "দশম" } ; 
-lin pot111 = {s = rows ! sg ! sg ; size = less100 ; n = Pl ; ord = rows ! sg ! sg  ++ BIND ++ "তম" } ;
-lin pot1to19 d = {s = rows ! d.size ! sg ; size = less100 ; n = d.n ; ord = rows ! d.size ! sg ++ BIND ++ "তম" } ;
-lin pot0as1 n = {s = n.s ! unit ; size = table {sg => singl ; _ => less100} ! n.size ; n = n.n ; ord = n.ord } ;
+  pot1 d = {s = d.s ! ten ; size = less100 ; n = d.n ; ord = d.s ! ten ++ BIND ++ "তম" } ;
+  pot1plus d e = {s = rows ! e.size ! d.size ; size = less100 ; n = d.n ; ord = rows ! e.size ! d.size ++ BIND ++ "তম" } ;
 
-lin pot1 d = {s = d.s ! ten ; size = less100 ; n = d.n ; ord = d.s ! ten ++ BIND ++ "তম" } ;
-lin pot1plus d e = {s = rows ! e.size ! d.size ; size = less100 ; n = d.n ; ord = rows ! e.size ! d.size ++ BIND ++ "তম" } ;
-
-lin pot1as2 n = {s = n.s ; s2 = n.s ; size = n.size ; n = n.n ; ord = n.ord } ;
-lin pot2 d = {s = (mksau (d.s ! unit) d.size) ; 
+  pot1as2 n = {s = n.s ; s2 = n.s ; size = n.size ; n = n.n ; ord = n.ord } ;
+  pot2 d = {s = (mksau (d.s ! unit) d.size) ; 
               s2 = d.s ! unit ++ "লক্ষ" ; size = more100 ; n = d.n ;
               ord = (mksau (d.s ! unit) d.size) ++ BIND ++ "তম" } ;
-lin pot2plus d e = 
+  pot2plus d e = 
   {s = (mksau (d.s ! unit) d.size) ++ e.s ; 
    s2 = (d.s ! unit) ++ "লক্ষ" ++ (mkhazar e.s e.size) ; 
    size = more100 ; n = d.n ;
    ord = (mksau (d.s ! unit) d.size) ++ e.s ++ BIND ++ "তম" } ;
 
-lin pot2as3 n = {s = n.s ; n = n.n ; ord = n.ord } ;
-lin pot3 n = {s = table { singl => ekhazar ;
+  pot2as3 n = {s = n.s ; n = n.n ; ord = n.ord } ;
+  pot3 n = {s = table { singl => ekhazar ;
                           less100 => n.s ++ "হাজার" ; 
                           more100 => n.s2 } ! n.size ; n = n.n ;
               ord = table { singl => ekhazar ;
                           less100 => n.s ++ "হাজার" ; 
                           more100 => n.s2 } ! n.size ++ BIND ++ "তম" } ;
-lin pot3plus n m = 
+  pot3plus n m = 
   {s = table {singl => ekhazar ;
               less100 => n.s ++ "হাজার" ; 
               more100 => n.s2 } ! n.size ++ m.s ; n = n.n ;
    ord = table {singl => ekhazar ;
               less100 => n.s ++ "হাজার" ; 
               more100 => n.s2 } ! n.size ++ m.s ++ BIND ++ "তম" } ;
+  pot3as4 n = n ;
+  pot4as5 n = n ;
 
-oper ekhazar : Str = "এক" ++ "হাজার" ; 
-oper mkhazar : Str -> Size -> Str = \s -> \sz -> table {singl => ekhazar ; _ => s ++ "হাজার"} ! sz ;
-oper mksau : Str -> DSize -> Str = \s -> \sz -> table {sg => "একশ" ; _ => s ++ BIND ++ "শ"} ! sz ;
+oper 
+  ekhazar : Str = "এক" ++ "হাজার" ; 
+  mkhazar : Str -> Size -> Str = \s -> \sz -> table {singl => ekhazar ; _ => s ++ "হাজার"} ! sz ;
+  mksau : Str -> DSize -> Str = \s -> \sz -> table {sg => "একশ" ; _ => s ++ BIND ++ "শ"} ! sz ;
 
 
-  lin
-    -- : Dig -> Digits ;       -- 8
-    IDig d = d ; 
-
-    -- : Dig -> Digits -> Digits ; -- 876
-    IIDig d e = {
-    s = table {
-      NCard => d.s ! NCard ++ BIND ++ e.s ! NCard ;
-      NOrd => d.s ! NCard ++ BIND ++ e.s ! NCard ++ BIND ++ "তম" 
-    } ;
-    n = Pl ;
+lin
+  -- : Dig -> Digits ;       -- 8
+  IDig d = d ; 
+  -- : Dig -> Digits -> Digits ; -- 876
+  IIDig d e = {
+  s = table {
+    NCard => d.s ! NCard ++ BIND ++ e.s ! NCard ;
+    NOrd => d.s ! NCard ++ BIND ++ e.s ! NCard ++ BIND ++ "তম" 
   } ;
+  n = Pl ;
+} ;
+  -- : Dig ;
+  D_0 = mkDig "০" "০তম" Sg ;
+  D_1 = mkDig "১" "১ম" Sg ;
+  D_2 = mkDig "২" "২য়" Pl ;
+  D_3 = mkDig "৩" "৩য়" Pl ;
+  D_4 = mkDig "৪" "৪র্থ" Pl ;
+  D_5 = mkDig "৫" "৫ম" Pl ;
+  D_6 = mkDig "৬" "৬ষ্ট" Pl ;
+  D_7 = mkDig "৭" "৭ম" Pl ;
+  D_8 = mkDig "৮" "৮ম" Pl ;
+  D_9 = mkDig "৯" "৯ম" Pl ;
 
-    -- : Dig ;
-    D_0 = mkDig "০" "০তম" Sg ;
-    D_1 = mkDig "১" "১ম" Sg ;
-    D_2 = mkDig "২" "২য়" Pl ;
-    D_3 = mkDig "৩" "৩য়" Pl ;
-    D_4 = mkDig "৪" "৪র্থ" Pl ;
-    D_5 = mkDig "৫" "৫ম" Pl ;
-    D_6 = mkDig "৬" "৬ষ্ট" Pl ;
-    D_7 = mkDig "৭" "৭ম" Pl ;
-    D_8 = mkDig "৮" "৮ম" Pl ;
-    D_9 = mkDig "৯" "৯ম" Pl ;
+oper
 
-  oper
-
-    mkDig : Str -> Str -> Number -> LinDig = \s1, s2, n -> {
-      s = table {
-        NCard => s1 ;
-        NOrd  => s2
-        } ;
-      n = n ;
+  mkDig : Str -> Str -> Number -> LinDig = \s1, s2, n -> {
+    s = table {
+      NCard => s1 ;
+      NOrd  => s2
       } ;
+    n = n ;
+    } ;
 
-  lin PosDecimal d = { s = d.s ! NCard ; hasDot = False ; n = Pl } ;
+lin 
 
-  lin NegDecimal d = { s = "-" ++ BIND ++ d.s ! NCard ; hasDot = False ; n = Pl } ;
+  PosDecimal d = { s = d.s ! NCard ; hasDot = False ; n = Pl } ;
+
+  NegDecimal d = { s = "-" ++ BIND ++ d.s ! NCard ; hasDot = False ; n = Pl } ;
 
   IFrac d i = {
       s = d.s ++ if_then_Str d.hasDot BIND (BIND++"."++BIND) ++ i.s ! NCard ;

@@ -63,6 +63,7 @@ oper
     s :
         NForm =>
         Str ;
+    numSuff : Str
     } ;
 
   mkLinN : Animacy -> Str -> LinN ;
@@ -105,7 +106,8 @@ oper
             Inflection Pl Definite Nom => s + "গুলো" ;
             Inflection Pl Definite Obj => s + "গুলোকে" ;
             Inflection Pl Definite (Gen|Loc) => s + "গুলোর"
-        }
+        } ;
+    numSuff = "জন" 
   } ;
 
 nomObjSameN : Str -> LinN = \s -> {
@@ -139,7 +141,8 @@ nomObjSameN : Str -> LinN = \s -> {
           Inflection Pl Definite (Nom|Obj) => s + "গুলো" ;
           Inflection Pl Definite Gen => s + "গুলোর" ;
           Inflection Pl Definite Loc => s + "গুলোতে"
-        }
+        } ;
+      numSuff = "টি" 
     } ;
 
   -- Most often, the lincat for CN is the same as N, with possibly some additional fields.
@@ -179,6 +182,8 @@ nomObjSameN : Str -> LinN = \s -> {
   oper 
     LinNumeral : Type = {s : CardOrd => Str ; n : Number} ;
 
+  -- lincat
+  --   Decimal = {s : Str ; n : Number ; hasDot : Bool} ;
 
 ---------------------------------------------
 -- Pronoun
