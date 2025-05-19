@@ -192,6 +192,10 @@ oper
   mkPrep = overload {
     mkPrep : Str -> Case -> Prep = \s, c -> lin Prep {s = s ; c = c} ;
     } ;
+
+  mkAdv = overload {
+    mkAdv : Str -> Adv = \s -> lin Adv (ss s) ;
+    } ;
 {-
   mkConj = overload {
     mkConj : (and : Str) -> Conj = \s -> …
