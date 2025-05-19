@@ -159,6 +159,12 @@ nomObjSameN : Str -> LinN = \s -> {
     -- g : Gender ; -- inherent gender/noun class, if your language has that
   } ;
 
+    mkLinPN : Str -> Number -> LinPN = \s,n ->
+      let pnAsN : LinN = mkLinN Inanimate s ;
+       in {s = table {
+                  NPBare => s ;
+                  NPC c => pnAsN.s ! Inflection n Indefinite c } ;
+          n = n } ;
   -- For inflection paradigms, see http://www.grammaticalframework.org/doc/tutorial/gf-tutorial.html#toc56
   -- mkNoun : Str -> LinN = \str -> {
   --   s = table {

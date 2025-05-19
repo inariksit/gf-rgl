@@ -15,10 +15,9 @@ lin
   FloatPN i = mkPN_onRuntimeToken i.s ;
 
 --   -- : Card -> PN ;                -- twelve [as proper name]
---   NumPN i = mkPN_onRuntimeToken (i.s ! NCard) ;
+  NumPN i = mkPN_onRuntimeToken i.s ;
 
 -- lin
--- --  CNIntNP cn i = {} ;
 
 --   -- : Det -> CN -> [Symb] -> NP ; -- (the) (2) numbers x and y
 --   -- CNSymbNP det cn xs =
@@ -52,7 +51,7 @@ oper
     --   } ;
 
 mkPN_onRuntimeToken : Str -> LinPN = \str -> {
-  s = table {
+  s = table { 
     NPBare => str ;
     NPC Gen => str ++ "এর" ;
     NPC _ => str

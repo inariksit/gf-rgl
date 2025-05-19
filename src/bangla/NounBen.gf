@@ -5,7 +5,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
   lin
 
 --2 Noun phrases
-
+  UsePN pn = pn ** {p = P3H1} ;
 -- : Det -> CN -> NP
     -- DetCN det cn = emptyNP ** { // TODO 
     --   s = det.s ++ cn.s ! det.n
@@ -86,12 +86,12 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
   NumSg = {s = [] ; n = Sg} ;
   NumPl = {s = [] ; n = Pl} ;
 
-{-
+
   -- : Card -> Num ;    -- two
   NumCard card = card ;
 
   -- : Digits  -> Card ;
-  NumDigits dig = -- probably like OrdDigits, but choose the NCard form
+  NumDigits dig = dig ** { s = dig.s ! NCard } ; -- probably like OrdDigits, but choose the NCard form
 
   -- : Numeral -> Card ;
   NumNumeral num = {
@@ -112,16 +112,16 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   -- : A       -> Ord ;
   OrdSuperl a = {
-    s = "most" ++ a.s ! Superl
+    s = "সবচেয়ে" ++ a.s 
     } ;
 
 -- One can combine a numeral and a superlative.
 
   -- : Numeral -> A -> Ord ; -- third largest
   OrdNumeralSuperl num a = {
-    s = num.s ! NOrd ++ a.s ! Superl
+    s = num.s ! NOrd ++ a.s 
   } ;
--}
+
 
   -- : Quant
   -- Definite and Indefinite article does not exist as a word in Bangla, rather it exists as 

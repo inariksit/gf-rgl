@@ -125,6 +125,11 @@ oper
   mkA = overload {
     mkA : Str -> A = \s -> lin A (ResBen.mkAdj s) ;
   } ;
+
+  mkPN = overload {
+    mkPN : Str -> PN = \s -> lin PN (ResBen.mkLinPN s Sg) ;
+    mkPN : Str -> Number -> PN = \s, n ->lin PN (ResBen.mkLinPN s n) ;
+  } ;
 {-
   mkPN = overload {
     mkPN : Str -> PN = …

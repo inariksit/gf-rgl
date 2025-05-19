@@ -15,7 +15,6 @@ oper
 
 lincat 
   Dig = LinDig ;   -- single digit 0..9
-  -- Decimal = {s : Str ; n : Number ; hasDot : Bool} ;
   Digit = LinDigit ;
   Sub10 = {s : DForm => Str ; size : DSize ; n : Number ; ord : Str} ;
   Sub100 = {s : Str ; size : Size ; n : Number ; ord : Str} ;
