@@ -51,7 +51,7 @@ oper
     --   } ;
 
 mkPN_onRuntimeToken : Str -> LinPN = \str -> {
-  s = table { 
+  s = table {
     NPBare => str ;
     NPC Gen => str ++ "এর" ;
     NPC _ => str
@@ -65,8 +65,8 @@ lincat
 lin
   MkSymb s = s ;
 
---   BaseSymb = infixSS "and" ; -- this comes between the last two ones
---   ConsSymb = infixSS "," ;
+  BaseSymb = infixSS "এবং" ; -- this comes between the last two ones
+  ConsSymb = infixSS "," ;
 
 
 }

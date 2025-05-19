@@ -126,9 +126,12 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
   -- : Quant
   -- Definite and Indefinite article does not exist as a word in Bangla, rather it exists as 
   -- a property of the Noun
-  
-  -- DefArt = mkQuant "the" "the" ;
-  -- IndefArt = mkQuant "a" [] ;
+
+  DefArt = ss "" ;
+  IndefArt = ss "" ;
+  -- Inari: eventually change the lincat of Quant, and
+  -- have these include a param that determines whether
+  -- to choose Indefinite or Definite from the inflection table of the N
 
 {-
   -- : Pron -> Quant        -- my
