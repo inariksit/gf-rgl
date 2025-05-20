@@ -42,22 +42,20 @@ https://inariksit.github.io/gf/2018/08/28/gf-gotchas.html#my-naming-scheme-for-l
     * Replace the placeholder cases on line 53 and make the table 2-dimensional, like this:
         oper LinN : Type = {s : Number => Case => Str ; …} ;
     * Make your own parameter that combines all the relevant features, like this:
-        param NForm = Whatever | You | Need | For | Noun | Inflection ;
+        param NForm = Whatever | You | Need | For | Noun | ;
         oper LinN : Type = {s : NForm => Str ; …} ;
-      This can be a good idea, if your inflection table has some gaps, i.e. not all combinations are in use
+      This can be a good idea, if your table has some gaps, i.e. not all combinations are in use
       See https://gist.github.com/inariksit/708ab9df2498e88bc63aedf5fc7be2f3#file-tables-gf-L48-L122 for explanation
  -}
 
 param
   Case = Nom | Gen | Obj | Loc ;
-  Number = Sg
-         | Pl ;
+  Number = Sg | Pl ;
   
-  Article = Indefinite | Definite ;
+  Article = Indefinite | Definite | NoArticle ;
   Animacy = Inanimate | Animate ;
   Person = P1 | P2H0 | P2H1 | P2H2 | P3H1 | P3H2 ;
-  NForm = Bare | Inflection Number Article Case ;
-  NPCase = NPBare | NPC Case ;
+  NForm = Inflection Number Article Case ;
 oper
   LinN : Type = {
     s :
@@ -76,7 +74,18 @@ oper
 -- cc -table mkLinN Animate "বেদী"
   genLocSameN : Str -> LinN = \s -> {
         s = table {
-            Bare => s ;
+            Inflection Sg NoArticle Nom => s ;
+            Inflection Sg NoArticle Obj => s + "কে" ;
+            Inflection Sg NoArticle (Gen|Loc) => case s of {
+                    -- TODO Fix pattern matching
+                    ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
+                      => s + "য়ের" ;
+                    _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
+                      => s + "র" ;
+                    _ + ("ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ")
+                      => s + "য়ের" ;
+                    _ => s + " ের"
+                   } ;
             Inflection Sg Indefinite Nom => "একজন" ++ s ;
             Inflection Sg Indefinite Obj => "একজন" ++ s + "কে" ;
             Inflection Sg Indefinite (Gen|Loc) => case s of {
@@ -92,7 +101,7 @@ oper
            Inflection Sg Definite Nom => s + "টা" ;
            Inflection Sg Definite Obj => s + "টাকে" ;
            Inflection Sg Definite (Gen|Loc) => s + "টার" ;
-           Inflection Pl Indefinite Nom => case s of {
+           Inflection Pl (Indefinite|NoArticle) Nom => case s of {
                     ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
                       => s + "য়েরা" ;
                     _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
@@ -101,8 +110,8 @@ oper
                       => s + "য়েরা" ;
                     _ => s + " েরা"
                    } ;
-            Inflection Pl Indefinite Obj => s + "দেরকে" ;
-            Inflection Pl Indefinite (Gen|Loc) => s + "দের" ;
+            Inflection Pl (Indefinite|NoArticle) Obj => s + "দেরকে" ;
+            Inflection Pl (Indefinite|NoArticle) (Gen|Loc) => s + "দের" ;
             Inflection Pl Definite Nom => s + "গুলো" ;
             Inflection Pl Definite Obj => s + "গুলোকে" ;
             Inflection Pl Definite (Gen|Loc) => s + "গুলোর"
@@ -112,7 +121,21 @@ oper
 
 nomObjSameN : Str -> LinN = \s -> {
         s = table {
-          Bare => s ;
+          Inflection Sg NoArticle (Nom|Obj) => s ;
+          Inflection Sg NoArticle Gen => case s of {
+                    ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
+                      => s + "য়ের" ;
+                    _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
+                      => s + "র" ;
+                    _ + ("ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ")
+                      => s + "য়ের" ;
+                    _ => s + " ের"
+                   } ;
+          Inflection Sg NoArticle Loc => case s of {
+                    _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ" | "ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ")
+                      => s + "তে" ;
+                    _ => s + " ে"
+                   } ;
           Inflection Sg Indefinite (Nom|Obj) => "একটা" ++ s ;
           Inflection Sg Indefinite Gen => case s of {
                     ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
@@ -127,8 +150,8 @@ nomObjSameN : Str -> LinN = \s -> {
           Inflection Sg Definite (Nom|Obj) => s + "টা" ;
           Inflection Sg Definite Gen => s + "টার" ;
           Inflection Sg Definite Loc => s + "টায়" ;
-          Inflection Pl Indefinite (Nom|Obj) => s ;
-          Inflection Pl Indefinite Gen => case s of {
+          Inflection Pl (Indefinite|NoArticle) (Nom|Obj) => s ;
+          Inflection Pl (Indefinite|NoArticle) Gen => case s of {
                     ? + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
                       => s + "য়ের" ;
                     _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ")
@@ -137,7 +160,11 @@ nomObjSameN : Str -> LinN = \s -> {
                       => s + "য়ের" ;
                     _ => s + " ের"
                    } ;
-          Inflection Pl Indefinite Loc => s + " ে" ;
+          Inflection Pl (Indefinite|NoArticle) Loc => case s of {
+                    _ + ("ৌ" | "ৈ" | "া" | "ী" | "ূ" | "ো" | "ে" | "্" | "ি" | "ু" | "ৃ" | "ই" | "ঈ" | "উ" | "ঊ" | "ঋ" | "এ" | "ঐ" | "ও" | "ঔ")
+                      => s + "তে" ;
+                    _ => s + " ে"
+                   } ;
           Inflection Pl Definite (Nom|Obj) => s + "গুলো" ;
           Inflection Pl Definite Gen => s + "গুলোর" ;
           Inflection Pl Definite Loc => s + "গুলোতে"
@@ -154,18 +181,17 @@ nomObjSameN : Str -> LinN = \s -> {
     ;
 
   LinPN : Type = {
-    s : NPCase => Str ;
+    s : Case => Str ;
     n : Number ; -- Proper nouns often have already an inherent number; you don't usually say "a Paris / many Parises"
     -- g : Gender ; -- inherent gender/noun class, if your language has that
   } ;
 
-    mkLinPN : Str -> Number -> LinPN = \s,n ->
-      let pnAsN : LinN = mkLinN Inanimate s ;
-       in {s = table {
-                  NPBare => s ;
-                  NPC c => pnAsN.s ! Inflection n Indefinite c } ;
-          n = n } ;
-  -- For inflection paradigms, see http://www.grammaticalframework.org/doc/tutorial/gf-tutorial.html#toc56
+  mkLinPN : Str -> Number -> LinPN = \s,n -> {
+    s = \\c => (mkLinN Inanimate s).s ! Inflection n NoArticle c ;
+    n = n
+  } ;
+
+  -- For paradigms, see http://www.grammaticalframework.org/doc/tutorial/gf-tutorial.html#toc56
   -- mkNoun : Str -> LinN = \str -> {
   --   s = table {
   --     _ => str -- TODO: actual morphology
@@ -270,7 +296,7 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
 -}
 
   LinNP : Type = {
-    s : NPCase => Str ;
+    s : Case => Str ;
     -- Alternative: If anything inflects in case (nouns, pronouns), NP has to also inflect in case!
     -- s : Case => Str ;
     n : Number ;
@@ -279,7 +305,7 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
     -- a : Agr -- sketched on lines 97-101
     } ;
 
-  linNP : LinNP -> Str = \np -> np.s ! NPBare ; -- Change when you change LinNP
+  linNP : LinNP -> Str = \np -> np.s ! Nom ; -- Change when you change LinNP
 
   emptyNP : LinNP = { -- Change when you change LinNP
     s = \\_ => [] ;

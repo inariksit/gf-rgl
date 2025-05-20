@@ -53,10 +53,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 -}
   -- MassNP : CN -> NP ;
     MassNP cn = emptyNP ** {
-      s = table {
-        NPBare => cn.s ! Bare ;
-        NPC c => cn.s ! Inflection Sg Indefinite c 
-      } 
+      s = \\c => cn.s ! Inflection Sg NoArticle c 
     } ;
 
 

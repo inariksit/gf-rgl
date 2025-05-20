@@ -4,7 +4,6 @@ concrete SymbolBen of Symbol = CatBen **
   open Prelude, ParadigmsBen, ResBen, (Noun=NounBen) in {
 
 lin
-
   --  : Symb -> PN ;                -- x
   SymbPN i = mkPN_onRuntimeToken i.s ;
 
@@ -52,9 +51,8 @@ oper
 
 mkPN_onRuntimeToken : Str -> LinPN = \str -> {
   s = table {
-    NPBare => str ;
-    NPC Gen => str ++ "এর" ;
-    NPC _ => str
+    Gen => str ++ "এর" ;
+    _ => str
   } ;
   n = Pl ;
   } ;

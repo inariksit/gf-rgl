@@ -4,17 +4,17 @@ concrete ConjunctionBen of Conjunction =
   flags optimize=all_subs ;
 
 lincat
-  [NP] = {s1, s2 : NPCase => Str ; n : Number ; p : Person} ;
+  [NP] = {s1, s2 : Case => Str ; n : Number ; p : Person} ;
 
 lin
   -- : NP -> NP -> ListNP ;      -- John, Mary
-  BaseNP x y = twoTable NPCase x y ** {n = conjNum x.n y.n ; p = conjPerson x.p y.p} ;
+  BaseNP x y = twoTable Case x y ** {n = conjNum x.n y.n ; p = conjPerson x.p y.p} ;
 
   -- : NP -> ListNP -> ListNP ;  -- John, Mary, Bill
-  ConsNP x xs = (consrTable NPCase comma x xs) **  {n = conjNum x.n xs.n ; p = conjPerson x.p xs.p} ;
+  ConsNP x xs = (consrTable Case comma x xs) **  {n = conjNum x.n xs.n ; p = conjPerson x.p xs.p} ;
 
   -- : Conj -> ListNP -> NP ;     -- she or we
-  ConjNP conj xs = conjunctDistrTable NPCase conj xs ** xs ;
+  ConjNP conj xs = conjunctDistrTable Case conj xs ** xs ;
 
 oper
   conjNum : Number -> Number -> Number = \n,_ -> Pl ;
