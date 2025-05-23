@@ -148,7 +148,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
   } ;
 
   AdvCN cn adv = {
-    s = \\n => adv.s ++ cn.s ! n ;
+    s = \\n => cn.s ! n ++ adv.s  ;
     numSuff = cn.numSuff ;
   } ;
 
@@ -184,6 +184,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   -- : CN -> SC  -> CN ;   -- question where she sleeps
   SentCN cn sc =
+--}
 
 --2 Apposition
 
@@ -191,7 +192,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   -- : CN -> NP -> CN ;    -- city Paris (, numbers x and y)
   ApposCN cn np = cn ** {
-    s =
+    s = \\n => np.s ! Nom ++ cn.s ! n
     } ;
 
 --2 Possessive and partitive constructs
@@ -200,9 +201,10 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
   -- : PossNP  : CN -> NP -> CN ;
   -- in English: book of someone; point is that we can add a determiner to the CN,
   -- so it can become "a book of someone" or "the book of someone"
-  PossNP cn np =
-
-
+  PossNP cn np = cn ** {
+    s = \\n => np.s ! Gen ++ cn.s ! n
+    } ;
+{-
   -- : Det -> NP -> NP ; -- three of them, some of the boys
   CountNP det np = -- Nonsense for DefArt or IndefArt, but don't worry about that! RGL can contain weird sentences, as long as it contains the non-weird stuff we want
 

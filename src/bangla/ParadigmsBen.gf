@@ -11,9 +11,17 @@ oper
 
  -- Prep : Type ;
   noPrep : Prep ;
+  Case : Type ;
+  nominative : Case ;
+  objective : Case ;
+  locative : Case ;
+  genitive : Case ;
+  Animacy : Type ;
+  animate : Animacy ;
+  inanimate : Animacy ;
 
   -- Add more overload instances if needed for all categories!
-
+  
 --2 Nouns
 
   mkN : overload {
@@ -39,7 +47,8 @@ oper
 
   -- Verbs
   mkV : overload {
-    mkV : Str -> V ; -- Predictable verb
+    mkV : Str -> V ; -- Both low and high form are same
+    mkV : Str -> Str -> V ;
   } ;
 
 
@@ -79,6 +88,7 @@ oper
   -- If prepositions take case, add that as argument to mkPrep
   mkPrep : overload {
     mkPrep : Str -> Prep ;
+    mkPrep : Str -> Case -> Prep ;
     } ;
 
   mkConj : overload {
@@ -110,6 +120,14 @@ oper
 
   -- Prep = CatBen.Prep ;
   noPrep = mkPrep [] Gen ;
+  Case = ResBen.Case ;
+  nominative = ResBen.Nom ;
+  objective = ResBen.Obj ;
+  locative = ResBen.Loc ;
+  genitive = ResBen.Gen ;
+  Animacy = ResBen.Animacy ;
+  animate = ResBen.Animate ;
+  inanimate = ResBen.Inanimate ;
 
   -- Add more overload instances if needed for all categories!
 
@@ -150,7 +168,8 @@ oper
 -}
   -- Verbs
   mkV = overload {
-    mkV : Str -> Str -> V = \s1, s2 -> lin V (mkVerb s1 s2) ;
+    mkV : Str -> V = \s -> lin V (mkVerb s s) ;
+    mkV : Str -> Str -> V = \low, high -> lin V (mkVerb low high) ;
   } ;
 
 {-
@@ -190,6 +209,7 @@ oper
 
   -- If prepositions take case, add that as argument to mkPrep
   mkPrep = overload {
+    mkPrep : Str -> Prep = \s -> lin Prep {s = s ; c = Gen} ; -- Default Case genitive
     mkPrep : Str -> Case -> Prep = \s, c -> lin Prep {s = s ; c = c} ;
     } ;
 
