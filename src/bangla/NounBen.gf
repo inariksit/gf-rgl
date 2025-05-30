@@ -128,9 +128,6 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   DefArt = mkQuant "" Definite ;
   IndefArt = mkQuant "" Indefinite ;
-  -- Inari: eventually change the lincat of Quant, and
-  -- have these include a param that determines whether
-  -- to choose Indefinite or Definite from the inflection table of the N
 
 {-
   -- : Pron -> Quant        -- my
@@ -170,15 +167,8 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
   -- : N3 -> N2 ;          -- distance (to Paris)
   Use3N3 n3 = lin N2 n3 ;
 
-  -- : AP -> CN -> CN
-  AdjCN ap cn =
-
   -- : CN -> RS -> CN ;
   RelCN cn rs =
-
-
-  -- : CN -> Adv -> CN ;
-  AdvCN cn adv =
 
 -- Nouns can also be modified by embedded sentences and questions.
 -- For some nouns this makes little sense, but we leave this for applications
@@ -186,7 +176,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
   -- : CN -> SC  -> CN ;   -- question where she sleeps
   SentCN cn sc =
---}
+-}
 
 --2 Apposition
 
