@@ -32,19 +32,19 @@ lin num x0 = {
 } ;
 
 
-oper mkNum : Str -> Str -> Str -> DSize -> LinDigit = 
+oper mkDigits : Str -> Str -> Str -> DSize -> LinDigit = 
   \two -> \twenty -> \second -> \sz ->  
   {s = table {unit => two ; ten => twenty } ; 
    size = sz ; n = Pl ; ord = second } ;
 
-lin n2 = mkNum "দুই" "বিশ" "দ্বিতীয়" r2 ;
-lin n3 = mkNum "তিন" "ত্রিশ" "তৃতীয়" r3 ;
-lin n4 = mkNum "চার" "চল্লিশ" "চতুর্থ" r4 ;
-lin n5 = mkNum "পাঁচ" "পঞ্চাশ" "পঞ্চম" r5 ;
-lin n6 = mkNum "ছয়" "ষাট" "ষষ্ট" r6 ; 
-lin n7 = mkNum "সাত" "সত্তর" "সপ্তম" r7 ;
-lin n8 = mkNum "আট" "আশি" "অষ্টম" r8 ;
-lin n9 = mkNum "নয়" "নব্বই" "নবম" r9 ;
+lin n2 = mkDigits "দুই" "বিশ" "দ্বিতীয়" r2 ;
+lin n3 = mkDigits "তিন" "ত্রিশ" "তৃতীয়" r3 ;
+lin n4 = mkDigits "চার" "চল্লিশ" "চতুর্থ" r4 ;
+lin n5 = mkDigits "পাঁচ" "পঞ্চাশ" "পঞ্চম" r5 ;
+lin n6 = mkDigits "ছয়" "ষাট" "ষষ্ট" r6 ; 
+lin n7 = mkDigits "সাত" "সত্তর" "সপ্তম" r7 ;
+lin n8 = mkDigits "আট" "আশি" "অষ্টম" r8 ;
+lin n9 = mkDigits "নয়" "নব্বই" "নবম" r9 ;
 
 oper 
   mkR : (a1,_,_,_,_,_,_,_,a9 : Str) -> DSize => Str = 

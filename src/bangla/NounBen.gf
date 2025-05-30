@@ -6,10 +6,11 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 
 --2 Noun phrases
   UsePN pn = pn ** {p = P3H1} ;
--- : Det -> CN -> NP
-    -- DetCN det cn = emptyNP ** { // TODO 
-    --   s = det.s ++ cn.s ! det.n
-    --   } ;
+
+  -- Det -> CN -> NP
+    DetCN det cn = emptyNP ** {
+      s = \\c => det.s ++ cn.s ! Inflection det.n det.a c
+      } ;
 {-
   -- : PN -> NP ;
   -- Assuming that lincat PN = lincat NP
@@ -66,6 +67,7 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
     DetQuant quant num = quant ** {
       s = quant.s ++ num.s ;
       n = num.n ;
+      a = quant.a ;
       } ;
 
   -- : Quant -> Num -> Ord -> Det ;
@@ -80,8 +82,8 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
 -- the "kernel" of a determiner. It is, however, the $Num$ that determines
 -- the inherent number.
 
-  NumSg = {s = [] ; n = Sg} ;
-  NumPl = {s = [] ; n = Pl} ;
+  NumSg = mkNum "" Sg ;
+  NumPl = mkNum "" Pl ;
 
 
   -- : Card -> Num ;    -- two
@@ -124,8 +126,8 @@ concrete NounBen of Noun = CatBen ** open ResBen, Prelude in {
   -- Definite and Indefinite article does not exist as a word in Bangla, rather it exists as 
   -- a property of the Noun
 
-  DefArt = ss "" ;
-  IndefArt = ss "" ;
+  DefArt = mkQuant "" Definite ;
+  IndefArt = mkQuant "" Indefinite ;
   -- Inari: eventually change the lincat of Quant, and
   -- have these include a param that determines whether
   -- to choose Indefinite or Definite from the inflection table of the N

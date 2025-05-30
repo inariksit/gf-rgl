@@ -55,8 +55,8 @@ concrete CatBen of Cat = CommonX ** open ResBen, Coordination, Prelude in {
     Det = ResBen.LinDet ; -- s : Str , n : Number
     Predet = SS ;
     Quant = ResBen.LinQuant ; -- s : Number => Str
-    Num = ResBen.LinDet ;
-    Card = ResBen.LinDet ;
+    Num = ResBen.LinNum ;
+    Card = ResBen.LinNum ;
     ACard = SS ;
     Ord = SS ;
     DAP = SS ;

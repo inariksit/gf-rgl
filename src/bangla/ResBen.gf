@@ -319,7 +319,10 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
   -- If your language has a number, it is very very very likely that
   -- Quant has a variable number and Det has inherent number.
 
-  LinQuant : Type = SS ;
+  LinQuant : Type = {
+    s : Str ;
+    a : Article ;
+  } ;
     --  {
     -- s,  -- quantifier in a context, e.g. 'this (cat) (is nice)'
     -- sp  -- quantifier as standalone, e.g. 'this (is nice)'
@@ -329,8 +332,13 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
   LinDet : Type = {
     s : Str ;
     n : Number ;
-    } ;
+    a : Article 
+  } ;
 
+  LinNum : Type = {
+    s : Str ;
+    n : Number
+  } ;
   -- Can you reuse your mkNoun? Do nouns and quantifiers inflect the same way?
   -- mkQuant : Str -> Str -> LinQuant = \this, these -> {
   --   s,
@@ -339,15 +347,21 @@ That's why I'm copying over the definition below, instead of the neater `LinNP :
   --     Pl => these } ;
   --   };
 
-  mkQuant : Str -> LinQuant = \this -> {
-    s = this 
+  mkQuant : Str -> Article -> LinQuant = \this, article -> {
+    s = this ;
+    a = article 
   };
 
-  mkDet : Str -> Number -> LinDet = \str, num -> {
+  mkDet : Str -> Number -> Article -> LinDet = \str, num, article -> {
     s = str ;
-    n = num
+    n = num ;
+    a = article ;
   } ;
 
+  mkNum : Str -> Number -> LinNum = \str, num -> {
+    s = str ;
+    n = num 
+  } ;
 --------------------------------------------------------------------------------
 -- Adpositions
 

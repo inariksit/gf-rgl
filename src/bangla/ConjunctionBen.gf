@@ -5,6 +5,7 @@ concrete ConjunctionBen of Conjunction =
 
 lincat
   [NP] = {s1, s2 : Case => Str ; n : Number ; p : Person} ;
+  [Adv],[AdV],[IAdv] = {s1,s2 : Str} ;
 
 lin
   -- : NP -> NP -> ListNP ;      -- John, Mary
@@ -15,6 +16,9 @@ lin
 
   -- : Conj -> ListNP -> NP ;     -- she or we
   ConjNP conj xs = conjunctDistrTable Case conj xs ** xs ;
+  BaseAdv, BaseAdV, BaseIAdv = twoSS ;
+  ConsAdv, ConsAdV, ConsIAdv = consrSS comma ;
+  ConjAdv, ConjAdV, ConjIAdv = conjunctDistrSS ;
 
 oper
   conjNum : Number -> Number -> Number = \n,_ -> Pl ;
@@ -45,13 +49,13 @@ oper
 
 -----------------------------------------------------------------------------
 -- Adverb and other simple {s : Str} types.
-lincat
-  [Adv],[AdV],[IAdv] = {s1,s2 : Str} ;
+-- lincat
+--   [Adv],[AdV],[IAdv] = {s1,s2 : Str} ;
 
-lin
-  BaseAdv, BaseAdV, BaseIAdv = twoSS ;
-  ConsAdv, ConsAdV, ConsIAdv = consrSS comma ;
-  ConjAdv, ConjAdV, ConjIAdv = conjunctDistrSS ;
+-- lin
+--   BaseAdv, BaseAdV, BaseIAdv = twoSS ;
+--   ConsAdv, ConsAdV, ConsIAdv = consrSS comma ;
+--   ConjAdv, ConjAdV, ConjIAdv = conjunctDistrSS ;
 
 {-
 
