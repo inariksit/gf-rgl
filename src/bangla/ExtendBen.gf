@@ -8,6 +8,7 @@ concrete ExtendBen of Extend = CatBen
     , ListVPI -- infinitive VP's (TODO: with anteriority and polarity)
     , MkVPS
     , PredVPS
+    , ApposNP
 
     -- excluded because RGL funs needed for them not implemented yet
     , SlashBareV2S
@@ -35,4 +36,12 @@ concrete ExtendBen of Extend = CatBen
     , PiedPipingRelSlash -- requires RelSlash
     , PiedPipingQuestSlash -- requires QuestSlash
 
-  ] with (Grammar=GrammarBen) ;
+  ] with (Grammar=GrammarBen) ** open Prelude, ResBen in {
+
+  lin
+
+    -- : NP -> NP -> NP ;   -- Mr Macron, the president of France,
+    ApposNP np1 np2 = np1 ** {
+      s = \\c => np2.s ! Nom ++ bindComma ++ np1.s ! c
+      } ;
+  };
